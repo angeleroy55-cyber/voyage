@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import QuickView from "@/components/offer/QuickView";
 import Icon from "@/components/ui/Icon";
 import { discount, durationLabel, photo, price, ratingLabel } from "@/lib/format";
 import type { Offer } from "@/lib/types";
@@ -34,28 +35,30 @@ export default function OfferCard({ offer, layout = "grid" }: { offer: Offer; la
 
   if (layout === "row") {
     return (
-      <article className="group overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-card transition hover:shadow-pop sm:flex">
-        <Link
-          href={`/offre/${offer.slug}`}
-          className="relative block overflow-hidden sm:w-80 sm:shrink-0"
-        >
-          {/* From sm up the wrapper is absolute, so the column takes its height from
-              the text side and the zoom on hover stays clipped inside the image. */}
-          <div className="relative aspect-16/10 sm:absolute sm:inset-0 sm:aspect-auto">
-            <Image
-              src={offer.image ?? photo(offer.imageSeed, 640, 400)}
-              alt={`${offer.title}, ${offer.destination}`}
-              fill
-              sizes="(max-width: 640px) 100vw, 320px"
-              className="object-cover transition duration-500 group-hover:scale-105"
-            />
-          </div>
-          {off && (
-            <span className="absolute left-3 top-3 z-10 rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">
-              −{off} %
-            </span>
-          )}
-        </Link>
+      <article className="group hover-lift overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-card sm:flex">
+        {/* L'aperçu rapide est un bouton : il ne peut donc pas vivre dans le
+            lien vers la fiche, d'où ce conteneur qui les porte côte à côte. */}
+        <div className="relative overflow-hidden sm:w-80 sm:shrink-0">
+          <Link href={`/offre/${offer.slug}`} className="block">
+            {/* From sm up the wrapper is absolute, so the column takes its height from
+                the text side and the zoom on hover stays clipped inside the image. */}
+            <div className="relative aspect-16/10 sm:absolute sm:inset-0 sm:aspect-auto">
+              <Image
+                src={offer.image ?? photo(offer.imageSeed, 640, 400)}
+                alt={`${offer.title}, ${offer.destination}`}
+                fill
+                sizes="(max-width: 640px) 100vw, 320px"
+                className="object-cover transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            {off && (
+              <span className="absolute left-3 top-3 z-10 rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">
+                −{off} %
+              </span>
+            )}
+          </Link>
+          <QuickView offer={offer} />
+        </div>
         <div className="flex min-w-0 flex-1 flex-col gap-3 p-4 sm:flex-row sm:items-stretch">
           <div className="min-w-0 flex-1">
             <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-navy-500">
@@ -100,28 +103,31 @@ export default function OfferCard({ offer, layout = "grid" }: { offer: Offer; la
   }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-pop">
-      <Link href={`/offre/${offer.slug}`} className="relative block aspect-16/10 overflow-hidden">
-        <Image
-          src={offer.image ?? photo(offer.imageSeed, 600, 375)}
-          alt={`${offer.title}, ${offer.destination}`}
-          fill
-          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 300px"
-          className="object-cover transition duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-x-0 top-0 flex justify-between p-3">
-          {off ? (
-            <span className="rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">−{off} %</span>
-          ) : (
-            <span />
-          )}
-          {offer.tags[0] && (
-            <span className="rounded-md bg-white/95 px-2 py-1 text-[11px] font-bold text-navy-700">
-              {offer.tags[0]}
-            </span>
-          )}
-        </div>
-      </Link>
+    <article className="group hover-lift flex h-full flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-card">
+      <div className="relative aspect-16/10 overflow-hidden">
+        <Link href={`/offre/${offer.slug}`} className="absolute inset-0 block">
+          <Image
+            src={offer.image ?? photo(offer.imageSeed, 600, 375)}
+            alt={`${offer.title}, ${offer.destination}`}
+            fill
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 300px"
+            className="object-cover transition duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-x-0 top-0 flex justify-between p-3">
+            {off ? (
+              <span className="rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">−{off} %</span>
+            ) : (
+              <span />
+            )}
+            {offer.tags[0] && (
+              <span className="rounded-md bg-white/95 px-2 py-1 text-[11px] font-bold text-navy-700">
+                {offer.tags[0]}
+              </span>
+            )}
+          </div>
+        </Link>
+        <QuickView offer={offer} />
+      </div>
 
       <div className="flex flex-1 flex-col p-4">
         <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-navy-500">

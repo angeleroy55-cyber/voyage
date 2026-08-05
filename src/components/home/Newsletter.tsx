@@ -1,17 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
+import { useFormStatus } from "react-dom";
 import Icon from "@/components/ui/Icon";
+import { subscribe, type FormState } from "@/server/actions/public";
 
-const INTERESTS = ["Plage & soleil", "Croisières", "Circuits", "Week-ends", "Famille", "Longue distance"];
+const INTERESTS = [
+  "Plage & soleil",
+  "Croisières",
+  "Circuits",
+  "Week-ends",
+  "Famille",
+  "Longue distance",
+];
+
+const INITIAL: FormState = { ok: false, message: "" };
 
 export default function Newsletter() {
-  const [email, setEmail] = useState("");
   const [picked, setPicked] = useState<string[]>(["Plage & soleil"]);
-  const [sent, setSent] = useState(false);
+  const [state, formAction] = useActionState(subscribe, INITIAL);
 
   function toggle(tag: string) {
-    setPicked((p) => (p.includes(tag) ? p.filter((t) => t !== tag) : [...p, tag]));
+    setPicked((current) =>
+      current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag],
+    );
   }
 
   return (
@@ -33,38 +45,31 @@ export default function Newsletter() {
           </div>
 
           <div>
-            {sent ? (
-              <div className="flex items-start gap-3 rounded-xl bg-white/10 p-5">
+            {state.ok ? (
+              <div className="animate-fade-up flex items-start gap-3 rounded-xl bg-white/10 p-5">
                 <Icon name="check" className="mt-0.5 size-5 shrink-0 text-teal-400" />
-                <p className="text-sm">
-                  C&apos;est noté pour <strong>{email}</strong>. Vous recevrez les alertes sur&nbsp;:{" "}
-                  {picked.length ? picked.join(", ").toLowerCase() : "toutes nos offres"}.
-                </p>
+                <p className="text-sm">{state.message}</p>
               </div>
             ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSent(true);
-                }}
-              >
+              <form action={formAction}>
+                {/* Les cases cochées sont reflétées dans des champs cachés :
+                    l'action serveur reçoit la même liste que celle affichée. */}
+                {picked.map((tag) => (
+                  <input key={tag} type="hidden" name="interests" value={tag} />
+                ))}
+
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <input
                     type="email"
+                    name="email"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="votre@email.fr"
                     aria-label="Votre adresse e-mail"
                     className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-[15px] text-white placeholder:text-navy-200 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
                   />
-                  <button
-                    type="submit"
-                    className="rounded-xl bg-gold-400 px-6 py-3 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500"
-                  >
-                    Je m&apos;inscris
-                  </button>
+                  <SubmitButton />
                 </div>
+
                 <div className="mt-4 flex flex-wrap gap-2">
                   {INTERESTS.map((tag) => {
                     const on = picked.includes(tag);
@@ -76,7 +81,7 @@ export default function Newsletter() {
                         aria-pressed={on}
                         className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                           on
-                            ? "border-gold-400 bg-gold-400 text-navy-900"
+                            ? "border-gold-300 bg-gold-400 text-navy-900"
                             : "border-white/25 text-navy-100 hover:border-white/60"
                         }`}
                       >
@@ -85,6 +90,13 @@ export default function Newsletter() {
                     );
                   })}
                 </div>
+
+                {state.message && !state.ok && (
+                  <p role="alert" className="mt-3 text-sm text-gold-300">
+                    {state.message}
+                  </p>
+                )}
+
                 <p className="mt-3 text-xs text-navy-200">
                   En vous inscrivant, vous acceptez notre politique de confidentialité.
                 </p>
@@ -94,5 +106,18 @@ export default function Newsletter() {
         </div>
       </div>
     </section>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="rounded-xl bg-gold-400 px-6 py-3 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500 disabled:opacity-60"
+    >
+      {pending ? "…" : "Je m'inscris"}
+    </button>
   );
 }

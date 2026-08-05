@@ -9,13 +9,13 @@ export default function BlogSection({ posts }: { posts: Post[] }) {
     <Section
       title="Le carnet de voyage"
       subtitle="Conseils pratiques et idées d'itinéraires écrits par nos équipes."
-      href="/aide"
+      href="/blog"
       linkLabel="Tous les articles"
     >
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {posts.map((p) => (
           <article key={p.slug} className="group">
-            <Link href="/aide" className="block overflow-hidden rounded-2xl">
+            <Link href={`/blog/${p.slug}`} className="block overflow-hidden rounded-2xl">
               <div className="relative aspect-16/10">
                 <Image
                   src={p.image ?? photo(p.imageSeed, 600, 375)}
@@ -28,7 +28,7 @@ export default function BlogSection({ posts }: { posts: Post[] }) {
             </Link>
             <p className="mt-3 text-xs font-bold uppercase tracking-wide text-gold-700">{p.category}</p>
             <h3 className="mt-1 text-[15px] font-bold leading-snug text-navy-900">
-              <Link href="/aide" className="hover:text-gold-700">
+              <Link href={`/blog/${p.slug}`} className="hover:text-gold-700">
                 {p.title}
               </Link>
             </h3>

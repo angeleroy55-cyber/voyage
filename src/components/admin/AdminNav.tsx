@@ -11,7 +11,10 @@ const LINKS = [
   { href: "/admin/reservations", label: "Réservations", icon: "calendar" },
   { href: "/admin/avis", label: "Avis", icon: "star" },
   { href: "/admin/articles", label: "Articles", icon: "mail" },
+  { href: "/admin/abonnes", label: "Abonnés", icon: "users" },
+  { href: "/admin/equipe", label: "Équipe", icon: "headset" },
   { href: "/admin/parametres", label: "Réglages", icon: "filter" },
+  { href: "/admin/profil", label: "Mon profil", icon: "shield" },
 ];
 
 export default function AdminNav({ compact = false }: { compact?: boolean }) {

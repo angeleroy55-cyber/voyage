@@ -10,12 +10,14 @@ import GiftCard from "@/components/home/GiftCard";
 import Testimonials from "@/components/home/Testimonials";
 import BlogSection from "@/components/home/BlogSection";
 import SearchWidget from "@/components/search/SearchWidget";
+import Reveal from "@/components/ui/Reveal";
 import {
   getBestDeals,
   getDestinations,
   getOffers,
   getPosts,
   getReviews,
+  getSearchCategories,
   getSettings,
 } from "@/server/catalogue";
 
@@ -24,23 +26,45 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [deals, cruises, tours, camping, all, destinations, reviews, posts, settings] =
-    await Promise.all([
-      getBestDeals(8),
-      getOffers("croisieres"),
-      getOffers("circuits"),
-      getOffers("campings"),
-      getOffers(),
-      getDestinations(),
-      getReviews(6),
-      getPosts(4),
-      getSettings(),
-    ]);
+  const [deals, all, destinations, reviews, posts, settings, categories] = await Promise.all([
+    getBestDeals(8),
+    getOffers(),
+    getDestinations(),
+    getReviews(6),
+    getPosts(4),
+    getSettings(),
+    getSearchCategories(),
+  ]);
 
   const topBooked = [...all]
     .filter((offer) => offer.category !== "voitures")
     .sort((a, b) => b.reviews - a.reviews)
     .slice(0, 9);
+
+  // Les rayons suivent les catégories actives : en désactiver une au
+  // back-office retire sa section, sans laisser de slug codé en dur derrière.
+  const RAILS: { slug: string; title: string; subtitle: string }[] = [
+    {
+      slug: "croisieres",
+      title: "Croisières au départ d'Europe",
+      subtitle: "Pension complète, escales et animations comprises.",
+    },
+    {
+      slug: "circuits",
+      title: "Circuits accompagnés",
+      subtitle: "Guide francophone, transferts et visites principales inclus.",
+    },
+    {
+      slug: "campings",
+      title: "Campings et clubs en famille",
+      subtitle: "Mobil-homes équipés, espaces aquatiques et clubs enfants.",
+    },
+  ];
+
+  const rails = RAILS.filter((rail) => categories.some((c) => c.id === rail.slug)).map((rail) => ({
+    ...rail,
+    offers: all.filter((offer) => offer.category === rail.slug),
+  })).filter((rail) => rail.offers.length > 0);
 
   return (
     <>
@@ -56,7 +80,7 @@ export default async function HomePage() {
           </p>
         </div>
         <div className="mx-auto mt-5 max-w-page px-4">
-          <SearchWidget />
+          <SearchWidget categories={categories} />
         </div>
       </div>
 
@@ -64,62 +88,84 @@ export default async function HomePage() {
         <HeroCarousel />
       </div>
 
-      <div className="mt-10">
+      <Reveal variant="fade" className="mt-10">
         <TrustBar />
-      </div>
+      </Reveal>
 
+      {/* Chaque bloc apparaît en remontant lorsqu'il entre dans le champ de
+          vision ; la page reste entièrement lisible sans JavaScript et les
+          animations se désactivent si le système le demande (cf. Reveal). */}
       <div className="space-y-14 py-14">
-        <Selections />
+        <Reveal>
+          <Selections />
+        </Reveal>
 
         {deals.length > 0 && (
-          <OfferRail
-            title="Les meilleures remises du moment"
-            subtitle="Stocks limités, prix valables jusqu'à épuisement."
-            href="/recherche/vol-hotel"
-            offers={deals}
-          />
+          <Reveal>
+            <OfferRail
+              title="Les meilleures remises du moment"
+              subtitle="Stocks limités, prix valables jusqu'à épuisement."
+              href="/recherche/vol-hotel"
+              offers={deals}
+            />
+          </Reveal>
         )}
 
-        <DestinationGrid destinations={destinations} />
+        <Reveal>
+          <DestinationGrid destinations={destinations} />
+        </Reveal>
 
-        {cruises.length > 0 && (
-          <OfferRail
-            title="Croisières au départ d'Europe"
-            subtitle="Pension complète, escales et animations comprises."
-            href="/recherche/croisieres"
-            offers={cruises}
-          />
+        {/* Les rayons thématiques s'intercalent avant le bloc « populaires » ;
+            l'inscription reste après, une fois quelques offres parcourues. */}
+        {rails.slice(0, 2).map((rail) => (
+          <Reveal key={rail.slug}>
+            <OfferRail
+              title={rail.title}
+              subtitle={rail.subtitle}
+              href={`/recherche/${rail.slug}`}
+              offers={rail.offers}
+            />
+          </Reveal>
+        ))}
+
+        <Reveal>
+          <PopularBookings offers={topBooked} />
+        </Reveal>
+
+        <Reveal variant="zoom">
+          <Newsletter />
+        </Reveal>
+
+        {rails.slice(2).map((rail) => (
+          <Reveal key={rail.slug}>
+            <OfferRail
+              title={rail.title}
+              subtitle={rail.subtitle}
+              href={`/recherche/${rail.slug}`}
+              offers={rail.offers}
+            />
+          </Reveal>
+        ))}
+
+        <Reveal>
+          <Benefits />
+        </Reveal>
+
+        <Reveal variant="zoom">
+          <GiftCard />
+        </Reveal>
+
+        {reviews.length > 0 && (
+          <Reveal>
+            <Testimonials reviews={reviews} />
+          </Reveal>
         )}
 
-        {tours.length > 0 && (
-          <OfferRail
-            title="Circuits accompagnés"
-            subtitle="Guide francophone, transferts et visites principales inclus."
-            href="/recherche/circuits"
-            offers={tours}
-          />
+        {posts.length > 0 && (
+          <Reveal>
+            <BlogSection posts={posts} />
+          </Reveal>
         )}
-
-        <PopularBookings offers={topBooked} />
-
-        <Newsletter />
-
-        {camping.length > 0 && (
-          <OfferRail
-            title="Campings et clubs en famille"
-            subtitle="Mobil-homes équipés, espaces aquatiques et clubs enfants."
-            href="/recherche/campings"
-            offers={camping}
-          />
-        )}
-
-        <Benefits />
-
-        <GiftCard />
-
-        {reviews.length > 0 && <Testimonials reviews={reviews} />}
-
-        {posts.length > 0 && <BlogSection posts={posts} />}
       </div>
     </>
   );

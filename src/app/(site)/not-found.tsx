@@ -1,8 +1,13 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import { CATEGORIES } from "@/lib/data";
+import { getSearchCategories } from "@/server/catalogue";
 
-export default function NotFound() {
+export default async function NotFound() {
+  // Les raccourcis proposés viennent de la base, comme partout ailleurs : une
+  // catégorie désactivée ne doit pas réapparaître par la page d'erreur, dont la
+  // charge utile est embarquée dans le flux de chaque route.
+  const categories = await getSearchCategories();
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-24 text-center">
       <p className="text-6xl font-extrabold text-navy-200">404</p>
@@ -21,14 +26,14 @@ export default function NotFound() {
         <Icon name="chevronRight" className="size-4" />
       </Link>
       <div className="mt-8 flex flex-wrap justify-center gap-2">
-        {CATEGORIES.map((c) => (
+        {categories.map((category) => (
           <Link
-            key={c.id}
-            href={`/recherche/${c.id}`}
+            key={category.id}
+            href={`/recherche/${category.id}`}
             className="flex items-center gap-2 rounded-xl border border-navy-200 px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
           >
-            <Icon name={c.icon} className="size-4" />
-            {c.label}
+            <Icon name={category.icon} className="size-4" />
+            {category.label}
           </Link>
         ))}
       </div>

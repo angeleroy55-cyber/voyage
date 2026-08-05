@@ -4,24 +4,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { BRAND, CATEGORIES, DEPARTURE_CITIES } from "@/lib/data";
+import { DEPARTURE_CITIES } from "@/lib/data";
+import type { SearchCategory, SiteSettings } from "@/server/catalogue";
 
-const PRIMARY_NAV = [
-  { label: "Bons plans", href: "/recherche/vol-hotel?tri=remise" },
-  { label: "Promos", href: "/recherche/vol-hotel?tri=prix" },
-  { label: "Destinations", href: "/destinations" },
-  { label: "Vol + Hôtel", href: "/recherche/vol-hotel" },
-  { label: "Croisières", href: "/recherche/croisieres" },
-  { label: "Circuits", href: "/recherche/circuits" },
-  { label: "Hôtels", href: "/recherche/hotels" },
-  { label: "Vols", href: "/recherche/vols" },
-  { label: "Campings", href: "/recherche/campings" },
-];
+type Props = {
+  settings: SiteSettings;
+  categories: SearchCategory[];
+  /** Voyageur connecté, `null` sinon : pilote le bloc de droite de l'en-tête. */
+  customer?: { name: string; firstName: string } | null;
+};
 
-export default function Header() {
+export default function Header({ settings, categories, customer = null }: Props) {
   const [open, setOpen] = useState(false);
   const [city, setCity] = useState("Paris");
   const [moreOpen, setMoreOpen] = useState(false);
+
+  // La navigation suit les types de voyage actifs en base : désactiver une
+  // catégorie au back-office la retire du menu, ici comme sur mobile.
+  const primaryNav = [
+    { label: "Bons plans", href: "/recherche/vol-hotel?tri=remise" },
+    { label: "Destinations", href: "/destinations" },
+    ...categories.map((c) => ({ label: c.label, href: `/recherche/${c.id}` })),
+  ];
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -36,9 +40,12 @@ export default function Header() {
       <div className="hidden bg-navy-800 text-navy-100 lg:block">
         <div className="mx-auto flex h-9 max-w-page items-center justify-between px-4 text-[13px]">
           <div className="flex items-center gap-5">
-            <a href={`tel:${BRAND.phone.replace(/\s/g, "")}`} className="flex items-center gap-1.5 hover:text-white">
+            <a
+              href={`tel:${settings.phone.replace(/\s/g, "")}`}
+              className="flex items-center gap-1.5 hover:text-white"
+            >
               <Icon name="phone" className="size-3.5" />
-              {BRAND.phone}
+              {settings.phone}
             </a>
             <Link href="/aide" className="hover:text-white">
               Aide &amp; FAQ
@@ -84,10 +91,10 @@ export default function Header() {
             <Icon name="menu" className="size-6" />
           </button>
 
-          <Logo />
+          <Logo name={settings.name} />
 
           <nav className="ml-2 hidden flex-1 items-center gap-1 lg:flex">
-            {PRIMARY_NAV.slice(0, 7).map((item) => (
+            {primaryNav.slice(0, 7).map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
@@ -112,7 +119,7 @@ export default function Header() {
               </button>
               {moreOpen && (
                 <div className="absolute left-0 top-full w-64 rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
-                  {CATEGORIES.map((c) => (
+                  {categories.map((c) => (
                     <Link
                       key={c.id}
                       href={`/recherche/${c.id}`}
@@ -129,17 +136,32 @@ export default function Header() {
 
           <div className="ml-auto flex items-center gap-2">
             <Link
-              href="/aide"
-              className="hidden rounded-lg px-3 py-2 text-sm font-medium text-navy-700 hover:bg-navy-50 md:block"
+              href={customer ? "/compte/reservations" : "/aide"}
+              className="hidden rounded-lg px-3 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50 md:block"
             >
               Ma réservation
             </Link>
-            <Link
-              href="/compte"
-              className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-800 transition hover:border-navy-400 hover:bg-navy-50"
-            >
-              Connexion
-            </Link>
+            {customer ? (
+              <Link
+                href="/compte/tableau-de-bord"
+                className="flex items-center gap-2 rounded-lg border border-navy-200 py-1.5 pl-1.5 pr-3.5 text-sm font-semibold text-navy-800 transition hover:border-navy-400 hover:bg-navy-50"
+              >
+                <span
+                  aria-hidden="true"
+                  className="grid size-7 place-items-center rounded-full bg-navy-800 text-xs font-extrabold text-gold-400"
+                >
+                  {customer.firstName.slice(0, 1).toUpperCase()}
+                </span>
+                <span className="hidden sm:inline">Mon espace</span>
+              </Link>
+            ) : (
+              <Link
+                href="/compte"
+                className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-800 transition hover:border-navy-400 hover:bg-navy-50"
+              >
+                Connexion
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -150,7 +172,7 @@ export default function Header() {
           <div className="absolute inset-0 bg-navy-900/50" onClick={() => setOpen(false)} />
           <div className="absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col bg-white">
             <div className="flex h-16 items-center justify-between border-b border-navy-100 px-4">
-              <Logo />
+              <Logo name={settings.name} />
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -161,7 +183,7 @@ export default function Header() {
               </button>
             </div>
             <nav className="flex-1 overflow-y-auto p-3">
-              {CATEGORIES.map((c) => (
+              {categories.map((c) => (
                 <Link
                   key={c.id}
                   href={`/recherche/${c.id}`}
@@ -176,7 +198,9 @@ export default function Header() {
               {[
                 { label: "Destinations", href: "/destinations" },
                 { label: "Aide & FAQ", href: "/aide" },
-                { label: "Connexion", href: "/compte" },
+                customer
+                  ? { label: "Mon espace client", href: "/compte/tableau-de-bord" }
+                  : { label: "Connexion", href: "/compte" },
               ].map((l) => (
                 <Link
                   key={l.label}
@@ -195,12 +219,12 @@ export default function Header() {
   );
 }
 
-function Logo() {
+function Logo({ name }: { name: string }) {
   return (
     <Link
       href="/"
       className="flex shrink-0 items-center gap-2.5"
-      aria-label={`${BRAND.name}, accueil`}
+      aria-label={`${name}, accueil`}
     >
       <Image
         src="/brand/logo-mark.png"

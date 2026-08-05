@@ -94,7 +94,9 @@ export async function getOffers(categorySlug?: string): Promise<Offer[]> {
   const rows = await prisma.offer.findMany({
     where: {
       status: "published",
-      ...(categorySlug ? { category: { slug: categorySlug } } : {}),
+      // Désactiver un type de voyage au back-office doit suffire à retirer ses
+      // offres du site, sans avoir à les dépublier une par une.
+      category: { active: true, ...(categorySlug ? { slug: categorySlug } : {}) },
     },
     orderBy: [{ position: "asc" }, { createdAt: "desc" }],
     select: OFFER_SELECT,
@@ -176,6 +178,39 @@ export async function getReviews(take = 6): Promise<Review[]> {
   }));
 }
 
+/** Avis publiés rattachés à une offre précise, pour sa fiche produit. */
+export async function getOfferReviews(slug: string, take = 8): Promise<Review[]> {
+  const rows = await prisma.review.findMany({
+    where: { status: "published", offer: { slug } },
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+  return rows.map((row) => ({
+    author: row.author,
+    city: row.city,
+    score: row.score,
+    date: row.createdAt.toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
+    trip: row.trip,
+    text: row.text,
+  }));
+}
+
+export async function getPostBySlug(slug: string) {
+  return prisma.post.findFirst({ where: { slug, status: "published" } });
+}
+
+export async function getPublishedPostSlugs(): Promise<string[]> {
+  const rows = await prisma.post.findMany({
+    where: { status: "published" },
+    select: { slug: true },
+  });
+  return rows.map((row) => row.slug);
+}
+
 export async function getPosts(take = 4): Promise<Post[]> {
   const rows = await prisma.post.findMany({
     where: { status: "published" },
@@ -204,3 +239,41 @@ export async function getCategories() {
     orderBy: { position: "asc" },
   });
 }
+
+/** Forme attendue par le moteur de recherche et la navigation (composants client). */
+export type SearchCategory = {
+  id: string;
+  label: string;
+  icon: string;
+  blurb: string;
+  form: string[];
+};
+
+export async function getSearchCategories(): Promise<SearchCategory[]> {
+  const rows = await getCategories();
+  return rows.map((row) => ({
+    id: row.slug,
+    label: row.label,
+    icon: row.icon,
+    blurb: row.blurb,
+    // Stocké en une seule colonne au format « origin,destination,dates » pour
+    // qu'ajouter un champ ne demande pas de table supplémentaire.
+    form: row.formFields.split(",").map((field) => field.trim()).filter(Boolean),
+  }));
+}
+
+/**
+ * Réglages consommés par l'en-tête et le pied de page, avec repli sur les
+ * valeurs de marque si la clé n'a jamais été renseignée au back-office.
+ */
+export async function getSiteSettings() {
+  const settings = await getSettings();
+  return {
+    name: settings["site.name"] || "GoSéjour",
+    tagline: settings["site.tagline"] || "Voyages • Séjours • Expériences",
+    phone: settings["site.phone"] || "01 86 65 00 00",
+    email: settings["site.email"] || "contact@gosejour.fr",
+  };
+}
+
+export type SiteSettings = Awaited<ReturnType<typeof getSiteSettings>>;

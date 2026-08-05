@@ -1,10 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FavouriteButton from "@/components/account/FavouriteButton";
 import BookingBox from "@/components/offer/BookingBox";
+import ReviewSection from "@/components/offer/ReviewSection";
 import Icon from "@/components/ui/Icon";
 import OfferCard, { RatingBadge, Stars } from "@/components/ui/OfferCard";
-import { getCategories, getOfferBySlug, getOffers, getPublishedOfferSlugs, getReviews } from "@/server/catalogue";
+import { getFavouriteSlugs } from "@/server/account";
+import { getCustomerSession } from "@/server/customer-session";
+import { getCategories, getOfferBySlug, getOfferReviews, getOffers, getPublishedOfferSlugs } from "@/server/catalogue";
 import { durationLabel, photo } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -25,11 +29,16 @@ export default async function OfferPage({ params }: PageProps<"/offre/[slug]">) 
   const offer = await getOfferBySlug(slug);
   if (!offer) notFound();
 
-  const [categories, reviews, sameCategory] = await Promise.all([
+  const [categories, reviews, sameCategory, session] = await Promise.all([
     getCategories(),
-    getReviews(3),
+    getOfferReviews(slug),
     getOffers(offer.category),
+    getCustomerSession(),
   ]);
+
+  // Le bouton « favori » n'apparaît que pour un visiteur connecté : sans compte,
+  // il n'y aurait nulle part où enregistrer la sélection.
+  const favouriteSlugs = session ? await getFavouriteSlugs(session.sub) : [];
 
   const category = categories.find((c) => c.slug === offer.category);
   // Une offre sans visuel retombe sur un placeholder deterministe.
@@ -66,7 +75,16 @@ export default async function OfferPage({ params }: PageProps<"/offre/[slug]">) 
             {offer.destination}, {offer.country} · {offer.region}
           </p>
         </div>
-        <RatingBadge score={offer.rating} reviews={offer.reviews} />
+        <div className="flex items-center gap-3">
+          <RatingBadge score={offer.rating} reviews={offer.reviews} />
+          {session && (
+            <FavouriteButton
+              slug={offer.slug}
+              initial={favouriteSlugs.includes(offer.slug)}
+              variant="inline"
+            />
+          )}
+        </div>
       </div>
 
       {/* Gallery */}
@@ -164,30 +182,11 @@ export default async function OfferPage({ params }: PageProps<"/offre/[slug]">) 
             </p>
           </section>
 
-          <section className="mt-9">
-            <h2 className="text-lg font-extrabold text-navy-900">
-              Avis des voyageurs ({offer.reviews.toLocaleString("fr-FR")})
-            </h2>
-            <div className="mt-3 space-y-3">
-              {reviews.map((r) => (
-                <figure key={r.author} className="rounded-2xl border border-navy-100 bg-white p-5">
-                  <div className="flex items-center justify-between">
-                    <figcaption className="text-sm font-bold text-navy-900">
-                      {r.author}
-                      <span className="ml-2 font-normal text-navy-500">{r.city}</span>
-                    </figcaption>
-                    <span className="rounded-lg bg-navy-700 px-2 py-1 text-xs font-bold text-white tabular-nums">
-                      {r.score.toFixed(1).replace(".", ",")}
-                    </span>
-                  </div>
-                  <blockquote className="mt-2 text-sm leading-relaxed text-navy-700">
-                    « {r.text} »
-                  </blockquote>
-                  <p className="mt-2 text-xs text-navy-500">Séjour effectué en {r.date}</p>
-                </figure>
-              ))}
-            </div>
-          </section>
+          <ReviewSection
+            offerSlug={offer.slug}
+            offerTitle={offer.title}
+            reviews={reviews}
+          />
         </div>
 
         <BookingBox offer={offer} />

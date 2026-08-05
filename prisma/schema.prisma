@@ -99,6 +99,7 @@ model Offer {
   images      OfferImage[]
   reviews     Review[]
   bookings    Booking[]
+  favourites  Favourite[]
 
   @@index([categoryId, status])
   @@index([status, featured])
@@ -140,11 +141,57 @@ model Review {
   @@index([offerId])
 }
 
+/// Voyageur disposant d'un espace client. Distinct d'`AdminUser` : les deux
+/// populations n'ont ni les mêmes droits, ni le même cycle de vie, et une seule
+/// table obligerait à filtrer sur un rôle à chaque requête du back-office.
+model Customer {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  firstName    String  @default("")
+  lastName     String  @default("")
+  phone        String  @default("")
+  city         String  @default("")
+  /// scrypt : sel et empreinte, dans une seule chaîne (cf. src/server/auth.ts).
+  passwordHash String
+
+  /// Cumul des séjours réglés, base du statut de fidélité affiché à l'espace
+  /// client. Recalculé à chaque réservation confirmée plutôt que dérivé à la
+  /// volée : l'historique reste juste même si une offre est supprimée.
+  loyaltyPoints Int @default(0)
+
+  newsletter Boolean   @default(false)
+  active     Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  bookings   Booking[]
+  favourites Favourite[]
+}
+
+/// Offre mise de côté depuis une carte ou une fiche produit.
+model Favourite {
+  id         String   @id @default(cuid())
+  customerId String
+  offerId    String
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  offer    Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  /// Un même séjour ne peut être mis en favori qu'une fois par voyageur.
+  @@unique([customerId, offerId])
+  @@index([customerId, createdAt])
+}
+
 model Booking {
   id        String @id @default(cuid())
   /// Référence lisible communiquée au client (ex. GS-4F7K2A).
   reference String @unique
   offerId   String?
+  /// Rattachement à un espace client. Reste nul pour une demande passée sans
+  /// compte : les coordonnées saisies suffisent alors au suivi par téléphone.
+  customerId String?
 
   customerName  String
   customerEmail String
@@ -155,13 +202,24 @@ model Booking {
   totalPrice Int
   notes      String  @default("")
 
-  status    String   @default("pending") // pending | confirmed | cancelled
+  /// Dates du séjour, telles que demandées au moteur de recherche.
+  departureDate DateTime?
+  returnDate    DateTime?
+
+  /// Suivi du règlement. `paidAmount` est en euros entiers, comme `totalPrice` ;
+  /// `instalments` vaut 1 pour un paiement comptant, 4 pour le fractionnement.
+  paidAmount  Int @default(0)
+  instalments Int @default(1)
+
+  status    String   @default("pending") // pending | confirmed | cancelled | completed
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  offer Offer? @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  offer    Offer?    @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
   @@index([status, createdAt])
+  @@index([customerId, createdAt])
 }
 
 model Subscriber {

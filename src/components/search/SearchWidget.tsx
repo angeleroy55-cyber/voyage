@@ -3,11 +3,27 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { CATEGORIES, DEPARTURE_CITIES } from "@/lib/data";
-import type { CategoryId } from "@/lib/types";
+import { DEPARTURE_CITIES } from "@/lib/data";
+import type { SearchCategory } from "@/server/catalogue";
 
 type Props = {
-  initial?: CategoryId;
+  /** Types de voyage actifs, lus en base par la page qui rend le moteur. */
+  categories: SearchCategory[];
+  /** Slug de la categorie preselectionnee ; les slugs viennent de la base. */
+  initial?: string;
+  /**
+   * Critères déjà présents dans l'URL, sur une page de résultats : le moteur
+   * les réaffiche au lieu de repartir de ses valeurs par défaut, sans quoi
+   * revenir en arrière effacerait visuellement la recherche en cours.
+   */
+  values?: {
+    q?: string;
+    depart?: string;
+    du?: string;
+    au?: string;
+    voyageurs?: string;
+    flex?: string;
+  };
   compact?: boolean;
 };
 
@@ -17,24 +33,43 @@ function isoDate(offsetDays: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-export default function SearchWidget({ initial = "vol-hotel", compact = false }: Props) {
+/** Date au format `AAAA-MM-JJ`, sinon le repli fourni. */
+function isoOr(value: string | undefined, fallback: string): string {
+  return value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : fallback;
+}
+
+export default function SearchWidget({
+  categories,
+  initial = "vol-hotel",
+  values = {},
+  compact = false,
+}: Props) {
   const router = useRouter();
-  const [active, setActive] = useState<CategoryId>(initial);
-  const [origin, setOrigin] = useState("Paris");
-  const [destination, setDestination] = useState("");
-  const [start, setStart] = useState(isoDate(30));
-  const [end, setEnd] = useState(isoDate(37));
-  const [adults, setAdults] = useState(2);
+  const [active, setActive] = useState<string>(initial);
+  const [origin, setOrigin] = useState(
+    values.depart && DEPARTURE_CITIES.includes(values.depart) ? values.depart : "Paris",
+  );
+  const [destination, setDestination] = useState(values.q ?? "");
+  const [start, setStart] = useState(isoOr(values.du, isoDate(30)));
+  const [end, setEnd] = useState(isoOr(values.au, isoDate(37)));
+  // `voyageurs` ne transporte qu'un total : il est reporté sur les adultes, le
+  // détail adultes/enfants n'ayant pas besoin de survivre au partage d'un lien.
+  const [adults, setAdults] = useState(() => {
+    const total = Number(values.voyageurs);
+    return Number.isInteger(total) && total >= 1 && total <= 9 ? total : 2;
+  });
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const [travellersOpen, setTravellersOpen] = useState(false);
-  const [flexible, setFlexible] = useState(false);
+  const [flexible, setFlexible] = useState(values.flex === "1");
 
   const category = useMemo(
-    () => CATEGORIES.find((c) => c.id === active) ?? CATEGORIES[0],
-    [active],
+    () => categories.find((c) => c.id === active) ?? categories[0],
+    [categories, active],
   );
-  const fields = category.form;
+  // Une catégorie désactivée en base peut disparaître : le moteur retombe alors
+  // sur la première disponible plutôt que de casser le rendu.
+  const fields = category?.form ?? [];
 
   const travellersLabel = `${adults} adulte${adults > 1 ? "s" : ""}${
     children > 0 ? `, ${children} enfant${children > 1 ? "s" : ""}` : ""
@@ -60,7 +95,7 @@ export default function SearchWidget({ initial = "vol-hotel", compact = false }:
     >
       {/* Tabs */}
       <div className="rail flex gap-1 overflow-x-auto border-b border-navy-100 px-2 pt-2">
-        {CATEGORIES.map((c) => {
+        {categories.map((c) => {
           const on = c.id === active;
           return (
             <button
@@ -210,7 +245,7 @@ export default function SearchWidget({ initial = "vol-hotel", compact = false }:
             />
             Mes dates sont flexibles (± 3 jours)
           </label>
-          <p className="text-sm text-navy-500">{category.blurb}</p>
+          <p className="text-sm text-navy-500">{category?.blurb}</p>
         </div>
       </form>
     </div>

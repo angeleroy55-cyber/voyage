@@ -3,10 +3,64 @@ import { notFound } from "next/navigation";
 import ResultsView from "@/components/search/ResultsView";
 import SearchWidget from "@/components/search/SearchWidget";
 import Icon from "@/components/ui/Icon";
-import { getCategories, getOffers } from "@/server/catalogue";
+import { getCategories, getOffers, getSearchCategories } from "@/server/catalogue";
+import type { InitialFilters, Sort } from "@/components/search/ResultsView";
 import type { CategoryId } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+type Params = Record<string, string | string[] | undefined>;
+
+const SORTS: readonly Sort[] = [
+  "recommande",
+  "prix",
+  "prix-desc",
+  "note",
+  "remise",
+  "duree",
+];
+
+/** Première valeur d'un paramètre, quel que soit le nombre d'occurrences. */
+function text(value: string | string[] | undefined): string | undefined {
+  const first = Array.isArray(value) ? value[0] : value;
+  return first?.trim() || undefined;
+}
+
+/** Paramètre entier positif ; `undefined` si absent ou non numérique. */
+function integer(value: string | string[] | undefined): number | undefined {
+  const raw = text(value);
+  if (raw === undefined) return undefined;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? Math.round(parsed) : undefined;
+}
+
+/** Liste séparée par des virgules : « Spa,Famille » → ["Spa", "Famille"]. */
+function list(value: string | string[] | undefined): string[] {
+  const raw = text(value);
+  if (!raw) return [];
+  return Array.from(new Set(raw.split(",").map((item) => item.trim()).filter(Boolean)));
+}
+
+function readFilters(sp: Params): InitialFilters {
+  const sortParam = text(sp.tri);
+  const rating = Number(text(sp.note));
+
+  return {
+    q: text(sp.q) ?? "",
+    sort: SORTS.includes(sortParam as Sort) ? (sortParam as Sort) : "recommande",
+    minPrice: integer(sp.prixMin),
+    maxPrice: integer(sp.prixMax),
+    stars: list(sp.etoiles)
+      .map(Number)
+      .filter((n) => Number.isInteger(n) && n >= 1 && n <= 5),
+    boards: list(sp.pension),
+    cities: list(sp.villes),
+    durations: list(sp.duree).filter((d) => ["court", "moyen", "long"].includes(d)),
+    tags: list(sp.themes),
+    minRating: Number.isFinite(rating) && rating > 0 && rating <= 10 ? rating : 0,
+    dealsOnly: text(sp.promo) === "1",
+  };
+}
 
 export async function generateMetadata({ params }: PageProps<"/recherche/[category]">) {
   const { category } = await params;
@@ -26,15 +80,23 @@ export default async function SearchPage({
   const found = categories.find((c) => c.slug === category);
   if (!found) notFound();
 
-  const offers = await getOffers(found.slug);
+  const [offers, searchCategories] = await Promise.all([
+    getOffers(found.slug),
+    getSearchCategories(),
+  ]);
 
-  const query = typeof sp.q === "string" ? sp.q : "";
-  const allowedSorts = ["recommande", "prix", "prix-desc", "note", "remise"] as const;
-  type Sort = (typeof allowedSorts)[number];
-  const sortParam = typeof sp.tri === "string" ? sp.tri : "recommande";
-  const sort: Sort = (allowedSorts as readonly string[]).includes(sortParam)
-    ? (sortParam as Sort)
-    : "recommande";
+  // L'URL porte l'intégralité des critères : elle est donc décodée ici, côté
+  // serveur, pour que le premier rendu soit déjà filtré. Toute valeur douteuse
+  // est écartée plutôt que corrigée — un paramètre bricolé à la main ne doit
+  // pas pouvoir vider la page.
+  const filters = readFilters(sp);
+  const carried = {
+    du: text(sp.du),
+    au: text(sp.au),
+    depart: text(sp.depart),
+    voyageurs: text(sp.voyageurs),
+    flex: text(sp.flex),
+  };
 
   return (
     <>
@@ -50,14 +112,19 @@ export default async function SearchPage({
             <Icon name="chevronRight" className="size-3" />
             <span className="font-semibold text-navy-800">{found.label}</span>
           </nav>
-          <SearchWidget initial={found.slug as CategoryId} compact />
+          <SearchWidget
+            categories={searchCategories}
+            initial={found.slug as CategoryId}
+            values={{ ...carried, q: filters.q }}
+            compact
+          />
         </div>
       </div>
 
       <div className="mx-auto max-w-page px-4 py-8">
         <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">
           {found.label}
-          {query && <span className="text-navy-500"> — « {query} »</span>}
+          {filters.q && <span className="text-navy-500"> — « {filters.q} »</span>}
         </h1>
         <p className="mb-7 mt-1 text-sm text-navy-600">{found.blurb}</p>
 
@@ -66,7 +133,12 @@ export default async function SearchPage({
             Aucune offre publiée dans cette catégorie pour le moment.
           </p>
         ) : (
-          <ResultsView offers={offers} initialSort={sort} query={query} />
+          <ResultsView
+            offers={offers}
+            initial={filters}
+            query={filters.q}
+            carried={carried}
+          />
         )}
 
         <div className="mt-12 rounded-2xl border border-navy-100 bg-navy-50/60 p-6">

@@ -23,7 +23,10 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="flex min-h-screen bg-navy-50/40">
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-navy-100 bg-white lg:flex">
+      {/* Colonne figée : elle occupe toute la hauteur de la fenêtre et ne défile
+          pas avec le contenu. `overflow-y-auto` garde le menu atteignable si la
+          liste dépasse sur les petits écrans. */}
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-navy-100 bg-white lg:flex">
         <Link href="/admin" className="flex items-center gap-2.5 px-5 py-5">
           <Image
             src="/brand/logo-mark.png"

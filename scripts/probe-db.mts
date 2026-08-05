@@ -25,7 +25,8 @@ try {
   ]);
   console.log(`concurrent (max=${max}) : ${results.join(", ")}`);
 } catch (error) {
-  console.log(`ECHEC (max=${max}) : ${error.code ?? ""} ${error.message.split("\n")[0]}`);
+  const detail = error instanceof Error ? error.message.split("\n")[0] : String(error);
+  console.log(`ECHEC (max=${max}) : ${detail}`);
 } finally {
   await prisma.$disconnect();
 }
