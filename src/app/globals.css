@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-50: #eef3fb;
+  --color-navy-100: #d6e2f5;
+  --color-navy-200: #adc4e8;
+  --color-navy-300: #7b9cd6;
+  --color-navy-400: #4a72bd;
+  --color-navy-500: #2b52a0;
+  --color-navy-600: #1d3d80;
+  --color-navy-700: #163063;
+  --color-navy-800: #11244b;
+  /* Bleu nuit repris du logo GoSéjour */
+  --color-navy-900: #0a1930;
+
+  /* Or de la marque : gold-400 est la teinte exacte du logo. */
+  --color-gold-50: #fff9e6;
+  --color-gold-100: #fff1c2;
+  --color-gold-200: #ffe587;
+  --color-gold-300: #ffd84d;
+  --color-gold-400: #ffc800;
+  --color-gold-500: #e3a900;
+  --color-gold-600: #b88400;
+  --color-gold-700: #8f6600;
+  --color-gold-800: #6b4c00;
+
+  --color-teal-400: #22b8ac;
+  --color-teal-500: #12968d;
+  --color-teal-600: #0d7a73;
+
+  /* Page gutter width — drives every `max-w-page` container. */
+  --container-page: 96rem;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px rgba(12, 26, 55, 0.06),
+    0 8px 24px -14px rgba(12, 26, 55, 0.3);
+  --shadow-pop: 0 14px 44px -14px rgba(12, 26, 55, 0.38);
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-navy-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Horizontal rails: scrollable without a visible scrollbar */
+.rail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.35s ease-out both;
+}

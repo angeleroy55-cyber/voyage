@@ -1,0 +1,213 @@
+// Modèle de données GoSéjour.
+// Moteur : PostgreSQL, en local comme en production (voir docs/BASE-DE-DONNEES.md).
+// Les statuts sont des `String` plutôt que des enums Prisma : ajouter un statut
+// ne demande alors aucune migration de type, seulement une valeur de plus dans
+// les constantes TypeScript de src/lib/constants.ts.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---- Catalogue ----
+
+/// Type de voyage : vol+hôtel, croisière, circuit… Pilote les onglets du moteur
+/// de recherche et les champs affichés dans le formulaire.
+model Category {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  label    String
+  icon     String  @default("pin")
+  blurb    String  @default("")
+  /// Champs du moteur de recherche, séparés par des virgules
+  /// (origin, destination, dates, travellers, driver).
+  formFields String @default("destination,dates,travellers")
+  position Int     @default(0)
+  active   Boolean @default(true)
+
+  offers Offer[]
+
+  @@index([position])
+}
+
+model Destination {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  country     String  @default("")
+  region      String  @default("")
+  imageUrl    String  @default("")
+  /// Identifiant Cloudinary, pour pouvoir supprimer le média à la source.
+  imageId     String  @default("")
+  fromPrice   Int     @default(0)
+  offersCount Int     @default(0)
+  featured    Boolean @default(false)
+  position    Int     @default(0)
+
+  offers Offer[]
+
+  @@index([featured, position])
+}
+
+model Offer {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  categoryId    String
+  destinationId String?
+
+  title         String
+  destination   String
+  country       String  @default("")
+  region        String  @default("")
+  departureCity String  @default("Paris")
+
+  nights Int    @default(0)
+  stars  Int    @default(0)
+  board  String @default("Sans repas")
+
+  /// Prix par personne, en euros entiers : les tarifs du catalogue n'ont pas de
+  /// centimes et l'entier évite les erreurs d'arrondi des flottants.
+  price    Int
+  oldPrice Int?
+
+  rating       Float @default(0)
+  reviewsCount Int   @default(0)
+
+  dates       String @default("")
+  description String @default("")
+
+  /// Listes courtes propres à l'offre : le tableau Postgres évite trois tables
+  /// de jointure qui ne serviraient qu'à de l'affichage.
+  tags       String[] @default([])
+  amenities  String[] @default([])
+  highlights String[] @default([])
+  included   String[] @default([])
+
+  status   String  @default("draft") // draft | published | archived
+  featured Boolean @default(false)
+  position Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  destinationRef Destination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  images      OfferImage[]
+  reviews     Review[]
+  bookings    Booking[]
+
+  @@index([categoryId, status])
+  @@index([status, featured])
+  @@index([destinationId])
+}
+
+model OfferImage {
+  id       String @id @default(cuid())
+  offerId  String
+  url      String
+  /// public_id Cloudinary ; vide pour un fichier servi depuis /public.
+  publicId String @default("")
+  alt      String @default("")
+  position Int    @default(0)
+
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@index([offerId, position])
+}
+
+// ---- Relation client ----
+
+model Review {
+  id      String  @id @default(cuid())
+  offerId String?
+
+  author String
+  city   String @default("")
+  score  Float
+  text   String
+  trip   String @default("")
+
+  status    String   @default("pending") // pending | published | rejected
+  createdAt DateTime @default(now())
+
+  offer Offer? @relation(fields: [offerId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([offerId])
+}
+
+model Booking {
+  id        String @id @default(cuid())
+  /// Référence lisible communiquée au client (ex. GS-4F7K2A).
+  reference String @unique
+  offerId   String?
+
+  customerName  String
+  customerEmail String
+  customerPhone String @default("")
+
+  travellers Int     @default(1)
+  insurance  Boolean @default(false)
+  totalPrice Int
+  notes      String  @default("")
+
+  status    String   @default("pending") // pending | confirmed | cancelled
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  offer Offer? @relation(fields: [offerId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  interests String[] @default([])
+  createdAt DateTime @default(now())
+}
+
+// ---- Éditorial ----
+
+model Post {
+  id          String @id @default(cuid())
+  slug        String @unique
+  title       String
+  excerpt     String @default("")
+  body        String @default("")
+  category    String @default("Conseils")
+  readingTime Int    @default(5)
+  imageUrl    String @default("")
+  imageId     String @default("")
+
+  status    String   @default("draft") // draft | published
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+}
+
+// ---- Administration ----
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String    @default("")
+  /// scrypt : sel et empreinte, encodés dans une seule chaîne.
+  passwordHash String
+  role         String    @default("editor") // owner | editor
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+/// Réglages éditables depuis le back-office (téléphone, e-mail, accroches…).
+model Setting {
+  key       String   @id
+  value     String   @default("")
+  updatedAt DateTime @updatedAt
+}

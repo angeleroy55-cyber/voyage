@@ -1,0 +1,135 @@
+# GoSéjour.fr — site de voyages + back-office
+
+Agence de voyages en ligne : site public (recherche multi-produits, fiches
+offres, réservation) et back-office complet, sur PostgreSQL.
+
+## Démarrage rapide
+
+Node n'est pas dans le `PATH` de cette machine. En PowerShell, une fois par session :
+
+```powershell
+$env:Path = "C:\Program Files\nodejs;" + $env:Path
+```
+
+Puis, dans **deux terminaux** :
+
+```bash
+npm run db:local   # terminal 1 — PostgreSQL local (à laisser tourner)
+npm run dev        # terminal 2 — http://localhost:3000
+```
+
+Si la base est vide (premier lancement, ou dossier `.pglite/` supprimé) :
+
+```bash
+npm run setup      # db:push + db:seed
+```
+
+**Accès au back-office** : http://localhost:3000/admin
+`admin@gosejour.fr` / `gosejour2026` (modifiable dans `.env`).
+
+## Base de données
+
+Le schéma vise **PostgreSQL** en local comme en production. Comme ni PostgreSQL
+ni Docker n'étaient installables sur ce poste, le développement s'appuie sur
+[PGlite](https://pglite.dev) — un vrai PostgreSQL compilé en WebAssembly —
+exposé par `npm run db:local` sur le protocole réseau PostgreSQL, port 5432.
+Prisma, `psql` ou tout autre client s'y connectent normalement.
+
+Passer en production ne demande **aucun changement de code** : il suffit de
+pointer `DATABASE_URL` vers un PostgreSQL hébergé (Neon, Supabase, RDS…) et de
+lancer `npm run db:push`. Le script `db:local` n'est alors plus utilisé.
+
+Les données vivent dans `.pglite/` (non versionné). Pour repartir de zéro :
+supprimer ce dossier puis relancer `npm run setup`.
+
+| Script | Rôle |
+| --- | --- |
+| `npm run db:local` | Démarre PostgreSQL (PGlite) sur le port 5432 |
+| `npm run db:push` | Applique `prisma/schema.prisma` à la base |
+| `npm run db:seed` | Remplit la base (46 offres, destinations, avis, articles, compte admin) |
+| `npm run db:studio` | Explorateur Prisma Studio |
+| `npm run setup` | `db:push` puis `db:seed` |
+
+Le seed est idempotent : il peut être relancé sans créer de doublons, et ne
+réécrit jamais le mot de passe d'un compte admin existant.
+
+## Images — Cloudinary
+
+Cloudinary s'active dès que les trois variables sont renseignées dans
+`.env.local` :
+
+```
+CLOUDINARY_CLOUD_NAME=""
+CLOUDINARY_API_KEY=""
+CLOUDINARY_API_SECRET=""
+```
+
+Sans elles, les téléversements du back-office sont écrits dans
+`public/uploads/` : l'administration reste pleinement utilisable sans compte
+Cloudinary. Le statut effectif est affiché dans **Réglages → État du système**.
+
+## Back-office
+
+| Section | Ce qu'on y fait |
+| --- | --- |
+| Tableau de bord | Indicateurs, CA confirmé, dernières réservations, avis à modérer |
+| Offres | CRUD complet, galerie d'images, statut brouillon/en ligne/archivée, mise en avant |
+| Destinations | Création, édition en ligne, visuel, mise en avant sur l'accueil |
+| Réservations | Suivi, confirmation/annulation, notes internes |
+| Avis | Modération : publier, refuser, supprimer |
+| Articles | Carnet de voyage : rédaction, visuel, publication |
+| Réglages | Nom, signature, contacts, accroches d'accueil ; état du système ; comptes |
+
+**Sécurité** : mots de passe dérivés avec scrypt (`node:crypto`, sel par compte,
+comparaison à durée constante) ; session portée par un cookie `HttpOnly` signé
+en HMAC-SHA256, valable 12 h. Toute page et toute action du back-office passent
+par `requireSession()`. Le message d'échec de connexion est identique que le
+compte soit inconnu ou le mot de passe faux, pour ne pas permettre d'énumérer
+les adresses.
+
+## Marque
+
+Le logo source (`assets/logo-source.jpeg`) est découpé par script :
+
+```bash
+npm run logo   # -> public/brand/logo-mark.png, logo-full.png, logo-wordmark.png
+```
+
+Les zones sont détectées par analyse des pixels, pas par coordonnées codées en
+dur : remplacer le fichier source et relancer suffit. Palette dans
+`src/app/globals.css` — bleu nuit `navy-900` (#0a1930) et or `gold-400`
+(#ffc800), tous deux relevés sur le logo.
+
+## Architecture
+
+```
+src/
+├─ app/
+│  ├─ (site)/           site public (en-tête + pied de page)
+│  └─ admin/            back-office : /admin/connexion + (protected)/
+├─ components/
+│  ├─ site/ search/ home/ offer/ admin/ ui/
+├─ server/
+│  ├─ prisma.ts         client Prisma (adaptateur pg)
+│  ├─ auth.ts           scrypt + jetons de session
+│  ├─ session.ts        cookies, gardes
+│  ├─ media.ts          Cloudinary / repli local
+│  ├─ catalogue.ts      lectures du site public
+│  └─ actions/          Server Actions (écritures)
+└─ lib/                 types, formatage, constantes
+```
+
+Le site public lit la base via `src/server/catalogue.ts`, qui rend exactement
+les formes attendues par les composants — les pages sont en rendu dynamique,
+donc une publication faite au back-office est visible immédiatement.
+
+## Vérifications
+
+```bash
+npm run build   # 0 erreur TypeScript
+npm run lint    # 0 avertissement
+```
+
+Sondes de diagnostic conservées : `scripts/probe-db.mts` (connexions
+concurrentes) et `scripts/probe-auth.mts` (chaîne d'authentification), à lancer
+avec `npx tsx scripts/<fichier>`.
