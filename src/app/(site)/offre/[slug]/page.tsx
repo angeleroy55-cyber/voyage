@@ -21,11 +21,18 @@ export async function generateMetadata({ params }: PageProps<"/offre/[slug]">) {
   const { slug } = await params;
   const offer = await getOfferBySlug(slug);
   if (!offer) return { title: "Offre introuvable" };
-  return { title: `${offer.title} — ${offer.destination}`, description: offer.description };
+  return { title: `${offer.title} · ${offer.destination}`, description: offer.description };
 }
 
-export default async function OfferPage({ params }: PageProps<"/offre/[slug]">) {
+/** Date `AAAA-MM-JJ` héritée du moteur de recherche, sinon chaîne vide. */
+function readDate(value: string | string[] | undefined): string {
+  const raw = String(Array.isArray(value) ? value[0] : (value ?? ""));
+  return /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : "";
+}
+
+export default async function OfferPage({ params, searchParams }: PageProps<"/offre/[slug]">) {
   const { slug } = await params;
+  const sp = await searchParams;
   const offer = await getOfferBySlug(slug);
   if (!offer) notFound();
 
@@ -92,7 +99,7 @@ export default async function OfferPage({ params }: PageProps<"/offre/[slug]">) 
         <div className="relative aspect-16/10 md:col-span-2 md:row-span-2 md:aspect-auto md:min-h-80">
           <Image
             src={gallery[0]}
-            alt={`${offer.title} — vue principale`}
+            alt={`${offer.title}, vue principale`}
             fill
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -103,7 +110,7 @@ export default async function OfferPage({ params }: PageProps<"/offre/[slug]">) 
           <div key={src} className="relative hidden aspect-4/3 md:block">
             <Image
               src={src}
-              alt={`${offer.title} — photo ${i + 2}`}
+              alt={`${offer.title}, photo ${i + 2}`}
               fill
               sizes="25vw"
               className="object-cover"
@@ -189,7 +196,11 @@ export default async function OfferPage({ params }: PageProps<"/offre/[slug]">) 
           />
         </div>
 
-        <BookingBox offer={offer} />
+        <BookingBox
+          offer={offer}
+          departureDate={readDate(sp.du)}
+          returnDate={readDate(sp.au)}
+        />
       </div>
 
       <section className="mt-14">

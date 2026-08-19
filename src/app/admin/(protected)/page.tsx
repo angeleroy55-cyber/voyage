@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { prisma } from "@/server/prisma";
+import { STATUS_LABELS } from "@/lib/constants";
 import { price } from "@/lib/format";
 
 export const metadata = { title: "Tableau de bord" };
@@ -11,6 +12,10 @@ export default async function DashboardPage() {
     publishedOffers,
     draftOffers,
     destinations,
+    categories,
+    activeCategories,
+    customers,
+    inactiveCustomers,
     pendingReviews,
     bookings,
     pendingBookings,
@@ -23,6 +28,10 @@ export default async function DashboardPage() {
     prisma.offer.count({ where: { status: "published" } }),
     prisma.offer.count({ where: { status: "draft" } }),
     prisma.destination.count(),
+    prisma.category.count(),
+    prisma.category.count({ where: { active: true } }),
+    prisma.customer.count(),
+    prisma.customer.count({ where: { active: false } }),
     prisma.review.count({ where: { status: "pending" } }),
     prisma.booking.count(),
     prisma.booking.count({ where: { status: "pending" } }),
@@ -54,6 +63,8 @@ export default async function DashboardPage() {
     { label: "Réservations", value: bookings, hint: `${pendingBookings} à traiter`, href: "/admin/reservations", icon: "calendar" },
     { label: "Avis à modérer", value: pendingReviews, hint: "en attente", href: "/admin/avis", icon: "star" },
     { label: "Destinations", value: destinations, hint: `${subscribers} inscrit(s) newsletter`, href: "/admin/destinations", icon: "pin" },
+    { label: "Types de voyage", value: categories, hint: `${activeCategories} visible(s) sur le site`, href: "/admin/categories", icon: "route" },
+    { label: "Clients", value: customers, hint: inactiveCustomers > 0 ? `${inactiveCustomers} compte(s) désactivé(s)` : "tous actifs", href: "/admin/clients", icon: "users" },
   ];
 
   return (
@@ -63,7 +74,7 @@ export default async function DashboardPage() {
         Vue d&apos;ensemble du catalogue et de l&apos;activité commerciale.
       </p>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {tiles.map((t) => (
           <Link
             key={t.label}
@@ -153,6 +164,14 @@ export default async function DashboardPage() {
 
       <section className="mt-5 rounded-2xl border border-navy-100 bg-white p-5">
         <h2 className="text-base font-extrabold text-navy-900">Offres les plus commentées</h2>
+        {topOffers.length === 0 && (
+          <p className="mt-3 text-sm text-navy-500">
+            Aucune offre en ligne pour l&apos;instant.{" "}
+            <Link href="/admin/offres/nouvelle" className="font-semibold text-gold-700 hover:underline">
+              En créer une
+            </Link>
+          </p>
+        )}
         <ul className="mt-3 divide-y divide-navy-100">
           {topOffers.map((o) => (
             <li key={o.id} className="flex items-center justify-between gap-3 py-2.5">
@@ -160,7 +179,7 @@ export default async function DashboardPage() {
                 href={`/admin/offres/${o.id}`}
                 className="min-w-0 truncate text-sm font-semibold text-navy-900 hover:text-gold-700"
               >
-                {o.destination} — {o.title}
+                {o.destination} · {o.title}
               </Link>
               <span className="shrink-0 text-sm font-bold text-navy-900">{price(o.price)}</span>
             </li>
@@ -174,15 +193,18 @@ export default async function DashboardPage() {
 function StatusPill({ status }: { status: string }) {
   const tone =
     status === "confirmed"
-      ? "bg-teal-50 text-teal-600"
+      ? "bg-teal-50 text-teal-700"
       : status === "cancelled"
         ? "bg-red-50 text-red-600"
-        : "bg-gold-50 text-gold-700";
-  const label =
-    status === "confirmed" ? "Confirmée" : status === "cancelled" ? "Annulée" : "À traiter";
+        : status === "completed"
+          ? "bg-navy-100 text-navy-700"
+          : "bg-gold-50 text-gold-700";
+
+  // Le libellé vient de `STATUS_LABELS` : une liste écrite en dur ici affichait
+  // « À traiter » pour un séjour terminé, faute de cas prévu.
   return (
     <span className={`inline-block rounded px-1.5 py-0.5 text-[11px] font-bold ${tone}`}>
-      {label}
+      {STATUS_LABELS[status] ?? status}
     </span>
   );
 }

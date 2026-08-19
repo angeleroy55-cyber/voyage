@@ -38,7 +38,7 @@ export default function Newsletter() {
             <h2 className="mt-2 text-2xl font-extrabold leading-tight sm:text-3xl">
               Recevez les baisses de prix sur ce qui vous intéresse
             </h2>
-            <p className="mt-2 text-sm text-navy-100">
+            <p className="mt-2 text-sm text-white">
               Un e-mail par semaine, uniquement sur les thèmes que vous cochez. Désinscription en un
               clic, sans question.
             </p>
@@ -65,6 +65,9 @@ export default function Newsletter() {
                     required
                     placeholder="votre@email.fr"
                     aria-label="Votre adresse e-mail"
+                    // Le texte saisi est en blanc pur ; l'indication reste en
+                    // bleu clair, sans quoi elle serait indiscernable de la
+                    // valeur réellement tapée.
                     className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-[15px] text-white placeholder:text-navy-200 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
                   />
                   <SubmitButton />
@@ -82,7 +85,7 @@ export default function Newsletter() {
                         className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                           on
                             ? "border-gold-300 bg-gold-400 text-navy-900"
-                            : "border-white/25 text-navy-100 hover:border-white/60"
+                            : "border-white/25 text-white hover:border-white/60"
                         }`}
                       >
                         {tag}
@@ -97,7 +100,7 @@ export default function Newsletter() {
                   </p>
                 )}
 
-                <p className="mt-3 text-xs text-navy-200">
+                <p className="mt-3 text-xs text-white">
                   En vous inscrivant, vous acceptez notre politique de confidentialité.
                 </p>
               </form>

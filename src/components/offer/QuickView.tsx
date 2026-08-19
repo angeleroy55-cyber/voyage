@@ -74,7 +74,7 @@ export default function QuickView({ offer }: { offer: Offer }) {
               <Image
                 key={gallery[index]}
                 src={gallery[index]}
-                alt={`${offer.title} — visuel ${index + 1} sur ${gallery.length}`}
+                alt={`${offer.title}, visuel ${index + 1} sur ${gallery.length}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 420px"
                 className="animate-fade-up object-cover"

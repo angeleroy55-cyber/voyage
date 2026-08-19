@@ -7,8 +7,10 @@ import Icon from "@/components/ui/Icon";
 const LINKS = [
   { href: "/admin", label: "Tableau de bord", icon: "compass", exact: true },
   { href: "/admin/offres", label: "Offres", icon: "package" },
+  { href: "/admin/categories", label: "Types de voyage", icon: "route" },
   { href: "/admin/destinations", label: "Destinations", icon: "pin" },
   { href: "/admin/reservations", label: "Réservations", icon: "calendar" },
+  { href: "/admin/clients", label: "Clients", icon: "users" },
   { href: "/admin/avis", label: "Avis", icon: "star" },
   { href: "/admin/articles", label: "Articles", icon: "mail" },
   { href: "/admin/abonnes", label: "Abonnés", icon: "users" },

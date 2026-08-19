@@ -56,7 +56,7 @@ export default async function AccountPage() {
             </h1>
             <p className="mt-3 text-[15px] leading-relaxed text-navy-600">
               Un seul endroit pour savoir où en est chaque réservation, ce qu&apos;il reste à
-              régler et quels documents sont disponibles — sans rappeler le service client.
+              régler et quels documents sont disponibles, sans rappeler le service client.
             </p>
 
             <ul className="mt-8 space-y-5">

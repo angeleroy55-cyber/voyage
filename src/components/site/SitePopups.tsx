@@ -10,7 +10,7 @@ import { subscribe, type FormState } from "@/server/actions/public";
  * Surcouches affichées sur tout le site : bandeau cookies puis, une fois le
  * choix fait, invitation à s'inscrire aux alertes de prix.
  *
- * Les deux ne se chevauchent jamais — tant qu'aucun choix n'est enregistré sur
+ * Les deux ne se chevauchent jamais : tant qu'aucun choix n'est enregistré sur
  * les cookies, l'invitation reste en attente. Chaque décision est mémorisée
  * dans `localStorage` avec sa date, pour ne pas reproposer la même chose au
  * visiteur suivant chargement de page.
@@ -47,7 +47,7 @@ export default function SitePopups() {
   const [newsletterOpen, setNewsletterOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Étape 1 — le bandeau cookies, après un court délai pour ne pas parasiter
+  // Étape 1 : le bandeau cookies, après un court délai pour ne pas parasiter
   // le premier rendu.
   useEffect(() => {
     if (read(COOKIE_KEY)) return;
@@ -55,7 +55,7 @@ export default function SitePopups() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Étape 2 — l'invitation aux alertes de prix. Deux déclencheurs : le temps
+  // Étape 2 : l'invitation aux alertes de prix. Deux déclencheurs : le temps
   // passé sur la page, ou la souris qui remonte vers la barre d'onglets, signe
   // habituel d'un départ imminent.
   useEffect(() => {
@@ -250,7 +250,7 @@ function NewsletterPopup({
           <p className="mt-2 text-2xl font-extrabold leading-tight">
             −40 % sur votre prochain séjour ?
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-navy-100">
+          <p className="mt-2 text-sm leading-relaxed text-white">
             Nous surveillons les prix pour vous et vous prévenons dès qu&apos;une destination que
             vous suivez baisse. Un e-mail par semaine, pas davantage.
           </p>

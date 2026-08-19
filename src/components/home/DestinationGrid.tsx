@@ -57,7 +57,7 @@ function Tile({
       <div className="absolute inset-0 bg-linear-to-t from-navy-900/85 via-navy-900/20 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-4">
         <p className="text-lg font-extrabold text-white drop-shadow">{destination.name}</p>
-        <p className="text-xs text-navy-100">
+        <p className="text-xs text-white">
           {destination.offersCount.toLocaleString("fr-FR")} offres · dès{" "}
           <span className="font-bold text-white">{price(destination.fromPrice)}</span>
         </p>

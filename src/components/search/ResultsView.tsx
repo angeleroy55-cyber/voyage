@@ -407,7 +407,7 @@ export default function ResultsView({
                 >
                   {s}
                   <Icon name="star" className="size-3.5 fill-current" />
-                  <span className={on ? "text-navy-200" : "text-navy-400"}>({count})</span>
+                  <span className={on ? "text-white" : "text-navy-400"}>({count})</span>
                 </button>
               );
             })}

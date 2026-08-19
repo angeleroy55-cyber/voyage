@@ -38,14 +38,14 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/conn
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center">
           <Image
-            src="/brand/logo-full.png"
+            src="/brand/logo-lockup-inverse.png"
             alt="GoSéjour"
-            width={190}
-            height={275}
+            width={1380}
+            height={432}
             priority
-            className="h-auto w-40 rounded-2xl"
+            className="h-auto w-60"
           />
-          <p className="mt-5 text-sm text-navy-200">Back-office</p>
+          <p className="mt-5 text-sm text-white">Back-office</p>
         </div>
 
         <form
@@ -96,7 +96,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/conn
           </button>
         </form>
 
-        <p className="mt-4 text-center text-xs text-navy-300">
+        <p className="mt-4 text-center text-xs text-white">
           Accès réservé à l&apos;équipe GoSéjour.
         </p>
       </div>

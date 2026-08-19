@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import AdminNotice from "@/components/admin/AdminNotice";
+import Pagination from "@/components/admin/Pagination";
 import { prisma } from "@/server/prisma";
 import { price } from "@/lib/format";
 
 export const metadata = { title: "Offres" };
 export const dynamic = "force-dynamic";
+
+const PER_PAGE = 30;
 
 const STATUS_LABEL: Record<string, string> = {
   published: "En ligne",
@@ -19,23 +23,30 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
   const status = typeof sp.statut === "string" ? sp.statut : "";
   const categorySlug = typeof sp.type === "string" ? sp.type : "";
 
-  const [categories, offers] = await Promise.all([
+  const page = Math.max(1, Number(sp.page) || 1);
+
+  const where = {
+    ...(status ? { status } : {}),
+    ...(categorySlug ? { category: { slug: categorySlug } } : {}),
+    ...(query
+      ? {
+          OR: [
+            { title: { contains: query, mode: "insensitive" as const } },
+            { destination: { contains: query, mode: "insensitive" as const } },
+            { country: { contains: query, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
+  const [categories, total, offers] = await Promise.all([
     prisma.category.findMany({ orderBy: { position: "asc" } }),
+    prisma.offer.count({ where }),
     prisma.offer.findMany({
-      where: {
-        ...(status ? { status } : {}),
-        ...(categorySlug ? { category: { slug: categorySlug } } : {}),
-        ...(query
-          ? {
-              OR: [
-                { title: { contains: query, mode: "insensitive" as const } },
-                { destination: { contains: query, mode: "insensitive" as const } },
-                { country: { contains: query, mode: "insensitive" as const } },
-              ],
-            }
-          : {}),
-      },
+      where,
       orderBy: [{ status: "asc" }, { position: "asc" }],
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
       include: {
         category: { select: { label: true } },
         images: { orderBy: { position: "asc" }, take: 1 },
@@ -50,7 +61,7 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">Offres</h1>
           <p className="mt-1 text-sm text-navy-600">
-            {offers.length} offre{offers.length > 1 ? "s" : ""} dans le catalogue.
+            {total} offre{total > 1 ? "s" : ""} dans le catalogue.
           </p>
         </div>
         <Link
@@ -62,11 +73,7 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
         </Link>
       </div>
 
-      {sp.supprime && (
-        <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-700">
-          Offre supprimée.
-        </p>
-      )}
+      {sp.supprime && <AdminNotice>Offre supprimée.</AdminNotice>}
 
       <form className="mt-5 flex flex-wrap gap-2 rounded-2xl border border-navy-100 bg-white p-3">
         <input
@@ -107,7 +114,16 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
 
       {offers.length === 0 ? (
         <p className="mt-6 rounded-2xl border border-dashed border-navy-200 p-10 text-center text-sm text-navy-500">
-          Aucune offre ne correspond à ces critères.
+          {total > 0 ? (
+            <>
+              Cette page n&apos;existe pas.{" "}
+              <Link href="/admin/offres" className="font-semibold text-navy-700 underline">
+                Revenir au début de la liste
+              </Link>
+            </>
+          ) : (
+            "Aucune offre ne correspond à ces critères."
+          )}
         </p>
       ) : (
         <div className="mt-4 overflow-hidden rounded-2xl border border-navy-100 bg-white">
@@ -172,6 +188,14 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
           </ul>
         </div>
       )}
+
+      <Pagination
+        base="/admin/offres"
+        params={{ q: query, statut: status, type: categorySlug }}
+        page={page}
+        total={total}
+        perPage={PER_PAGE}
+      />
     </div>
   );
 }

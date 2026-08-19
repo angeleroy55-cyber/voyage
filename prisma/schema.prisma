@@ -210,6 +210,10 @@ model Booking {
   /// `instalments` vaut 1 pour un paiement comptant, 4 pour le fractionnement.
   paidAmount  Int @default(0)
   instalments Int @default(1)
+  /// Moyen de paiement retenu à la réservation, parmi les identifiants de
+  /// `PAYMENT_METHODS` (src/lib/constants.ts). Vide pour les demandes
+  /// enregistrées avant l'ajout de l'étape de paiement.
+  paymentMethod String @default("")
 
   status    String   @default("pending") // pending | confirmed | cancelled | completed
   createdAt DateTime @default(now())

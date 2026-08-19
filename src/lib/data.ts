@@ -4,7 +4,7 @@ export const BRAND = {
   name: "GoSéjour",
   domain: "gosejour.fr",
   tagline: "Voyages • Séjours • Expériences",
-  phone: "01 86 65 00 00",
+  phone: "+33 7 59 82 38 73",
   email: "contact@gosejour.fr",
 };
 
@@ -374,7 +374,7 @@ export const POSTS: Post[] = [
   {
     slug: "croisiere-premiere-fois",
     title: "Première croisière : dix questions que tout le monde se pose",
-    excerpt: "Mal de mer, pourboires, tenue du soir, excursions à réserver ou non — on répond sans détour.",
+    excerpt: "Mal de mer, pourboires, tenue du soir, excursions à réserver ou non : on répond sans détour.",
     category: "Croisières",
     readingTime: 9,
     imageSeed: "post-croisiere",

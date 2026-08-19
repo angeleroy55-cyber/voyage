@@ -27,7 +27,7 @@ export default function PopularBookings({ offers }: { offers: Offer[] }) {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-navy-900">
-                  {o.destination} — {o.title}
+                  {o.destination} · {o.title}
                 </span>
                 <span className="block text-xs text-navy-500">
                   {durationLabel(o.nights, o.category)} · {o.board}

@@ -64,7 +64,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           className="mt-0.5 size-4 rounded border-navy-300 accent-gold-500"
         />
         <span>
-          <span className="font-semibold text-navy-900">Recevoir les alertes prix</span> — un e-mail
+          <span className="font-semibold text-navy-900">Recevoir les alertes prix</span> : un e-mail
           par semaine sur les destinations que vous suivez.
         </span>
       </label>

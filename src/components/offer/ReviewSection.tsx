@@ -39,7 +39,7 @@ export default function ReviewSection({
           </h2>
           <p className="mt-1 text-sm text-navy-600">
             {reviews.length === 0
-              ? "Aucun avis publié pour le moment — soyez le premier."
+              ? "Aucun avis publié pour le moment : soyez le premier."
               : `${reviews.length} avis publié${reviews.length > 1 ? "s" : ""}${
                   average ? ` · note moyenne ${average.replace(".", ",")}/10` : ""
                 }.`}
@@ -86,7 +86,7 @@ export default function ReviewSection({
               </blockquote>
               <p className="mt-3 border-t border-navy-100 pt-3 text-xs text-navy-500">
                 <span className="font-bold text-navy-900">{review.author}</span>
-                {review.city && ` — ${review.city}`} · {review.date}
+                {review.city && `, ${review.city}`} · {review.date}
               </p>
             </li>
           ))}

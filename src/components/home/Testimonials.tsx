@@ -39,7 +39,7 @@ export default function Testimonials({ reviews }: { reviews: Review[] }) {
             </blockquote>
             <figcaption className="mt-4 border-t border-navy-100 pt-3 text-xs text-navy-500">
               <span className="block font-bold text-navy-900">
-                {r.author} — {r.city}
+                {r.author}, {r.city}
               </span>
               {r.trip} · {r.date}
             </figcaption>

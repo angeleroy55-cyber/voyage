@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 /**
  * Session de l'espace client.
  *
- * Elle reprend le mécanisme du back-office — jeton signé HMAC-SHA256, aucune
- * table de sessions — mais reste strictement séparée : cookie différent, secret
+ * Elle reprend le mécanisme du back-office (jeton signé HMAC-SHA256, aucune
+ * table de sessions) mais reste strictement séparée : cookie différent, secret
  * différent, durée différente. Un jeton d'administration ne peut donc pas ouvrir
  * un espace client, ni l'inverse, même si l'un des deux secrets fuitait.
  *

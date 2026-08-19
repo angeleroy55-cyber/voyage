@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/server/prisma";
 import { photo } from "@/lib/format";
+import { BRAND } from "@/lib/data";
 import type { CategoryId, Destination, Offer, Post, Review } from "@/lib/types";
 
 /**
@@ -132,6 +133,39 @@ export async function getOfferBySlug(slug: string): Promise<Offer | null> {
     select: OFFER_SELECT,
   });
   return row ? toOffer(row) : null;
+}
+
+/**
+ * Demande relue pour la page de confirmation, atteignable avec la seule
+ * référence. Les coordonnées n'en font donc pas partie : l'adresse est masquée,
+ * juste assez pour que le client reconnaisse la sienne. Le dossier complet reste
+ * dans l'espace client, derrière la session.
+ */
+export async function getBookingConfirmation(reference: string) {
+  const row = await prisma.booking.findUnique({
+    where: { reference },
+    select: {
+      reference: true,
+      status: true,
+      travellers: true,
+      insurance: true,
+      totalPrice: true,
+      instalments: true,
+      paymentMethod: true,
+      departureDate: true,
+      returnDate: true,
+      customerEmail: true,
+      customerId: true,
+      offer: { select: { slug: true, title: true, destination: true, country: true } },
+    },
+  });
+  if (!row) return null;
+
+  const [user, domain] = row.customerEmail.split("@");
+  return {
+    ...row,
+    customerEmail: domain ? `${user.slice(0, 2)}${"•".repeat(4)}@${domain}` : "",
+  };
 }
 
 export async function getPublishedOfferSlugs(): Promise<string[]> {
@@ -269,10 +303,13 @@ export async function getSearchCategories(): Promise<SearchCategory[]> {
 export async function getSiteSettings() {
   const settings = await getSettings();
   return {
-    name: settings["site.name"] || "GoSéjour",
-    tagline: settings["site.tagline"] || "Voyages • Séjours • Expériences",
-    phone: settings["site.phone"] || "01 86 65 00 00",
-    email: settings["site.email"] || "contact@gosejour.fr",
+    // Repli sur les constantes de marque plutôt que sur des littéraux
+    // recopiés : un réglage vidé au back-office ne doit pas ressusciter un
+    // ancien numéro resté ici.
+    name: settings["site.name"] || BRAND.name,
+    tagline: settings["site.tagline"] || BRAND.tagline,
+    phone: settings["site.phone"] || BRAND.phone,
+    email: settings["site.email"] || BRAND.email,
   };
 }
 

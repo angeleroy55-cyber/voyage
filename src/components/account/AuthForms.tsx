@@ -85,7 +85,7 @@ function LoginForm({ demo }: { demo?: { email: string; password: string } }) {
 
       {demo && (
         <p className="rounded-xl bg-navy-50 p-3 text-xs leading-relaxed text-navy-600">
-          <strong className="text-navy-800">Compte de démonstration</strong> — les identifiants
+          <strong className="text-navy-800">Compte de démonstration</strong> : les identifiants
           sont pré-remplis : {demo.email}. Il donne accès à un historique de réservations fictif.
         </p>
       )}

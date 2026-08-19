@@ -74,9 +74,9 @@ export default async function HomePage() {
           <h1 className="text-2xl font-extrabold leading-tight text-white sm:text-3xl">
             {settings["hero.title"] || "Où partez-vous ?"}
           </h1>
-          <p className="mt-1.5 text-sm text-navy-100 sm:text-base">
+          <p className="mt-1.5 text-sm text-white sm:text-base">
             {settings["hero.subtitle"] ||
-              "Vols, hôtels, croisières, circuits et campings — comparés et réservés en une seule fois."}
+              "Vols, hôtels, croisières, circuits et campings : comparés et réservés en une seule fois."}
           </p>
         </div>
         <div className="mx-auto mt-5 max-w-page px-4">

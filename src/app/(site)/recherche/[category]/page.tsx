@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PageProps<"/recherche/[catego
   const { category } = await params;
   const found = (await getCategories()).find((c) => c.slug === category);
   if (!found) return { title: "Recherche" };
-  return { title: `${found.label} — nos offres`, description: found.blurb };
+  return { title: `${found.label} : nos offres`, description: found.blurb };
 }
 
 export default async function SearchPage({
@@ -87,7 +87,7 @@ export default async function SearchPage({
 
   // L'URL porte l'intégralité des critères : elle est donc décodée ici, côté
   // serveur, pour que le premier rendu soit déjà filtré. Toute valeur douteuse
-  // est écartée plutôt que corrigée — un paramètre bricolé à la main ne doit
+  // est écartée plutôt que corrigée : un paramètre bricolé à la main ne doit
   // pas pouvoir vider la page.
   const filters = readFilters(sp);
   const carried = {
@@ -124,7 +124,7 @@ export default async function SearchPage({
       <div className="mx-auto max-w-page px-4 py-8">
         <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">
           {found.label}
-          {filters.q && <span className="text-navy-500"> — « {filters.q} »</span>}
+          {filters.q && <span className="text-navy-500"> · « {filters.q} »</span>}
         </h1>
         <p className="mb-7 mt-1 text-sm text-navy-600">{found.blurb}</p>
 

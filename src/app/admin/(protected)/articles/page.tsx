@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { prisma } from "@/server/prisma";
+import ConfirmButton from "@/components/admin/ConfirmButton";
 import { deletePost, savePost } from "@/server/actions/admin";
 import { STATUS_LABELS } from "@/lib/constants";
 
@@ -107,7 +108,7 @@ export default async function PostsAdminPage({ searchParams }: PageProps<"/admin
                 </label>
                 <label className="block">
                   <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
-                    Statut — actuellement {STATUS_LABELS[post.status] ?? post.status}
+                    Statut (actuellement {STATUS_LABELS[post.status] ?? post.status})
                   </span>
                   <select name="status" defaultValue={post.status} className={INPUT}>
                     <option value="draft">Brouillon</option>
@@ -138,11 +139,15 @@ export default async function PostsAdminPage({ searchParams }: PageProps<"/admin
               </div>
             </form>
 
-            <form action={deletePost.bind(null, post.id)} className="mt-2">
-              <button className="text-xs font-semibold text-red-600 hover:underline">
-                Supprimer cet article
-              </button>
-            </form>
+            <div className="mt-2">
+              <ConfirmButton
+                action={deletePost.bind(null, post.id)}
+                label="Supprimer cet article"
+                title={`Supprimer « ${post.title} » ?`}
+                description={`L'article et son visuel seront supprimés, y compris s'il est en ligne. C'est définitif.`}
+                confirmLabel="Supprimer"
+              />
+            </div>
           </li>
         ))}
       </ul>

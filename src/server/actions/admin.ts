@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 import { requireSession } from "@/server/session";
 import { deleteImage, uploadImage } from "@/server/media";
+import { recomputeAllCounters, recomputeOfferRating } from "@/server/counters";
 import { slugify } from "@/lib/slug";
 
 function refresh(path: string) {
@@ -16,13 +17,17 @@ function refresh(path: string) {
 
 export async function setReviewStatus(id: string, status: string) {
   await requireSession();
-  await prisma.review.update({ where: { id }, data: { status } });
+  const review = await prisma.review.update({ where: { id }, data: { status } });
+  // La note de l'offre ne compte que les avis publiés : modérer, c'est la
+  // déplacer.
+  await recomputeOfferRating(review.offerId);
   refresh("/admin/avis");
 }
 
 export async function deleteReview(id: string) {
   await requireSession();
-  await prisma.review.delete({ where: { id } });
+  const review = await prisma.review.delete({ where: { id } });
+  await recomputeOfferRating(review.offerId);
   refresh("/admin/avis");
 }
 
@@ -159,4 +164,47 @@ export async function saveSettings(formData: FormData) {
 
   refresh("/admin/parametres");
   redirect("/admin/parametres?enregistre=1");
+}
+
+/**
+ * Reprise complète des compteurs dénormalisés. Sert après un import, ou pour
+ * rattraper les écarts accumulés avant que le recalcul ne soit branché sur
+ * chaque action.
+ */
+export async function recomputeCounters() {
+  await requireSession();
+  const done = await recomputeAllCounters();
+  revalidatePath("/", "layout");
+  redirect(`/admin/parametres?compteurs=${done.offers}-${done.destinations}`);
+}
+
+// ---- Abonnés ----
+
+export async function addSubscriber(formData: FormData) {
+  await requireSession();
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    redirect("/admin/abonnes?erreur=email");
+  }
+
+  const interests = formData.getAll("interests").map(String).filter(Boolean);
+
+  // Une réinscription ne doit pas échouer sur la contrainte d'unicité : on
+  // complète les centres d'intérêt de l'inscription existante.
+  await prisma.subscriber.upsert({
+    where: { email },
+    update: { interests },
+    create: { email, interests },
+  });
+
+  refresh("/admin/abonnes");
+  redirect("/admin/abonnes?ajoute=1");
+}
+
+export async function deleteSubscriber(id: string) {
+  await requireSession();
+  await prisma.subscriber.delete({ where: { id } });
+  refresh("/admin/abonnes");
+  redirect("/admin/abonnes?supprime=1");
 }
