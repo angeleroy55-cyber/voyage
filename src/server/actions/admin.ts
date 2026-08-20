@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 import { requireSession } from "@/server/session";
+import { sendBookingStatusUpdateEmail } from "@/server/mail";
 import { deleteImage, uploadImage } from "@/server/media";
 import { recomputeAllCounters, recomputeOfferRating } from "@/server/counters";
 import { slugify } from "@/lib/slug";
@@ -36,6 +37,7 @@ export async function deleteReview(id: string) {
 export async function setBookingStatus(id: string, status: string) {
   await requireSession();
   await prisma.booking.update({ where: { id }, data: { status } });
+  await sendBookingStatusUpdateEmail(id);
   refresh("/admin/reservations");
 }
 

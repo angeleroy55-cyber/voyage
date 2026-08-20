@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "@/server/prisma";
 import { requireSession } from "@/server/session";
 import { deleteImage, uploadImage } from "@/server/media";
 import { slugify } from "@/lib/slug";
+import { requireHeroSlideDelegate } from "@/server/hero-slides";
 
 function refresh() {
   revalidatePath("/", "layout");
@@ -14,6 +14,7 @@ function refresh() {
 
 export async function saveHeroSlide(id: string | null, formData: FormData) {
   await requireSession();
+  const heroSlide = requireHeroSlideDelegate();
 
   const title = String(formData.get("title") ?? "").trim();
   if (!title) throw new Error("Le titre du slide est obligatoire.");
@@ -40,7 +41,7 @@ export async function saveHeroSlide(id: string | null, formData: FormData) {
     image = { imageUrl: stored.url, imageId: stored.publicId };
 
     if (id) {
-      const previous = await prisma.heroSlide.findUnique({
+      const previous = await heroSlide.findUnique({
         where: { id },
         select: { imageId: true },
       });
@@ -49,12 +50,12 @@ export async function saveHeroSlide(id: string | null, formData: FormData) {
   }
 
   if (id) {
-    await prisma.heroSlide.update({
+    await heroSlide.update({
       where: { id },
       data: { ...data, ...image },
     });
   } else {
-    await prisma.heroSlide.create({
+    await heroSlide.create({
       data: { ...data, ...image },
     });
   }
@@ -65,10 +66,11 @@ export async function saveHeroSlide(id: string | null, formData: FormData) {
 
 export async function deleteHeroSlide(id: string) {
   await requireSession();
-  const slide = await prisma.heroSlide.findUnique({ where: { id } });
+  const heroSlide = requireHeroSlideDelegate();
+  const slide = await heroSlide.findUnique({ where: { id } });
   if (!slide) return;
   if (slide.imageId) await deleteImage(slide.imageId);
-  await prisma.heroSlide.delete({ where: { id } });
+  await heroSlide.delete({ where: { id } });
   refresh();
   redirect("/admin/hero?supprime=1");
 }

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 import { getCustomerSession } from "@/server/customer-session";
+import { sendBookingCreatedEmails, sendNewsletterWelcomeEmail } from "@/server/mail";
 import { bookingReference } from "@/lib/reference";
 import { PAYMENT_CHOICES } from "@/lib/constants";
 
@@ -108,6 +109,8 @@ export async function createBooking(
     revalidatePath("/compte/tableau-de-bord");
   }
 
+  await sendBookingCreatedEmails(booking.id, "site");
+
   // La confirmation est une page à part entière : elle survit à un rechargement
   // et à un partage de lien, ce qu'un message rendu dans le formulaire ne fait
   // pas. `redirect` lève une exception traitée par Next, donc rien ne suit.
@@ -134,6 +137,8 @@ export async function subscribe(
   });
 
   revalidatePath("/admin/abonnes");
+
+  await sendNewsletterWelcomeEmail({ email: address, interests });
 
   return {
     ok: true,

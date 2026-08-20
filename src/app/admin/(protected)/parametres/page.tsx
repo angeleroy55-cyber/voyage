@@ -4,6 +4,7 @@ import { prisma } from "@/server/prisma";
 import { recomputeCounters, saveSettings } from "@/server/actions/admin";
 import { counterDrift } from "@/server/counters";
 import { cloudinaryConfigured } from "@/server/media";
+import { getMailerSummary } from "@/server/mail";
 
 export const metadata = { title: "Réglages" };
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/p
   const sp = await searchParams;
   const rows = await prisma.setting.findMany();
   const values = new Map(rows.map((r) => [r.key, r.value]));
+  const mailer = getMailerSummary();
 
   const [offers, destinations, reviews, bookings, admins, drift] = await Promise.all([
     prisma.offer.count(),
@@ -117,6 +119,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/p
           {[
             ["Base de données", "PostgreSQL"],
             ["Stockage des visuels", cloudinaryConfigured() ? "Cloudinary" : "public/uploads (local)"],
+            ["Messagerie transactionnelle", mailer.enabled ? `${mailer.host}:${mailer.port}` : "Désactivée"],
             ["Offres", String(offers)],
             ["Destinations", String(destinations)],
             ["Avis", String(reviews)],
@@ -132,6 +135,12 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/p
           <p className="mt-3 rounded-xl bg-gold-50 px-3.5 py-2.5 text-xs text-navy-700">
             Renseigner CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY et CLOUDINARY_API_SECRET dans
             .env.local bascule automatiquement les prochains téléversements vers Cloudinary.
+          </p>
+        )}
+        {!mailer.enabled && (
+          <p className="mt-3 rounded-xl bg-gold-50 px-3.5 py-2.5 text-xs text-navy-700">
+            Renseigner SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER et SMTP_PASSWORD dans
+            .env.local active les e-mails transactionnels.
           </p>
         )}
       </section>

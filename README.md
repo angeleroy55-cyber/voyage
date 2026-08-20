@@ -75,14 +75,21 @@ La configuration de boîte mail peut aussi être préparée dans `.env.local` :
 
 ```env
 SMTP_HOST="smtp.hostinger.com"
+SMTP_PORT="465"
+SMTP_SECURE="true"
 SMTP_USER="contact@gosejour.fr"
 SMTP_PASSWORD="..."
+SMTP_FROM="GoSéjour <contact@gosejour.fr>"
+BOOKING_NOTIFICATION_EMAIL="contact@gosejour.fr"
 IMAP_HOST="imap.hostinger.com"
 ```
 
-`SMTP_*` servira à une future intégration d'envoi d'e-mails transactionnels
-(confirmation, notifications back-office, etc.). `IMAP_HOST` ne sert qu'à la
-lecture de la boîte depuis un client mail ; le site n'en a pas besoin.
+Le site envoie maintenant les e-mails transactionnels via `SMTP_*` :
+confirmation de demande, notification interne de nouvelle réservation,
+mise à jour de statut, reçu de paiement et message de bienvenue newsletter.
+`BOOKING_NOTIFICATION_EMAIL` définit la boîte interne qui reçoit les nouvelles
+demandes. `IMAP_HOST` ne sert qu'à la lecture de la boîte depuis un client
+mail ; le site n'en a pas besoin.
 
 ## Parcours de réservation
 

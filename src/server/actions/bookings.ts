@@ -4,6 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 import { requireSession } from "@/server/session";
+import {
+  sendBookingCreatedEmails,
+  sendBookingStatusUpdateEmail,
+  sendPaymentReceiptEmail,
+} from "@/server/mail";
 import { bookingReference } from "@/lib/reference";
 import { PAYMENT_CHOICES } from "@/lib/constants";
 
@@ -91,6 +96,8 @@ export async function createBookingByAdmin(formData: FormData) {
     },
   });
 
+  await sendBookingCreatedEmails(booking.id, "back-office");
+
   refresh();
   redirect(`/admin/reservations?q=${booking.reference}&cree=1`);
 }
@@ -106,7 +113,7 @@ export async function updateBooking(id: string, formData: FormData) {
 
   const current = await prisma.booking.findUnique({
     where: { id },
-    select: { paidAmount: true, reference: true },
+    select: { paidAmount: true, reference: true, status: true },
   });
   if (!current) redirect("/admin/reservations?erreur=introuvable");
 
@@ -119,6 +126,10 @@ export async function updateBooking(id: string, formData: FormData) {
       paidAmount: Math.min(current.paidAmount, fields.totalPrice),
     },
   });
+
+  if (current.status !== fields.status) {
+    await sendBookingStatusUpdateEmail(id);
+  }
 
   refresh(id);
   redirect(`/admin/reservations?q=${current.reference}&enregistre=1`);
@@ -143,6 +154,7 @@ export async function recordPayment(id: string, formData: FormData) {
   }
 
   await prisma.booking.update({ where: { id }, data: { paidAmount: next } });
+  await sendPaymentReceiptEmail(id, amount);
 
   refresh(id);
   redirect(`/admin/reservations?q=${booking.reference}&regle=1`);

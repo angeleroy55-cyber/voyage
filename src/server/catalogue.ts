@@ -3,6 +3,7 @@ import { prisma } from "@/server/prisma";
 import { BRAND } from "@/lib/data";
 import { withMediaFallback } from "@/lib/media";
 import type { CategoryId, Destination, HeroSlide, Offer, Post, Review } from "@/lib/types";
+import { listHeroSlides } from "@/server/hero-slides";
 
 /**
  * Lecture du catalogue pour le site public.
@@ -265,22 +266,7 @@ export async function getPosts(take = 4): Promise<Post[]> {
 }
 
 export async function getHeroSlides(): Promise<HeroSlide[]> {
-  const rows = await prisma.heroSlide.findMany({
-    where: { active: true },
-    orderBy: { position: "asc" },
-  });
-
-  return rows.map((row) => ({
-    id: row.id,
-    kicker: row.kicker,
-    title: row.title,
-    text: row.text,
-    href: row.href,
-    cta: row.cta,
-    image: withMediaFallback(row.imageUrl),
-    imageAlt: row.imageAlt || row.title,
-    position: row.position,
-  }));
+  return listHeroSlides();
 }
 
 export async function getSettings(): Promise<Record<string, string>> {
