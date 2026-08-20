@@ -60,6 +60,7 @@ export interface Destination {
   imageSeed: string;
   /** Visuel servi par la base ; à défaut, `imageSeed` fournit un placeholder. */
   image?: string;
+  imageAlt?: string;
   fromPrice: number;
   offersCount: number;
 }
@@ -81,4 +82,17 @@ export interface Post {
   readingTime: number;
   imageSeed: string;
   image?: string;
+  imageAlt?: string;
+}
+
+export interface HeroSlide {
+  id: string;
+  kicker: string;
+  title: string;
+  text: string;
+  href: string;
+  cta: string;
+  image: string;
+  imageAlt: string;
+  position: number;
 }

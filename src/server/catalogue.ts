@@ -2,7 +2,7 @@ import "server-only";
 import { prisma } from "@/server/prisma";
 import { photo } from "@/lib/format";
 import { BRAND } from "@/lib/data";
-import type { CategoryId, Destination, Offer, Post, Review } from "@/lib/types";
+import type { CategoryId, Destination, HeroSlide, Offer, Post, Review } from "@/lib/types";
 
 /**
  * Lecture du catalogue pour le site public.
@@ -187,6 +187,7 @@ export async function getDestinations(onlyFeatured = false): Promise<Destination
     country: row.region || row.country,
     imageSeed: row.slug,
     image: row.imageUrl || photo(row.slug, 800, 600),
+    imageAlt: row.imageAlt || row.name,
     fromPrice: row.fromPrice,
     offersCount: row.offersCount,
   }));
@@ -259,6 +260,26 @@ export async function getPosts(take = 4): Promise<Post[]> {
     readingTime: row.readingTime,
     imageSeed: row.slug,
     image: row.imageUrl || photo(row.slug, 800, 500),
+    imageAlt: row.imageAlt || row.title,
+  }));
+}
+
+export async function getHeroSlides(): Promise<HeroSlide[]> {
+  const rows = await prisma.heroSlide.findMany({
+    where: { active: true },
+    orderBy: { position: "asc" },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    kicker: row.kicker,
+    title: row.title,
+    text: row.text,
+    href: row.href,
+    cta: row.cta,
+    image: row.imageUrl || photo(`hero-${row.position}`, 1600, 700),
+    imageAlt: row.imageAlt || row.title,
+    position: row.position,
   }));
 }
 

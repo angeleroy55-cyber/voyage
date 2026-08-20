@@ -43,6 +43,7 @@ model Destination {
   imageUrl    String  @default("")
   /// Identifiant Cloudinary, pour pouvoir supprimer le média à la source.
   imageId     String  @default("")
+  imageAlt    String  @default("")
   fromPrice   Int     @default(0)
   offersCount Int     @default(0)
   featured    Boolean @default(false)
@@ -245,12 +246,29 @@ model Post {
   readingTime Int    @default(5)
   imageUrl    String @default("")
   imageId     String @default("")
+  imageAlt    String @default("")
 
   status    String   @default("draft") // draft | published
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([status, createdAt])
+}
+
+model HeroSlide {
+  id       String @id @default(cuid())
+  kicker   String @default("")
+  title    String
+  text     String @default("")
+  href     String @default("/")
+  cta      String @default("")
+  imageUrl String @default("")
+  imageId  String @default("")
+  imageAlt String @default("")
+  position Int    @default(0)
+  active   Boolean @default(true)
+
+  @@index([active, position])
 }
 
 // ---- Administration ----

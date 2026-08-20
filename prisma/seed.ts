@@ -31,6 +31,36 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: url, max: 1 }),
 });
 
+const HERO_SLIDES = [
+  {
+    kicker: "Ventes flash jusqu'à dimanche",
+    title: "Une semaine au soleil à partir de 419 €",
+    text: "Séjours tout compris en Méditerranée, vol et transferts inclus.",
+    href: "/recherche/vol-hotel",
+    cta: "Voir les séjours",
+    imageSeed: "hero-mediterranee",
+    imageAlt: "Séjour en Méditerranée",
+  },
+  {
+    kicker: "Croisières",
+    title: "Embarquez pour 8 jours en pension complète",
+    text: "Méditerranée, Canaries ou fjords : cabine extérieure sans supplément.",
+    href: "/recherche/croisieres",
+    cta: "Découvrir les croisières",
+    imageSeed: "hero-croisiere",
+    imageAlt: "Croisière au large",
+  },
+  {
+    kicker: "Circuits accompagnés",
+    title: "Le Japon, l'Islande ou le Pérou avec un guide francophone",
+    text: "Itinéraires clés en main, groupes limités, entrées des sites incluses.",
+    href: "/recherche/circuits",
+    cta: "Choisir un circuit",
+    imageSeed: "hero-circuits",
+    imageAlt: "Circuit accompagné à l'étranger",
+  },
+];
+
 async function main() {
   console.log("Catégories…");
   for (const [index, category] of CATEGORIES.entries()) {
@@ -62,6 +92,7 @@ async function main() {
         name: destination.name,
         region: destination.country,
         imageUrl: photo(destination.imageSeed, 800, 600),
+        imageAlt: destination.name,
         fromPrice: destination.fromPrice,
         offersCount: destination.offersCount,
         featured: index < 4,
@@ -73,6 +104,7 @@ async function main() {
         country: destination.name,
         region: destination.country,
         imageUrl: photo(destination.imageSeed, 800, 600),
+        imageAlt: destination.name,
         fromPrice: destination.fromPrice,
         offersCount: destination.offersCount,
         featured: index < 4,
@@ -167,6 +199,7 @@ async function main() {
         category: post.category,
         readingTime: post.readingTime,
         imageUrl: photo(post.imageSeed, 800, 500),
+        imageAlt: post.title,
         status: "published",
       },
       create: {
@@ -176,8 +209,27 @@ async function main() {
         category: post.category,
         readingTime: post.readingTime,
         imageUrl: photo(post.imageSeed, 800, 500),
+        imageAlt: post.title,
         status: "published",
       },
+    });
+  }
+
+  console.log("Hero…");
+  const heroCount = await prisma.heroSlide.count();
+  if (heroCount === 0) {
+    await prisma.heroSlide.createMany({
+      data: HERO_SLIDES.map((slide, index) => ({
+        kicker: slide.kicker,
+        title: slide.title,
+        text: slide.text,
+        href: slide.href,
+        cta: slide.cta,
+        imageUrl: photo(slide.imageSeed, 1600, 700),
+        imageAlt: slide.imageAlt,
+        position: index,
+        active: true,
+      })),
     });
   }
 
