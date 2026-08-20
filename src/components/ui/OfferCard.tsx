@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import QuickView from "@/components/offer/QuickView";
 import Icon from "@/components/ui/Icon";
-import { discount, durationLabel, photo, price, ratingLabel } from "@/lib/format";
+import { discount, durationLabel, price, ratingLabel } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 import type { Offer } from "@/lib/types";
 
 export function Stars({ count, className = "" }: { count: number; className?: string }) {
@@ -44,7 +45,7 @@ export default function OfferCard({ offer, layout = "grid" }: { offer: Offer; la
                 the text side and the zoom on hover stays clipped inside the image. */}
             <div className="relative aspect-16/10 sm:absolute sm:inset-0 sm:aspect-auto">
               <Image
-                src={offer.image ?? photo(offer.imageSeed, 640, 400)}
+                src={withMediaFallback(offer.image)}
                 alt={`${offer.title}, ${offer.destination}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 320px"
@@ -107,7 +108,7 @@ export default function OfferCard({ offer, layout = "grid" }: { offer: Offer; la
       <div className="relative aspect-16/10 overflow-hidden">
         <Link href={`/offre/${offer.slug}`} className="absolute inset-0 block">
           <Image
-            src={offer.image ?? photo(offer.imageSeed, 600, 375)}
+            src={withMediaFallback(offer.image)}
             alt={`${offer.title}, ${offer.destination}`}
             fill
             sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 300px"

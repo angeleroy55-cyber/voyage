@@ -86,13 +86,22 @@ async function main() {
 
   console.log("Destinations…");
   for (const [index, destination] of DESTINATIONS.entries()) {
+    const existing = await prisma.destination.findUnique({
+      where: { slug: destination.slug },
+      select: { imageUrl: true, imageId: true, imageAlt: true },
+    });
+    const seededImageUrl = existing?.imageUrl || photo(destination.imageSeed, 800, 600);
+    const seededImageId = existing?.imageId || "";
+    const seededImageAlt = existing?.imageAlt || destination.name;
+
     await prisma.destination.upsert({
       where: { slug: destination.slug },
       update: {
         name: destination.name,
         region: destination.country,
-        imageUrl: photo(destination.imageSeed, 800, 600),
-        imageAlt: destination.name,
+        imageUrl: seededImageUrl,
+        imageId: seededImageId,
+        imageAlt: seededImageAlt,
         fromPrice: destination.fromPrice,
         offersCount: destination.offersCount,
         featured: index < 4,
@@ -103,8 +112,9 @@ async function main() {
         name: destination.name,
         country: destination.name,
         region: destination.country,
-        imageUrl: photo(destination.imageSeed, 800, 600),
-        imageAlt: destination.name,
+        imageUrl: seededImageUrl,
+        imageId: seededImageId,
+        imageAlt: seededImageAlt,
         fromPrice: destination.fromPrice,
         offersCount: destination.offersCount,
         featured: index < 4,
@@ -191,6 +201,14 @@ async function main() {
 
   console.log("Articles…");
   for (const post of POSTS) {
+    const existing = await prisma.post.findUnique({
+      where: { slug: post.slug },
+      select: { imageUrl: true, imageId: true, imageAlt: true },
+    });
+    const seededImageUrl = existing?.imageUrl || photo(post.imageSeed, 800, 500);
+    const seededImageId = existing?.imageId || "";
+    const seededImageAlt = existing?.imageAlt || post.title;
+
     await prisma.post.upsert({
       where: { slug: post.slug },
       update: {
@@ -198,8 +216,9 @@ async function main() {
         excerpt: post.excerpt,
         category: post.category,
         readingTime: post.readingTime,
-        imageUrl: photo(post.imageSeed, 800, 500),
-        imageAlt: post.title,
+        imageUrl: seededImageUrl,
+        imageId: seededImageId,
+        imageAlt: seededImageAlt,
         status: "published",
       },
       create: {
@@ -208,8 +227,9 @@ async function main() {
         excerpt: post.excerpt,
         category: post.category,
         readingTime: post.readingTime,
-        imageUrl: photo(post.imageSeed, 800, 500),
-        imageAlt: post.title,
+        imageUrl: seededImageUrl,
+        imageId: seededImageId,
+        imageAlt: seededImageAlt,
         status: "published",
       },
     });

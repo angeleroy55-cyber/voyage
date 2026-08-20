@@ -133,8 +133,19 @@ export async function addOfferImage(offerId: string, formData: FormData) {
     redirect(`/admin/offres/${offerId}?erreur=fichier`);
   }
 
-  const stored = await uploadImage(file);
+  const offer = await prisma.offer.findUnique({
+    where: { id: offerId },
+    select: { slug: true },
+  });
+  if (!offer) {
+    redirect("/admin/offres?erreur=offre");
+  }
+
   const count = await prisma.offerImage.count({ where: { offerId } });
+  const stored = await uploadImage(file, {
+    folder: `gosejour/offers/${offer.slug}`,
+    publicId: `${String(count + 1).padStart(2, "0")}-${offer.slug}`,
+  });
   await prisma.offerImage.create({
     data: {
       offerId,

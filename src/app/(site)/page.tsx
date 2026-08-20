@@ -14,6 +14,7 @@ import Reveal from "@/components/ui/Reveal";
 import {
   getBestDeals,
   getDestinations,
+  getHeroSlides,
   getOffers,
   getPosts,
   getReviews,
@@ -26,7 +27,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [deals, all, destinations, reviews, posts, settings, categories] = await Promise.all([
+  const [deals, all, destinations, reviews, posts, settings, categories, heroSlides] = await Promise.all([
     getBestDeals(8),
     getOffers(),
     getDestinations(),
@@ -34,6 +35,7 @@ export default async function HomePage() {
     getPosts(4),
     getSettings(),
     getSearchCategories(),
+    getHeroSlides(),
   ]);
 
   const topBooked = [...all]
@@ -85,7 +87,7 @@ export default async function HomePage() {
       </div>
 
       <div className="mx-auto -mt-16 max-w-page px-4">
-        <HeroCarousel />
+        <HeroCarousel slides={heroSlides} />
       </div>
 
       <Reveal variant="fade" className="mt-10">

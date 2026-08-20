@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/server/prisma";
-import { photo } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 
 /**
  * Lecture de l'espace client.
@@ -70,7 +70,7 @@ function toBooking(row: BookingRow) {
           departureCity: offer.departureCity,
           category: offer.category.slug,
           categoryLabel: offer.category.label,
-          image: offer.images[0]?.url || photo(offer.slug, 600, 400),
+          image: withMediaFallback(offer.images[0]?.url),
         }
       : null,
     /** Reste à régler, jamais négatif même si un avoir dépasse le total. */
@@ -167,7 +167,7 @@ export async function getFavourites(customerId: string) {
       stars: row.offer.stars,
       board: row.offer.board,
       category: row.offer.category.slug,
-      image: row.offer.images[0]?.url || photo(row.offer.slug, 600, 400),
+      image: withMediaFallback(row.offer.images[0]?.url),
       /** Une offre dépubliée reste visible en favori, mais n'est plus réservable. */
       available: row.offer.status === "published",
     },

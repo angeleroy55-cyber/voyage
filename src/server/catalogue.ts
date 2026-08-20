@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "@/server/prisma";
-import { photo } from "@/lib/format";
 import { BRAND } from "@/lib/data";
+import { withMediaFallback } from "@/lib/media";
 import type { CategoryId, Destination, HeroSlide, Offer, Post, Review } from "@/lib/types";
 
 /**
@@ -186,7 +186,7 @@ export async function getDestinations(onlyFeatured = false): Promise<Destination
     name: row.name,
     country: row.region || row.country,
     imageSeed: row.slug,
-    image: row.imageUrl || photo(row.slug, 800, 600),
+    image: withMediaFallback(row.imageUrl),
     imageAlt: row.imageAlt || row.name,
     fromPrice: row.fromPrice,
     offersCount: row.offersCount,
@@ -259,7 +259,7 @@ export async function getPosts(take = 4): Promise<Post[]> {
     category: row.category,
     readingTime: row.readingTime,
     imageSeed: row.slug,
-    image: row.imageUrl || photo(row.slug, 800, 500),
+    image: withMediaFallback(row.imageUrl),
     imageAlt: row.imageAlt || row.title,
   }));
 }
@@ -277,7 +277,7 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
     text: row.text,
     href: row.href,
     cta: row.cta,
-    image: row.imageUrl || photo(`hero-${row.position}`, 1600, 700),
+    image: withMediaFallback(row.imageUrl),
     imageAlt: row.imageAlt || row.title,
     position: row.position,
   }));

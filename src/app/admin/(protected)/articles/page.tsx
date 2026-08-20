@@ -62,6 +62,12 @@ export default async function PostsAdminPage({ searchParams }: PageProps<"/admin
             />
           </label>
           <label className="block">
+            <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+              Texte alternatif du visuel
+            </span>
+            <input name="imageAlt" className={INPUT} />
+          </label>
+          <label className="block">
             <span className="text-xs font-medium uppercase tracking-wide text-navy-500">Statut</span>
             <select name="status" defaultValue="draft" className={INPUT}>
               <option value="draft">Brouillon</option>
@@ -99,6 +105,12 @@ export default async function PostsAdminPage({ searchParams }: PageProps<"/admin
                     Chapô
                   </span>
                   <textarea name="excerpt" rows={2} defaultValue={post.excerpt} className={INPUT} />
+                </label>
+                <label className="block sm:col-span-2">
+                  <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+                    Texte alternatif du visuel
+                  </span>
+                  <input name="imageAlt" defaultValue={post.imageAlt} className={INPUT} />
                 </label>
                 <label className="block">
                   <span className="text-xs font-medium uppercase tracking-wide text-navy-500">

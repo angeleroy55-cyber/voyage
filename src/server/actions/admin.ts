@@ -60,6 +60,7 @@ export async function saveDestination(id: string | null, formData: FormData) {
     name,
     country: String(formData.get("country") ?? "").trim(),
     region: String(formData.get("region") ?? "").trim(),
+    imageAlt: String(formData.get("imageAlt") ?? "").trim(),
     fromPrice: Math.max(0, Math.round(Number(formData.get("fromPrice")) || 0)),
     offersCount: Math.max(0, Math.round(Number(formData.get("offersCount")) || 0)),
     featured: formData.get("featured") === "on",
@@ -69,7 +70,11 @@ export async function saveDestination(id: string | null, formData: FormData) {
   const file = formData.get("file");
   let image: { imageUrl?: string; imageId?: string } = {};
   if (file instanceof File && file.size > 0) {
-    const stored = await uploadImage(file);
+    const publicId = slugify(name) || `destination-${Date.now()}`;
+    const stored = await uploadImage(file, {
+      folder: "gosejour/destinations",
+      publicId,
+    });
     image = { imageUrl: stored.url, imageId: stored.publicId };
 
     // Le visuel remplacé est retiré du stockage pour ne pas accumuler d'orphelins.
@@ -117,14 +122,27 @@ export async function savePost(id: string | null, formData: FormData) {
     body: String(formData.get("body") ?? "").trim(),
     category: String(formData.get("category") ?? "Conseils").trim(),
     readingTime: Math.max(1, Math.round(Number(formData.get("readingTime")) || 5)),
+    imageAlt: String(formData.get("imageAlt") ?? "").trim(),
     status: String(formData.get("status") ?? "draft"),
   };
 
   const file = formData.get("file");
   let image: { imageUrl?: string; imageId?: string } = {};
   if (file instanceof File && file.size > 0) {
-    const stored = await uploadImage(file);
+    const publicId = slugify(title) || `article-${Date.now()}`;
+    const stored = await uploadImage(file, {
+      folder: "gosejour/posts",
+      publicId,
+    });
     image = { imageUrl: stored.url, imageId: stored.publicId };
+
+    if (id) {
+      const previous = await prisma.post.findUnique({
+        where: { id },
+        select: { imageId: true },
+      });
+      if (previous?.imageId) await deleteImage(previous.imageId);
+    }
   }
 
   if (id) {

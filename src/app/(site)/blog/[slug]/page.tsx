@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { getPostBySlug, getPosts, getPublishedPostSlugs } from "@/server/catalogue";
-import { photo } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 
 export const dynamic = "force-dynamic";
 
@@ -56,8 +56,8 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
 
       <div className="relative mt-6 aspect-16/9 overflow-hidden rounded-2xl">
         <Image
-          src={post.imageUrl || photo(post.slug, 1200, 675)}
-          alt=""
+          src={withMediaFallback(post.imageUrl)}
+          alt={post.imageAlt || post.title}
           fill
           priority
           sizes="(max-width: 768px) 100vw, 768px"

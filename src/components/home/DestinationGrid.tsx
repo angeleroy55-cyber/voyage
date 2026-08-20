@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import type { Destination } from "@/lib/types";
-import { photo, price } from "@/lib/format";
+import { price } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 
 export default function DestinationGrid({ destinations }: { destinations: Destination[] }) {
   const [lead, ...rest] = destinations;
@@ -47,8 +48,8 @@ function Tile({
       } ${className}`}
     >
       <Image
-        src={destination.image ?? photo(destination.imageSeed, 800, 600)}
-        alt={destination.name}
+        src={withMediaFallback(destination.image)}
+        alt={destination.imageAlt || destination.name}
         fill
         priority={priority}
         sizes="(max-width: 768px) 100vw, 33vw"

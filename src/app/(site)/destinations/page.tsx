@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { getDestinations, getOffers, getSearchCategories } from "@/server/catalogue";
-import { photo, price } from "@/lib/format";
+import { price } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 
 export const metadata = { title: "Toutes les destinations" };
 export const dynamic = "force-dynamic";
@@ -48,8 +49,8 @@ export default async function DestinationsPage() {
               className="group relative aspect-4/3 overflow-hidden rounded-2xl"
             >
               <Image
-                src={destination.image ?? photo(destination.imageSeed, 600, 450)}
-                alt={destination.name}
+                src={withMediaFallback(destination.image)}
+                alt={destination.imageAlt || destination.name}
                 fill
                 sizes="(max-width: 640px) 90vw, 25vw"
                 className="object-cover transition duration-500 group-hover:scale-105"

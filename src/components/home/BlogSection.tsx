@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import type { Post } from "@/lib/types";
-import { photo } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 
 export default function BlogSection({ posts }: { posts: Post[] }) {
   return (
@@ -18,8 +18,8 @@ export default function BlogSection({ posts }: { posts: Post[] }) {
             <Link href={`/blog/${p.slug}`} className="block overflow-hidden rounded-2xl">
               <div className="relative aspect-16/10">
                 <Image
-                  src={p.image ?? photo(p.imageSeed, 600, 375)}
-                  alt=""
+                  src={withMediaFallback(p.image)}
+                  alt={p.imageAlt || p.title}
                   fill
                   sizes="(max-width: 640px) 90vw, 300px"
                   className="object-cover transition duration-500 group-hover:scale-105"

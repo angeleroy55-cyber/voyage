@@ -4,67 +4,47 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { photo } from "@/lib/format";
+import type { HeroSlide } from "@/lib/types";
 
-const SLIDES = [
-  {
-    seed: "hero-mediterranee",
-    kicker: "Ventes flash jusqu'à dimanche",
-    title: "Une semaine au soleil à partir de 419 €",
-    text: "Séjours tout compris en Méditerranée, vol et transferts inclus.",
-    href: "/recherche/vol-hotel",
-    cta: "Voir les séjours",
-  },
-  {
-    seed: "hero-croisiere",
-    kicker: "Croisières",
-    title: "Embarquez pour 8 jours en pension complète",
-    text: "Méditerranée, Canaries ou fjords : cabine extérieure sans supplément.",
-    href: "/recherche/croisieres",
-    cta: "Découvrir les croisières",
-  },
-  {
-    seed: "hero-circuits",
-    kicker: "Circuits accompagnés",
-    title: "Le Japon, l'Islande ou le Pérou avec un guide francophone",
-    text: "Itinéraires clés en main, groupes limités, entrées des sites incluses.",
-    href: "/recherche/circuits",
-    cta: "Choisir un circuit",
-  },
-];
-
-export default function HeroCarousel() {
+export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0);
-  const count = SLIDES.length;
+  const count = slides.length;
 
   const go = useCallback((dir: number) => {
-    setIndex((i) => (i + dir + SLIDES.length) % SLIDES.length);
-  }, []);
+    setIndex((i) => (i + dir + slides.length) % slides.length);
+  }, [slides.length]);
 
   useEffect(() => {
+    if (slides.length <= 1) return;
     const id = setInterval(() => go(1), 7000);
     return () => clearInterval(id);
-  }, [go]);
+  }, [go, slides.length]);
+
+  if (slides.length === 0) return null;
 
   return (
     <section className="relative overflow-hidden rounded-2xl" aria-roledescription="carrousel">
       <div className="relative aspect-21/9 min-h-64 w-full">
-        {SLIDES.map((s, i) => (
+        {slides.map((s, i) => (
           <div
-            key={s.seed}
+            key={s.id}
             className={`absolute inset-0 transition-opacity duration-700 ${
               i === index ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
             aria-hidden={i !== index}
           >
-            <Image
-              src={photo(s.seed, 1600, 700)}
-              alt=""
-              fill
-              priority={i === 0}
-              sizes="(max-width: 1280px) 100vw, 1216px"
-              className="object-cover"
-            />
+            {s.image ? (
+              <Image
+                src={s.image}
+                alt={s.imageAlt}
+                fill
+                priority={i === 0}
+                sizes="(max-width: 1280px) 100vw, 1216px"
+                className="object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-navy-300" aria-hidden="true" />
+            )}
             <div className="absolute inset-0 bg-linear-to-r from-navy-900/85 via-navy-900/55 to-transparent" />
             <div className="absolute inset-0 flex items-center">
               <div className="max-w-xl px-6 sm:px-10">
@@ -104,9 +84,9 @@ export default function HeroCarousel() {
       </button>
 
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-        {SLIDES.map((s, i) => (
+        {slides.map((s, i) => (
           <button
-            key={s.seed}
+            key={s.id}
             type="button"
             onClick={() => setIndex(i)}
             aria-label={`Aller à l'offre ${i + 1} sur ${count}`}

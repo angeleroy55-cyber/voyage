@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
 import Modal from "@/components/ui/Modal";
-import { discount, durationLabel, photo, price, ratingLabel } from "@/lib/format";
+import { discount, durationLabel, price, ratingLabel } from "@/lib/format";
+import { galleryWithMediaFallback } from "@/lib/media";
 import type { Offer } from "@/lib/types";
 
 /**
@@ -19,10 +20,7 @@ export default function QuickView({ offer }: { offer: Offer }) {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
 
-  const gallery =
-    offer.images && offer.images.length > 0
-      ? offer.images
-      : [photo(offer.imageSeed, 900, 560), photo(`${offer.imageSeed}-2`, 900, 560), photo(`${offer.imageSeed}-3`, 900, 560)];
+  const gallery = galleryWithMediaFallback(offer.images, offer.image);
 
   const off = discount(offer.price, offer.oldPrice);
   const step = (delta: number) =>

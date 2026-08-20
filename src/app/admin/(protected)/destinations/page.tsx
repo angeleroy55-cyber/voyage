@@ -68,6 +68,12 @@ export default async function DestinationsAdminPage({
               className="mt-1 block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-navy-100 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-navy-800"
             />
           </label>
+          <label className="block sm:col-span-2">
+            <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+              Texte alternatif du visuel
+            </span>
+            <input name="imageAlt" placeholder="Vue de la destination" className={INPUT} />
+          </label>
           <label className="flex items-center gap-2 text-sm text-navy-700">
             <input type="checkbox" name="featured" className="size-4 rounded accent-gold-500" />
             Mettre en avant
@@ -116,6 +122,16 @@ export default async function DestinationsAdminPage({
                   type="number"
                   name="fromPrice"
                   defaultValue={destination.fromPrice}
+                  className={INPUT}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+                  Texte alternatif
+                </span>
+                <input
+                  name="imageAlt"
+                  defaultValue={destination.imageAlt}
                   className={INPUT}
                 />
               </label>

@@ -9,7 +9,8 @@ import OfferCard, { RatingBadge, Stars } from "@/components/ui/OfferCard";
 import { getFavouriteSlugs } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
 import { getCategories, getOfferBySlug, getOfferReviews, getOffers, getPublishedOfferSlugs } from "@/server/catalogue";
-import { durationLabel, photo } from "@/lib/format";
+import { durationLabel } from "@/lib/format";
+import { galleryWithMediaFallback } from "@/lib/media";
 
 export const dynamic = "force-dynamic";
 
@@ -48,11 +49,7 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/of
   const favouriteSlugs = session ? await getFavouriteSlugs(session.sub) : [];
 
   const category = categories.find((c) => c.slug === offer.category);
-  // Une offre sans visuel retombe sur un placeholder deterministe.
-  const gallery =
-    offer.images && offer.images.length > 0
-      ? offer.images
-      : [0, 1, 2, 3, 4].map((i) => photo(`${offer.imageSeed}-${i}`, 800, 600));
+  const gallery = galleryWithMediaFallback(offer.images, offer.image);
   const related = sameCategory.filter((o) => o.slug !== offer.slug).slice(0, 4);
 
   return (

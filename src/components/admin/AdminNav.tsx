@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/admin/offres", label: "Offres", icon: "package" },
   { href: "/admin/categories", label: "Types de voyage", icon: "route" },
   { href: "/admin/destinations", label: "Destinations", icon: "pin" },
+  { href: "/admin/hero", label: "Hero accueil", icon: "sparkles" },
   { href: "/admin/reservations", label: "Réservations", icon: "calendar" },
   { href: "/admin/clients", label: "Clients", icon: "users" },
   { href: "/admin/avis", label: "Avis", icon: "star" },

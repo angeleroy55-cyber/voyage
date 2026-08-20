@@ -6,7 +6,8 @@ import Icon from "@/components/ui/Icon";
 import { getCustomer } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
 import { getOfferBySlug } from "@/server/catalogue";
-import { durationLabel, photo, price } from "@/lib/format";
+import { durationLabel, price } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 
 /**
  * Étape 2 de la réservation : récapitulatif du séjour, coordonnées du client et
@@ -58,7 +59,7 @@ export default async function ReservationPage({
   const departureDate = readDate(sp.du);
   const returnDate = readDate(sp.au);
 
-  const cover = offer.images?.[0] ?? offer.image ?? photo(`${offer.imageSeed}-0`, 400, 300);
+  const cover = withMediaFallback(offer.images?.[0] ?? offer.image);
 
   return (
     <div className="mx-auto max-w-page px-4 py-6">

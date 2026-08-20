@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { getPosts } from "@/server/catalogue";
-import { photo } from "@/lib/format";
+import { withMediaFallback } from "@/lib/media";
 
 export const metadata = {
   title: "Le carnet de voyage",
@@ -42,8 +42,8 @@ export default async function BlogPage() {
               <Link href={`/blog/${post.slug}`} className="block overflow-hidden rounded-2xl">
                 <div className="relative aspect-16/10">
                   <Image
-                    src={post.image ?? photo(post.imageSeed, 600, 375)}
-                    alt=""
+                    src={withMediaFallback(post.image)}
+                    alt={post.imageAlt || post.title}
                     fill
                     sizes="(max-width: 640px) 90vw, 380px"
                     className="object-cover transition duration-500 group-hover:scale-105"
