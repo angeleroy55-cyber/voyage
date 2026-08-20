@@ -68,6 +68,22 @@ Sans elles, les téléversements du back-office sont écrits dans
 `public/uploads/` : l'administration reste pleinement utilisable sans compte
 Cloudinary. Le statut effectif est affiché dans **Réglages → État du système**.
 
+## Messagerie de contact
+
+Le projet utilise déjà `contact@gosejour.fr` comme adresse de contact publique.
+La configuration de boîte mail peut aussi être préparée dans `.env.local` :
+
+```env
+SMTP_HOST="smtp.hostinger.com"
+SMTP_USER="contact@gosejour.fr"
+SMTP_PASSWORD="..."
+IMAP_HOST="imap.hostinger.com"
+```
+
+`SMTP_*` servira à une future intégration d'envoi d'e-mails transactionnels
+(confirmation, notifications back-office, etc.). `IMAP_HOST` ne sert qu'à la
+lecture de la boîte depuis un client mail ; le site n'en a pas besoin.
+
 ## Parcours de réservation
 
 Trois étapes, une URL par étape :
