@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 import { requireSession } from "@/server/session";
 import { deleteImage, uploadImage } from "@/server/media";
+import { recomputeDestinationStats } from "@/server/counters";
 import { slugify, toList } from "@/lib/slug";
 
 /** Rafraîchit le site public et le back-office après toute écriture. */
@@ -79,6 +80,7 @@ export async function createOffer(formData: FormData) {
   );
   const offer = await prisma.offer.create({ data: { ...data, slug } });
 
+  await recomputeDestinationStats(offer.destinationId);
   revalidateOffer(slug);
   redirect(`/admin/offres/${offer.id}?cree=1`);
 }
@@ -88,8 +90,18 @@ export async function updateOffer(id: string, formData: FormData) {
   const data = readOfferForm(formData);
   const slug = await uniqueSlug(String(formData.get("slug") || data.title), id);
 
-  const previous = await prisma.offer.findUnique({ where: { id }, select: { slug: true } });
-  await prisma.offer.update({ where: { id }, data: { ...data, slug } });
+  const previous = await prisma.offer.findUnique({
+    where: { id },
+    select: { slug: true, destinationId: true },
+  });
+  const offer = await prisma.offer.update({ where: { id }, data: { ...data, slug } });
+
+  // Les deux destinations sont recalculées : celle qu'on quitte perd une offre,
+  // celle qu'on rejoint en gagne une, et le prix d'appel bouge des deux côtés.
+  await recomputeDestinationStats(previous?.destinationId);
+  if (offer.destinationId !== previous?.destinationId) {
+    await recomputeDestinationStats(offer.destinationId);
+  }
 
   revalidateOffer(slug);
   if (previous && previous.slug !== slug) revalidateOffer(previous.slug);
@@ -109,6 +121,7 @@ export async function deleteOffer(id: string) {
   for (const image of offer.images) await deleteImage(image.publicId);
   await prisma.offer.delete({ where: { id } });
 
+  await recomputeDestinationStats(offer.destinationId);
   revalidateOffer(offer.slug);
   redirect("/admin/offres?supprime=1");
 }
@@ -151,5 +164,8 @@ export async function deleteOfferImage(imageId: string) {
 export async function setOfferStatus(id: string, status: string) {
   await requireSession();
   const offer = await prisma.offer.update({ where: { id }, data: { status } });
+  // Publier ou archiver fait entrer ou sortir l'offre du décompte de sa
+  // destination, et peut changer son prix d'appel.
+  await recomputeDestinationStats(offer.destinationId);
   revalidateOffer(offer.slug);
 }

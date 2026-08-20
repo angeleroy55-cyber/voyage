@@ -130,7 +130,7 @@ async function main() {
         data: Array.from({ length: 5 }, (_, i) => ({
           offerId: saved.id,
           url: photo(`${offer.imageSeed}${i === 0 ? "" : `-${i}`}`, 800, 600),
-          alt: `${offer.title} — photo ${i + 1}`,
+          alt: `${offer.title}, photo ${i + 1}`,
           position: i,
         })),
       });
@@ -189,7 +189,7 @@ async function main() {
     "site.email": BRAND.email,
     "hero.title": "Où partez-vous ?",
     "hero.subtitle":
-      "Vols, hôtels, croisières, circuits et campings — comparés et réservés en une seule fois.",
+      "Vols, hôtels, croisières, circuits et campings : comparés et réservés en une seule fois.",
   };
   for (const [key, value] of Object.entries(settings)) {
     await prisma.setting.upsert({ where: { key }, update: {}, create: { key, value } });
@@ -241,7 +241,7 @@ function shift(days: number): Date {
  * Il donne à l'espace client de quoi montrer tous ses états : un séjour
  * confirmé à venir avec paiement fractionné en cours, une demande en attente,
  * un voyage passé et une annulation. Comme le reste du seed, la fonction est
- * idempotente — relancée, elle met à jour au lieu de dupliquer.
+ * idempotente : relancée, elle met à jour au lieu de dupliquer.
  */
 async function seedDemoCustomer() {
   const email = process.env.DEMO_CUSTOMER_EMAIL ?? "camille.durand@example.fr";
@@ -272,6 +272,7 @@ async function seedDemoCustomer() {
       travellers: 2,
       insurance: true,
       instalments: 4,
+      paymentMethod: "visa",
       paidRatio: 0.5,
       departure: shift(38),
       nights: 7,
@@ -283,6 +284,7 @@ async function seedDemoCustomer() {
       travellers: 2,
       insurance: false,
       instalments: 1,
+      paymentMethod: "cb",
       paidRatio: 0,
       departure: shift(96),
       nights: 7,
@@ -294,6 +296,7 @@ async function seedDemoCustomer() {
       travellers: 2,
       insurance: false,
       instalments: 1,
+      paymentMethod: "paypal",
       paidRatio: 1,
       departure: shift(-124),
       nights: 4,
@@ -305,6 +308,7 @@ async function seedDemoCustomer() {
       travellers: 2,
       insurance: true,
       instalments: 4,
+      paymentMethod: "sepa",
       paidRatio: 0,
       departure: shift(-40),
       nights: 10,
@@ -334,6 +338,7 @@ async function seedDemoCustomer() {
       totalPrice,
       paidAmount: Math.round(totalPrice * item.paidRatio),
       instalments: item.instalments,
+      paymentMethod: item.paymentMethod,
       departureDate: item.departure,
       returnDate,
       status: item.status,

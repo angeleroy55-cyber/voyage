@@ -1,3 +1,4 @@
+import ConfirmButton from "@/components/admin/ConfirmButton";
 import { prisma } from "@/server/prisma";
 import { requireSession } from "@/server/session";
 import {
@@ -176,9 +177,9 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/equip
 
                   <form
                     action={resetAdminPassword.bind(null, member.id)}
-                    className="flex items-end gap-2"
+                    className="flex w-full flex-wrap items-end gap-2 sm:w-auto"
                   >
-                    <label className="block">
+                    <label className="block min-w-0 flex-1 sm:flex-none">
                       <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
                         Nouveau mot de passe
                       </span>
@@ -186,20 +187,25 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/equip
                         name="password"
                         required
                         minLength={10}
-                        className="mt-1 w-48 rounded-xl border border-navy-200 px-3 py-2 text-sm outline-none focus:border-navy-400"
+                        className="mt-1 w-full rounded-xl border border-navy-200 px-3 py-2 text-sm outline-none focus:border-navy-400 sm:w-48"
                       />
                     </label>
-                    <button className="rounded-lg border border-navy-200 px-3.5 py-2 text-xs font-bold text-navy-700 hover:border-navy-400">
+                    <button className="shrink-0 rounded-lg border border-navy-200 px-3.5 py-2 text-xs font-bold text-navy-700 hover:border-navy-400">
                       Réinitialiser
                     </button>
                   </form>
 
                   {!isSelf && (
-                    <form action={deleteAdmin.bind(null, member.id)} className="ml-auto">
-                      <button className="rounded-lg border border-red-200 px-3.5 py-2 text-xs font-bold text-red-700 hover:bg-red-50">
-                        Supprimer
-                      </button>
-                    </form>
+                    <span className="ml-auto">
+                      <ConfirmButton
+                        action={deleteAdmin.bind(null, member.id)}
+                        label="Supprimer"
+                        title={`Supprimer ${member.name || member.email} ?`}
+                        description={`${member.email} perdra immédiatement l'accès au back-office. C'est définitif : il faudra recréer un compte pour lui rendre la main.`}
+                        confirmLabel="Supprimer"
+                        className="rounded-lg border border-red-200 px-3.5 py-2 text-xs font-bold text-red-700 hover:bg-red-50"
+                      />
+                    </span>
                   )}
                 </div>
               )}

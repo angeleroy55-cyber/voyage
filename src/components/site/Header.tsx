@@ -37,20 +37,22 @@ export default function Header({ settings, categories, customer = null }: Props)
   return (
     <header className="sticky top-0 z-50 bg-white shadow-[0_1px_0_rgba(12,26,55,0.08)]">
       {/* Utility bar */}
-      <div className="hidden bg-navy-800 text-navy-100 lg:block">
+      {/* Sur bleu, le texte est en blanc pur : le survol se signale donc par
+          l'or de la marque, puisqu'un « blanc plus blanc » n'existe pas. */}
+      <div className="hidden bg-navy-800 text-white lg:block">
         <div className="mx-auto flex h-9 max-w-page items-center justify-between px-4 text-[13px]">
           <div className="flex items-center gap-5">
             <a
               href={`tel:${settings.phone.replace(/\s/g, "")}`}
-              className="flex items-center gap-1.5 hover:text-white"
+              className="flex items-center gap-1.5 transition hover:text-gold-300"
             >
               <Icon name="phone" className="size-3.5" />
               {settings.phone}
             </a>
-            <Link href="/aide" className="hover:text-white">
+            <Link href="/aide" className="transition hover:text-gold-300">
               Aide &amp; FAQ
             </Link>
-            <Link href="/aide#contact" className="hover:text-white">
+            <Link href="/aide#contact" className="transition hover:text-gold-300">
               Contact
             </Link>
           </div>
@@ -61,7 +63,7 @@ export default function Header({ settings, categories, customer = null }: Props)
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="cursor-pointer rounded bg-transparent py-0.5 pr-1 text-navy-100 outline-none hover:text-white focus:ring-2 focus:ring-white/40"
+                className="cursor-pointer rounded bg-transparent py-0.5 pr-1 text-white outline-none transition hover:text-gold-300 focus:ring-2 focus:ring-gold-400"
               >
                 {DEPARTURE_CITIES.map((c) => (
                   <option key={c} value={c} className="text-navy-900">
@@ -226,18 +228,16 @@ function Logo({ name }: { name: string }) {
       className="flex shrink-0 items-center gap-2.5"
       aria-label={`${name}, accueil`}
     >
+      {/* Le verrouillage porte déjà le nom : l'`alt` reste vide, le nom
+          accessible du lien étant donné par son `aria-label`. */}
       <Image
-        src="/brand/logo-mark.png"
+        src="/brand/logo-lockup.png"
         alt=""
-        width={40}
-        height={40}
+        width={1380}
+        height={432}
         priority
-        className="size-10 rounded-xl"
+        className="h-9 w-auto"
       />
-      <span className="text-[22px] font-extrabold leading-none tracking-tight text-navy-900">
-        <span className="text-gold-500">Go</span>Séjour
-        <span className="ml-0.5 align-top text-xs font-bold text-gold-500">.fr</span>
-      </span>
     </Link>
   );
 }

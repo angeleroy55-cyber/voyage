@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
@@ -37,19 +38,13 @@ export default function Footer({
       <div className="mx-auto max-w-page px-4 py-14">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2.5">
-              <Image
-                src="/brand/logo-mark.png"
-                alt=""
-                width={40}
-                height={40}
-                className="size-10 rounded-xl"
-              />
-              <span className="text-xl font-extrabold leading-none tracking-tight text-navy-900">
-                {settings.name}
-                <span className="ml-0.5 align-top text-xs font-bold text-gold-500">.fr</span>
-              </span>
-            </div>
+            <Image
+              src="/brand/logo-lockup.png"
+              alt={settings.name}
+              width={1380}
+              height={432}
+              className="h-10 w-auto"
+            />
             <p className="mt-3 text-sm leading-relaxed text-navy-600">
               {settings.tagline}. Agence de voyages en ligne : vols, hôtels, croisières, circuits et
               séjours, réservables en quelques minutes.
@@ -93,9 +88,21 @@ export default function Footer({
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label={`${network.label} (nouvelle fenêtre)`}
-                  className="grid size-9 place-items-center rounded-full border border-navy-200 bg-white text-navy-500 transition duration-200 hover:-translate-y-0.5 hover:border-gold-300 hover:text-gold-700 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400"
+                  // Le glyphe porte la couleur officielle du réseau ; au survol
+                  // la pastille s'inverse et se remplit de cette même identité.
+                  style={
+                    {
+                      "--brand": network.color,
+                      "--brand-fill": network.gradient ?? network.color,
+                    } as CSSProperties
+                  }
+                  className="group relative grid size-9 place-items-center overflow-hidden rounded-full border border-navy-200 bg-white text-[color:var(--brand)] transition duration-200 hover:-translate-y-0.5 hover:border-transparent hover:text-white hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400"
                 >
-                  <SocialLogo id={network.id} />
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 opacity-0 transition-opacity duration-200 [background:var(--brand-fill)] group-hover:opacity-100"
+                  />
+                  <SocialLogo id={network.id} className="relative size-4.5" />
                 </a>
               ))}
             </div>
@@ -107,7 +114,7 @@ export default function Footer({
                 <PaymentLogo
                   key={method.id}
                   id={method.id}
-                  className="transition duration-200 hover:-translate-y-0.5 hover:border-navy-300 hover:shadow-card"
+                  className="transition duration-200 hover:-translate-y-0.5 hover:shadow-card"
                 />
               ))}
             </div>
@@ -115,7 +122,7 @@ export default function Footer({
         </div>
 
         <p className="mt-8 text-xs leading-relaxed text-navy-500">
-          © {new Date().getFullYear()} {settings.name} — projet de démonstration. Les offres, prix et avis
+          © {new Date().getFullYear()} {settings.name}, projet de démonstration. Les offres, prix et avis
           affichés sont fictifs et générés pour les besoins de la maquette. Photographies :
           placeholders Picsum.
         </p>

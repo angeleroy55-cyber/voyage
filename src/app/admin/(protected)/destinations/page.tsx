@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ConfirmButton from "@/components/admin/ConfirmButton";
 import { prisma } from "@/server/prisma";
 import { deleteDestination, saveDestination } from "@/server/actions/admin";
 import { price } from "@/lib/format";
@@ -85,7 +86,7 @@ export default async function DestinationsAdminPage({
           <li key={destination.id} className="rounded-2xl border border-navy-100 bg-white p-4">
             <form
               action={saveDestination.bind(null, destination.id)}
-              className="grid items-end gap-3 sm:grid-cols-[88px_1fr_1fr_1fr_auto]"
+              className="grid items-end gap-3 sm:grid-cols-[88px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
             >
               <div className="relative size-20 overflow-hidden rounded-xl bg-navy-100">
                 {destination.imageUrl && (
@@ -140,15 +141,18 @@ export default async function DestinationsAdminPage({
                     />
                     Mise en avant
                   </label>
-                  <label className="text-sm text-navy-700">
+                  <label className="min-w-0 text-sm text-navy-700">
                     <span className="mr-2 text-xs uppercase tracking-wide text-navy-500">
                       Remplacer le visuel
                     </span>
+                    {/* `w-full` est indispensable : un champ fichier a une
+                        largeur intrinsèque large, qui élargissait la piste de la
+                        grille et faisait déborder toute la carte sous 360 px. */}
                     <input
                       type="file"
                       name="file"
                       accept="image/jpeg,image/png,image/webp,image/avif"
-                      className="text-sm file:mr-2 file:rounded file:border-0 file:bg-navy-100 file:px-2 file:py-1 file:text-xs file:font-semibold"
+                      className="w-full text-sm file:mr-2 file:rounded file:border-0 file:bg-navy-100 file:px-2 file:py-1 file:text-xs file:font-semibold"
                     />
                   </label>
                   <span className="text-xs text-navy-500">
@@ -159,11 +163,19 @@ export default async function DestinationsAdminPage({
               </div>
             </form>
 
-            <form action={deleteDestination.bind(null, destination.id)} className="mt-2">
-              <button className="text-xs font-semibold text-red-600 hover:underline">
-                Supprimer cette destination
-              </button>
-            </form>
+            <div className="mt-2">
+              <ConfirmButton
+                action={deleteDestination.bind(null, destination.id)}
+                label="Supprimer cette destination"
+                title={`Supprimer « ${destination.name} » ?`}
+                description={
+                  destination._count.offers > 0
+                    ? `${destination._count.offers} offre(s) y sont rattachées : elles resteront en ligne mais perdront leur destination. Le visuel sera supprimé du stockage.`
+                    : `« ${destination.name} » et son visuel seront supprimés. C'est définitif.`
+                }
+                confirmLabel="Supprimer"
+              />
+            </div>
           </li>
         ))}
       </ul>

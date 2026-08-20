@@ -2,7 +2,7 @@
  * Vérifie que chaque action du back-office se répercute réellement sur le site
  * public. Le contrôle ne se fait pas sur des fonctions isolées mais sur le HTML
  * servi par l'application : c'est le seul niveau qui prouve que la chaîne
- * complète — base, requête, rendu — tient debout.
+ * complète (base, requête, rendu) tient debout.
  *
  *   npx tsx scripts/probe-chaines.mts          (le serveur doit tourner)
  *
@@ -29,7 +29,7 @@ function check(label: string, ok: boolean, detail = "") {
     console.log(`  OK   ${label}`);
   } else {
     failed++;
-    console.log(`  ECHEC ${label}${detail ? ` — ${detail}` : ""}`);
+    console.log(`  ECHEC ${label}${detail ? ` : ${detail}` : ""}`);
   }
 }
 

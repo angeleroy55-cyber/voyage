@@ -64,7 +64,7 @@ export default function OfferForm({
 
           <Field label="Type de voyage" required>
             <select name="categoryId" required defaultValue={values.categoryId} className={INPUT}>
-              <option value="">— Choisir —</option>
+              <option value="">Choisir…</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.label}
@@ -75,7 +75,7 @@ export default function OfferForm({
 
           <Field label="Destination rattachée" hint="Pour les pages destination">
             <select name="destinationId" defaultValue={values.destinationId ?? ""} className={INPUT}>
-              <option value="">— Aucune —</option>
+              <option value="">Aucune</option>
               {destinations.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.name}

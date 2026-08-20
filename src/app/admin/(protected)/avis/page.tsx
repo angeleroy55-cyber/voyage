@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/server/prisma";
+import ConfirmButton from "@/components/admin/ConfirmButton";
 import { deleteReview, setReviewStatus } from "@/server/actions/admin";
 import { STATUS_LABELS } from "@/lib/constants";
 
@@ -98,11 +99,14 @@ export default async function ReviewsPage({ searchParams }: PageProps<"/admin/av
                     </button>
                   </form>
                 )}
-                <form action={deleteReview.bind(null, review.id)}>
-                  <button className="rounded-lg border border-red-200 px-3.5 py-2 text-xs font-bold text-red-700 hover:bg-red-50">
-                    Supprimer
-                  </button>
-                </form>
+                <ConfirmButton
+                  action={deleteReview.bind(null, review.id)}
+                  label="Supprimer"
+                  title={`Supprimer l'avis de ${review.author} ?`}
+                  description="L'avis disparaît de la base et la note de l'offre est recalculée sans lui. C'est définitif : préférez « Refuser » pour le retirer du site tout en le gardant."
+                  confirmLabel="Supprimer"
+                  className="rounded-lg border border-red-200 px-3.5 py-2 text-xs font-bold text-red-700 hover:bg-red-50"
+                />
               </div>
             </li>
           ))}

@@ -42,7 +42,7 @@ export default async function DashboardPage() {
         <p className="mt-1 text-sm text-navy-600">
           {summary.counts.upcoming > 0
             ? `${summary.counts.upcoming} voyage${summary.counts.upcoming > 1 ? "s" : ""} à venir. Voici où en sont vos dossiers.`
-            : "Aucun voyage prévu pour l'instant — le catalogue vous attend."}
+            : "Aucun voyage prévu pour l'instant : le catalogue vous attend."}
         </p>
       </header>
 
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
                 <h2 className="mt-1 text-xl font-extrabold leading-tight sm:text-2xl">
                   {nextTrip.offer.title}
                 </h2>
-                <p className="mt-1 text-sm text-navy-100">
+                <p className="mt-1 text-sm text-white">
                   {nextTrip.offer.destination}, {nextTrip.offer.country} ·{" "}
                   {dateRange(nextTrip.departureDate, nextTrip.returnDate)}
                 </p>
@@ -217,7 +217,7 @@ export default async function DashboardPage() {
               Programme fidélité
             </h2>
             <p className="mt-3 text-sm text-navy-600">
-              Statut <strong className="text-navy-900">{tier.label}</strong> —{" "}
+              Statut <strong className="text-navy-900">{tier.label}</strong> :{" "}
               {tier.perk.toLowerCase()}.
             </p>
             <ul className="mt-3 space-y-2">

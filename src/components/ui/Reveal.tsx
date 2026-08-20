@@ -45,7 +45,7 @@ export default function Reveal({
     if (!node) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Sans IntersectionObserver — ou avec les animations coupées — le contenu
+    // Sans IntersectionObserver, ou avec les animations coupées, le contenu
     // doit rester lisible : on l'affiche immédiatement. L'attribut est posé sur
     // le nœud plutôt que via un setState, qui déclencherait un rendu en cascade
     // pour un résultat identique : il n'y a ici rien à réconcilier, seulement un

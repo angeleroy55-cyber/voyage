@@ -1,9 +1,11 @@
 "use server";
 
-import { randomInt } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 import { getCustomerSession } from "@/server/customer-session";
+import { bookingReference } from "@/lib/reference";
+import { PAYMENT_CHOICES } from "@/lib/constants";
 
 /**
  * Écritures déclenchées par les visiteurs du site public.
@@ -14,14 +16,6 @@ import { getCustomerSession } from "@/server/customer-session";
  */
 
 export type FormState = { ok: boolean; message: string };
-
-/** Référence lisible communiquée au client, sans caractères ambigus (0/O, 1/I). */
-function bookingReference(): string {
-  const alphabet = "ACDEFGHJKLMNPQRSTUVWXYZ2345679";
-  let suffix = "";
-  for (let i = 0; i < 6; i++) suffix += alphabet[randomInt(alphabet.length)];
-  return `GS-${suffix}`;
-}
 
 function email(value: FormDataEntryValue | null): string {
   return String(value ?? "").trim().toLowerCase();
@@ -47,10 +41,19 @@ export async function createBooking(
   const customerPhone = String(formData.get("customerPhone") ?? "").trim();
   const travellers = Math.min(9, Math.max(1, Number(formData.get("travellers")) || 1));
   const insurance = formData.get("insurance") === "on";
+  const paymentMethod = String(formData.get("paymentMethod") ?? "");
 
   if (!customerName) return { ok: false, message: "Merci d'indiquer votre nom." };
   if (!EMAIL_PATTERN.test(customerEmail)) {
     return { ok: false, message: "Cette adresse e-mail ne semble pas valide." };
+  }
+  // Le `required` du formulaire ne protège de rien : la liste des moyens
+  // acceptés est celle du site, vérifiée ici.
+  if (!PAYMENT_CHOICES.some((m) => m.id === paymentMethod)) {
+    return { ok: false, message: "Merci de choisir un moyen de paiement." };
+  }
+  if (formData.get("terms") !== "on") {
+    return { ok: false, message: "Merci d'accepter les conditions de vente pour continuer." };
   }
 
   const offer = await prisma.offer.findFirst({
@@ -90,8 +93,10 @@ export async function createBooking(
       insurance,
       totalPrice,
       instalments,
+      paymentMethod,
       departureDate,
       returnDate,
+      notes: String(formData.get("notes") ?? "").trim().slice(0, 500),
       status: "pending",
     },
   });
@@ -103,12 +108,10 @@ export async function createBooking(
     revalidatePath("/compte/tableau-de-bord");
   }
 
-  return {
-    ok: true,
-    message: session
-      ? `Demande enregistrée sous la référence ${booking.reference}. Elle apparaît dès maintenant dans votre espace client.`
-      : `Demande enregistrée sous la référence ${booking.reference}. Un conseiller vous recontacte sous 24 h.`,
-  };
+  // La confirmation est une page à part entière : elle survit à un rechargement
+  // et à un partage de lien, ce qu'un message rendu dans le formulaire ne fait
+  // pas. `redirect` lève une exception traitée par Next, donc rien ne suit.
+  redirect(`/reservation/confirmee/${booking.reference}`);
 }
 
 export async function subscribe(

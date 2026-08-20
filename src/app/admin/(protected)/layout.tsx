@@ -29,15 +29,12 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-navy-100 bg-white lg:flex">
         <Link href="/admin" className="flex items-center gap-2.5 px-5 py-5">
           <Image
-            src="/brand/logo-mark.png"
-            alt=""
-            width={36}
-            height={36}
-            className="size-9 rounded-lg"
+            src="/brand/logo-lockup.png"
+            alt="GoSéjour"
+            width={1380}
+            height={432}
+            className="h-8 w-auto"
           />
-          <span className="text-lg font-extrabold leading-none tracking-tight text-navy-900">
-            <span className="text-gold-500">Go</span>Séjour
-          </span>
         </Link>
 
         <AdminNav />
@@ -67,7 +64,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-3 border-b border-navy-100 bg-white px-4 py-3 lg:hidden">
           <Link href="/admin" className="flex items-center gap-2">
-            <Image src="/brand/logo-mark.png" alt="" width={32} height={32} className="size-8 rounded-lg" />
+            <Image src="/brand/logo-mark.png" alt="" width={32} height={32} className="size-8" />
             <span className="font-extrabold text-navy-900">Back-office</span>
           </Link>
           <form action={signOut}>
@@ -89,7 +86,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         <footer className="px-4 pb-6 text-xs text-navy-400 sm:px-6 lg:px-8">
           <span className="inline-flex items-center gap-1.5">
             <Icon name="shield" className="size-3.5" />
-            Session valable 12 h — GoSéjour back-office
+            Session valable 12 h · GoSéjour back-office
           </span>
         </footer>
       </div>

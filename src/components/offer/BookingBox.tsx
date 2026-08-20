@@ -1,18 +1,30 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
-import { useFormStatus } from "react-dom";
+import { useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { createBooking, type FormState } from "@/server/actions/public";
 import { discount, durationLabel, price } from "@/lib/format";
 import type { Offer } from "@/lib/types";
 
-const INITIAL: FormState = { ok: false, message: "" };
-
-export default function BookingBox({ offer }: { offer: Offer }) {
+/**
+ * Première étape de la réservation, sur la fiche offre.
+ *
+ * L'encart ne fait que composer le séjour (nombre de voyageurs, assurance) puis
+ * passe la main à `/reservation/[slug]`, où sont saisies les coordonnées et
+ * choisi le moyen de paiement. Le formulaire part donc en `GET` : les choix
+ * voyagent dans l'URL, ce qui rend l'étape suivante partageable, rechargeable
+ * et accessible au bouton « précédent » sans réenvoi de formulaire.
+ */
+export default function BookingBox({
+  offer,
+  departureDate = "",
+  returnDate = "",
+}: {
+  offer: Offer;
+  departureDate?: string;
+  returnDate?: string;
+}) {
   const [travellers, setTravellers] = useState(2);
   const [insurance, setInsurance] = useState(false);
-  const [state, formAction] = useActionState(createBooking, INITIAL);
 
   const off = discount(offer.price, offer.oldPrice);
   const insurancePerPerson = Math.round(offer.price * 0.06);
@@ -26,9 +38,14 @@ export default function BookingBox({ offer }: { offer: Offer }) {
 
   return (
     <aside className="lg:sticky lg:top-28 lg:self-start">
-      <form action={formAction} className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card">
-        <input type="hidden" name="offerSlug" value={offer.slug} />
-        <input type="hidden" name="travellers" value={travellers} />
+      <form
+        method="get"
+        action={`/reservation/${offer.slug}`}
+        className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card"
+      >
+        <input type="hidden" name="voyageurs" value={travellers} />
+        {departureDate && <input type="hidden" name="du" value={departureDate} />}
+        {returnDate && <input type="hidden" name="au" value={returnDate} />}
 
         {off && (
           <span className="inline-block rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">
@@ -75,52 +92,17 @@ export default function BookingBox({ offer }: { offer: Offer }) {
         <label className="mt-3 flex cursor-pointer items-start gap-2.5 rounded-xl bg-navy-50 p-3.5">
           <input
             type="checkbox"
-            name="insurance"
+            name="assurance"
+            value="1"
             checked={insurance}
             onChange={(e) => setInsurance(e.target.checked)}
             className="mt-0.5 size-4 rounded border-navy-300 accent-gold-500"
           />
           <span className="text-sm text-navy-700">
-            <span className="font-semibold text-navy-900">Assurance annulation</span> — remboursement
+            <span className="font-semibold text-navy-900">Assurance annulation</span> : remboursement
             en cas d&apos;imprévu, {price(insurancePerPerson)} par personne.
           </span>
         </label>
-
-        <div className="mt-4 space-y-2 border-t border-navy-100 pt-4">
-          <label className="block">
-            <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
-              Nom et prénom
-            </span>
-            <input
-              name="customerName"
-              required
-              autoComplete="name"
-              className="mt-1 w-full rounded-xl border border-navy-200 px-3.5 py-2.5 text-sm outline-none focus:border-navy-400"
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
-              Adresse e-mail
-            </span>
-            <input
-              type="email"
-              name="customerEmail"
-              required
-              autoComplete="email"
-              className="mt-1 w-full rounded-xl border border-navy-200 px-3.5 py-2.5 text-sm outline-none focus:border-navy-400"
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
-              Téléphone <span className="normal-case text-navy-400">(facultatif)</span>
-            </span>
-            <input
-              name="customerPhone"
-              autoComplete="tel"
-              className="mt-1 w-full rounded-xl border border-navy-200 px-3.5 py-2.5 text-sm outline-none focus:border-navy-400"
-            />
-          </label>
-        </div>
 
         <div className="mt-4 space-y-1.5 border-t border-navy-100 pt-4 text-sm">
           <div className="flex justify-between text-navy-600">
@@ -142,24 +124,21 @@ export default function BookingBox({ offer }: { offer: Offer }) {
           <p className="text-xs text-navy-500">ou {price(Math.ceil(total / 4))} × 4 sans frais</p>
         </div>
 
-        <SubmitButton />
-
-        {state.message && (
-          <p
-            role="status"
-            className={`animate-fade-up mt-3 flex items-start gap-2 rounded-xl p-3 text-sm ${
-              state.ok ? "bg-teal-50 text-teal-700" : "bg-red-50 text-red-700"
-            }`}
-          >
-            <Icon name={state.ok ? "check" : "close"} className="mt-0.5 size-4 shrink-0" />
-            {state.message}
-          </p>
-        )}
+        <button
+          type="submit"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gold-400 py-3.5 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500"
+        >
+          Demander cette offre
+          <Icon name="chevronRight" className="size-4" />
+        </button>
+        <p className="mt-2 text-center text-xs text-navy-500">
+          Étape suivante : vos coordonnées et le moyen de paiement.
+        </p>
 
         <ul className="mt-4 space-y-2 text-xs text-navy-600">
           {[
             { icon: "check", text: "Annulation gratuite jusqu'à 30 jours avant le départ" },
-            { icon: "shield", text: "Demande sans engagement, aucun paiement en ligne" },
+            { icon: "shield", text: "Aucun débit maintenant : le règlement suit la confirmation" },
             { icon: "headset", text: "Assistance francophone 24 h/24 pendant le voyage" },
           ].map((l) => (
             <li key={l.text} className="flex items-start gap-2">
@@ -174,18 +153,5 @@ export default function BookingBox({ offer }: { offer: Offer }) {
         Besoin d&apos;un conseil ? Appelez-nous, un spécialiste {offer.destination} vous répond.
       </p>
     </aside>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="mt-4 w-full rounded-xl bg-gold-400 py-3.5 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500 disabled:opacity-60"
-    >
-      {pending ? "Envoi en cours…" : "Demander cette offre"}
-    </button>
   );
 }

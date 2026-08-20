@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Icon from "@/components/ui/Icon";
+import ConfirmButton from "@/components/admin/ConfirmButton";
 import OfferForm from "@/components/admin/OfferForm";
 import { prisma } from "@/server/prisma";
 import {
@@ -158,19 +159,24 @@ export default async function EditOfferPage({ params, searchParams }: PageProps<
         />
       </div>
 
-      <form action={remove} className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-5">
+      <section className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-5">
         <h2 className="text-base font-extrabold text-red-800">Supprimer cette offre</h2>
         <p className="mt-1 text-sm text-red-700">
           Les visuels associés sont également supprimés. Les réservations existantes sont conservées
           mais perdent leur lien vers l&apos;offre. Action irréversible.
         </p>
-        <button
-          type="submit"
-          className="mt-3 rounded-xl border border-red-300 bg-white px-4 py-2.5 text-sm font-bold text-red-700 hover:bg-red-100"
-        >
-          Supprimer définitivement
-        </button>
-      </form>
+        <div className="mt-3">
+          <ConfirmButton
+            action={remove}
+            label="Supprimer définitivement"
+            title={`Supprimer « ${offer.title} » ?`}
+            description={`L'offre, ses ${offer.images.length} visuel(s) et ses avis seront supprimés. Les réservations déjà passées sont conservées mais perdront le lien vers l'offre.`}
+            confirmLabel="Supprimer"
+            confirmWord={offer.slug}
+            className="rounded-xl border border-red-300 bg-white px-4 py-2.5 text-sm font-bold text-red-700 hover:bg-red-100"
+          />
+        </div>
+      </section>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { photo } from "@/lib/format";
 const SLIDES = [
   {
     seed: "hero-mediterranee",
-    kicker: "Ventes flash — jusqu'à dimanche",
+    kicker: "Ventes flash jusqu'à dimanche",
     title: "Une semaine au soleil à partir de 419 €",
     text: "Séjours tout compris en Méditerranée, vol et transferts inclus.",
     href: "/recherche/vol-hotel",
@@ -72,7 +72,7 @@ export default function HeroCarousel() {
                 <h2 className="mt-2 text-2xl font-extrabold leading-tight text-white sm:text-4xl">
                   {s.title}
                 </h2>
-                <p className="mt-2 text-sm text-navy-100 sm:text-base">{s.text}</p>
+                <p className="mt-2 text-sm text-white sm:text-base">{s.text}</p>
                 <Link
                   href={s.href}
                   className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold-400 px-5 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"

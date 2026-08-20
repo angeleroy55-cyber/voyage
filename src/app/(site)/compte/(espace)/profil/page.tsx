@@ -67,7 +67,7 @@ export default async function ProfilePage() {
               { label: "Membre depuis", value: dateLabel(customer.createdAt) },
               {
                 label: "Dernière connexion",
-                value: customer.lastLoginAt ? dateLabel(customer.lastLoginAt) : "—",
+                value: customer.lastLoginAt ? dateLabel(customer.lastLoginAt) : "Jamais",
               },
               { label: "Statut", value: tier.label },
               {

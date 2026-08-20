@@ -85,14 +85,14 @@ export default async function AccountLayout({ children }: LayoutProps<"/compte">
                       }}
                     />
                   </div>
-                  <p className="mt-1.5 text-[11px] text-navy-100">
+                  <p className="mt-1.5 text-[11px] text-white">
                     Encore {(next.from - points).toLocaleString("fr-FR")} pts pour le statut{" "}
                     {next.label}
                   </p>
                 </>
               ) : (
-                <p className="mt-1.5 text-[11px] text-navy-100">
-                  Statut maximum atteint — {tier.perk.toLowerCase()}.
+                <p className="mt-1.5 text-[11px] text-white">
+                  Statut maximum atteint : {tier.perk.toLowerCase()}.
                 </p>
               )}
             </div>

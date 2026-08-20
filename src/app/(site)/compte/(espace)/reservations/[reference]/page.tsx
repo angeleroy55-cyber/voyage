@@ -5,7 +5,8 @@ import CancelBooking from "@/components/account/CancelBooking";
 import StatusBadge from "@/components/account/StatusBadge";
 import Icon from "@/components/ui/Icon";
 import Reveal from "@/components/ui/Reveal";
-import { BOOKING_TIMELINE } from "@/lib/constants";
+import { PaymentLogo } from "@/components/ui/BrandLogos";
+import { BOOKING_TIMELINE, PAYMENT_METHODS, paymentLabel, type PaymentId } from "@/lib/constants";
 import { dateLabel, dateRange, durationLabel, price } from "@/lib/format";
 import { daysUntil, getBooking } from "@/server/account";
 import { requireCustomer } from "@/server/customer-session";
@@ -24,7 +25,7 @@ export default async function BookingDetailPage({
   const { reference } = await params;
 
   // `getBooking` filtre sur le client connecté : une référence valide mais
-  // appartenant à quelqu'un d'autre donne un 404, pas un 403 — inutile de
+  // appartenant à quelqu'un d'autre donne un 404, pas un 403 : inutile de
   // confirmer qu'elle existe.
   const booking = await getBooking(session.sub, reference);
   if (!booking) notFound();
@@ -214,10 +215,14 @@ export default async function BookingDetailPage({
                 <h2 className="text-sm font-extrabold uppercase tracking-wide text-navy-900">
                   Paiement
                 </h2>
-                <span className="text-xs text-navy-500">
+                <span className="flex items-center gap-2 text-xs text-navy-500">
+                  {PAYMENT_METHODS.some((m) => m.id === booking.paymentMethod) && (
+                    <PaymentLogo id={booking.paymentMethod as PaymentId} />
+                  )}
+                  {paymentLabel(booking.paymentMethod)} ·{" "}
                   {booking.instalments > 1
                     ? `${booking.instalments} fois sans frais`
-                    : "Paiement comptant"}
+                    : "paiement comptant"}
                 </span>
               </div>
 

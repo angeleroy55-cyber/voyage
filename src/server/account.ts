@@ -7,7 +7,7 @@ import { photo } from "@/lib/format";
  *
  * Toutes les requêtes sont bornées par `customerId` : c'est le seul endroit où
  * le rattachement est exprimé, ce qui évite d'avoir à le vérifier dans chaque
- * page. Les formes renvoyées sont déjà celles attendues à l'affichage — les
+ * page. Les formes renvoyées sont déjà celles attendues à l'affichage : les
  * pages ne manipulent jamais de ligne Prisma brute.
  */
 
@@ -53,6 +53,7 @@ function toBooking(row: BookingRow) {
     totalPrice: row.totalPrice,
     paidAmount: row.paidAmount,
     instalments: row.instalments,
+    paymentMethod: row.paymentMethod,
     notes: row.notes,
     createdAt: row.createdAt,
     departureDate: row.departureDate,

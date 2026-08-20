@@ -1,5 +1,8 @@
+import AdminNotice from "@/components/admin/AdminNotice";
+import ConfirmButton from "@/components/admin/ConfirmButton";
 import { prisma } from "@/server/prisma";
-import { saveSettings } from "@/server/actions/admin";
+import { recomputeCounters, saveSettings } from "@/server/actions/admin";
+import { counterDrift } from "@/server/counters";
 import { cloudinaryConfigured } from "@/server/media";
 
 export const metadata = { title: "Réglages" };
@@ -19,7 +22,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/p
   const rows = await prisma.setting.findMany();
   const values = new Map(rows.map((r) => [r.key, r.value]));
 
-  const [offers, destinations, reviews, bookings, admins] = await Promise.all([
+  const [offers, destinations, reviews, bookings, admins, drift] = await Promise.all([
     prisma.offer.count(),
     prisma.destination.count(),
     prisma.review.count(),
@@ -28,6 +31,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/p
       orderBy: { createdAt: "asc" },
       select: { id: true, email: true, name: true, role: true, lastLoginAt: true },
     }),
+    counterDrift(),
   ]);
 
   return (
@@ -37,11 +41,49 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/p
         Ces valeurs sont lues par le site public à chaque rendu.
       </p>
 
-      {sp.enregistre && (
-        <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-700">
-          Réglages enregistrés.
-        </p>
+      {sp.enregistre && <AdminNotice>Réglages enregistrés.</AdminNotice>}
+      {typeof sp.compteurs === "string" && (
+        <AdminNotice>
+          Compteurs recalculés : {sp.compteurs.split("-")[0]} offre(s) et{" "}
+          {sp.compteurs.split("-")[1]} destination(s) remises à jour.
+        </AdminNotice>
       )}
+
+      <section className="mt-4 rounded-2xl border border-navy-100 bg-white p-5">
+        <h2 className="text-base font-extrabold text-navy-900">Maintenance des compteurs</h2>
+        <p className="mt-1 text-sm text-navy-600">
+          La note des offres et le nombre d&apos;offres par destination sont stockés plutôt que
+          recalculés à chaque affichage. Ils se remettent à jour tout seuls à chaque modération et à
+          chaque publication ; cette reprise sert à rattraper des données importées.
+        </p>
+
+        {drift.offers + drift.destinations === 0 ? (
+          <p className="mt-3 text-sm text-teal-700">
+            Tous les compteurs correspondent déjà aux données réelles.
+          </p>
+        ) : (
+          <>
+            <p className="mt-3 rounded-xl bg-gold-50 px-4 py-3 text-sm text-navy-700">
+              <strong className="font-bold">{drift.offers} offre(s)</strong> et{" "}
+              <strong className="font-bold">{drift.destinations} destination(s)</strong> affichent
+              aujourd&apos;hui un chiffre qui ne vient pas des données. Sur le jeu de démonstration
+              ce sont des valeurs éditoriales : la reprise les remplacerait par les valeurs réelles,
+              souvent nulles.
+            </p>
+            <div className="mt-3">
+              <ConfirmButton
+                action={recomputeCounters}
+                label="Recalculer les compteurs"
+                title="Recalculer tous les compteurs ?"
+                description={`${drift.offers} note(s) d'offre et ${drift.destinations} compteur(s) de destination seront réécrits à partir des avis publiés et des offres en ligne. Les chiffres saisis à la main, y compris ceux du jeu de démonstration, seront perdus.`}
+                confirmLabel="Recalculer"
+                tone="neutral"
+                className="rounded-xl border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-700 hover:bg-navy-50"
+              />
+            </div>
+          </>
+        )}
+      </section>
 
       <form action={saveSettings} className="mt-5 rounded-2xl border border-navy-100 bg-white p-5">
         <div className="grid gap-4 sm:grid-cols-2">
