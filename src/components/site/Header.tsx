@@ -83,19 +83,21 @@ export default function Header({ settings, categories, customer = null }: Props)
 
       {/* Logo + nav */}
       <div className="mx-auto max-w-page px-4">
-        <div className="flex h-16 items-center gap-6">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="-ml-1 rounded p-2 text-navy-700 lg:hidden"
-            aria-label="Ouvrir le menu"
-          >
-            <Icon name="menu" className="size-6" />
-          </button>
+        <div className="flex h-16 items-stretch gap-4 lg:gap-6">
+          <div className="relative flex shrink-0 items-center gap-1 bg-navy-800 px-4 text-white before:absolute before:right-full before:top-0 before:h-full before:w-screen before:bg-navy-800 before:content-[''] md:pr-5 lg:gap-2 lg:pr-6">
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="rounded p-2 text-white transition hover:bg-white/10 lg:hidden"
+              aria-label="Ouvrir le menu"
+            >
+              <Icon name="menu" className="size-6" />
+            </button>
 
-          <Logo name={settings.name} />
+            <Logo name={settings.name} inverse />
+          </div>
 
-          <nav className="ml-2 hidden flex-1 items-center gap-1 lg:flex">
+          <nav className="hidden flex-1 items-center gap-1 lg:flex">
             {primaryNav.slice(0, 7).map((item) => (
               <Link
                 key={item.label}
@@ -221,7 +223,7 @@ export default function Header({ settings, categories, customer = null }: Props)
   );
 }
 
-function Logo({ name }: { name: string }) {
+function Logo({ name, inverse = false }: { name: string; inverse?: boolean }) {
   return (
     <Link
       href="/"
@@ -231,12 +233,12 @@ function Logo({ name }: { name: string }) {
       {/* Le verrouillage porte déjà le nom : l'`alt` reste vide, le nom
           accessible du lien étant donné par son `aria-label`. */}
       <Image
-        src="/brand/logo-lockup.png"
+        src={inverse ? "/brand/logo-lockup-inverse.png" : "/brand/logo-lockup.png"}
         alt=""
         width={1380}
         height={432}
         priority
-        className="h-9 w-auto"
+        className={inverse ? "h-11 w-auto md:h-12" : "h-10 w-auto md:h-11"}
       />
     </Link>
   );
