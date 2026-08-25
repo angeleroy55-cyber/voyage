@@ -8,13 +8,15 @@
     "start": "next start",
     "lint": "eslint",
     "db:local": "node scripts/pg-local.mjs",
+    "db:upgrade": "node scripts/db-upgrade.mjs",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "db:reset": "node scripts/db-reset.mjs",
     "logo": "node scripts/build-logo.mjs",
-    "setup": "npm run db:push && npm run db:seed"
+    "setup": "npm run db:upgrade && npm run db:push && npm run db:seed",
+    "photos": "tsx scripts/fetch-photos.mts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",

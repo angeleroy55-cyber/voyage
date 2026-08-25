@@ -13,7 +13,7 @@ import { PAYMENT_CHOICES } from "@/lib/constants";
  * Le site public ne sait créer qu'une demande en ligne, au total calculé par le
  * serveur. Ici c'est l'inverse : un conseiller saisit ce qu'il a négocié au
  * téléphone, donc le montant est libre. Les garde-fous portent sur ce qui doit
- * rester cohérent quoi qu'il arrive — le réglé ne dépasse pas le dû, et le moyen
+ * rester cohérent quoi qu'il arrive : le réglé ne dépasse pas le dû, et le moyen
  * de paiement appartient à la liste du site.
  */
 

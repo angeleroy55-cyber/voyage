@@ -43,6 +43,87 @@ export const CATEGORY_ICONS = [
   "tag",
 ] as const;
 
+/**
+ * Rôle d'une catégorie dans la navigation. `catalogue` est le seul type qui
+ * possède des offres : les autres composent leur listing à la lecture, renvoient
+ * vers une page dédiée, ou n'affichent que du contenu.
+ */
+export const CATEGORY_KINDS = [
+  { id: "catalogue", label: "Catalogue", hint: "Les offres lui sont rattachées une à une" },
+  { id: "dynamique", label: "Listing calculé", hint: "Sélection automatique, selon la règle choisie" },
+  { id: "hub", label: "Hub", hint: "Renvoie vers le hub des destinations" },
+  { id: "editorial", label: "Page éditoriale", hint: "Contenu seul, sans offre" },
+] as const;
+
+export type CategoryKindId = (typeof CATEGORY_KINDS)[number]["id"];
+
+/**
+ * Règles de sélection des catégories `dynamique`.
+ *
+ * Elles traversent le catalogue : une même offre nourrit Bons Plans, Dernière
+ * Minute et sa catégorie propriétaire, sans jamais être dupliquée ni obtenir
+ * une seconde URL. Sa seule adresse reste celle de sa catégorie de rattachement.
+ */
+export const OFFER_RULES = [
+  { id: "promos", label: "Bons plans", hint: "Toute offre affichée sous son prix de référence" },
+  { id: "derniere-minute", label: "Dernière minute", hint: "Départ dans moins de 21 jours" },
+  { id: "tout-compris", label: "Tout compris et clubs", hint: "Pension « Tout compris »" },
+  { id: "france", label: "Séjours France", hint: "Destinations situées en France" },
+] as const;
+
+export type OfferRuleId = (typeof OFFER_RULES)[number]["id"];
+
+/**
+ * Seuil du badge « Dernière minute », en jours avant le départ. Le badge est
+ * calculé à la lecture, jamais saisi : une offre ne peut donc pas rester
+ * marquée urgente après la date.
+ */
+export const LAST_MINUTE_DAYS = 21;
+
+/**
+ * Sous-types d'offre. Ils affinent une catégorie sans créer d'URL : « Vol +
+ * Hôtel » et « Tout compris » sont des filtres à l'intérieur de Séjours, pas
+ * des catégories concurrentes.
+ */
+export const OFFER_SUBTYPES = [
+  { id: "vol_hotel", label: "Vol + Hôtel" },
+  { id: "tout_compris", label: "Tout compris" },
+  { id: "club", label: "Club" },
+  { id: "hotel_seul", label: "Hôtel seul" },
+  { id: "vol_seul", label: "Vol seul" },
+  { id: "circuit_accompagne", label: "Circuit accompagné" },
+  { id: "circuit_libre", label: "Autotour" },
+  { id: "croisiere_maritime", label: "Croisière maritime" },
+  { id: "croisiere_fluviale", label: "Croisière fluviale" },
+  { id: "camping", label: "Camping" },
+  { id: "week_end", label: "Week-end" },
+  { id: "location", label: "Location de voiture" },
+] as const;
+
+export function subtypeLabel(id: string): string {
+  return OFFER_SUBTYPES.find((s) => s.id === id)?.label ?? "";
+}
+
+/**
+ * Couleurs du badge « type d'offre », en coin d'image sur la carte.
+ *
+ * Les classes sont écrites en toutes lettres : Tailwind lit le code source pour
+ * décider des règles à générer, une classe assemblée à la volée ne serait donc
+ * pas produite.
+ */
+export const CATEGORY_ACCENTS = [
+  { id: "navy", label: "Bleu nuit", badge: "bg-navy-800 text-white" },
+  { id: "gold", label: "Or", badge: "bg-gold-400 text-navy-900" },
+  { id: "teal", label: "Vert d'eau", badge: "bg-teal-600 text-white" },
+  { id: "rose", label: "Rose", badge: "bg-rose-600 text-white" },
+  { id: "violet", label: "Violet", badge: "bg-violet-600 text-white" },
+  { id: "emerald", label: "Vert", badge: "bg-emerald-600 text-white" },
+] as const;
+
+export function accentBadge(id: string | undefined): string {
+  return CATEGORY_ACCENTS.find((a) => a.id === id)?.badge ?? CATEGORY_ACCENTS[0].badge;
+}
+
 export const OFFER_STATUSES = ["draft", "published", "archived"] as const;
 export const REVIEW_STATUSES = ["pending", "published", "rejected"] as const;
 export const BOOKING_STATUSES = ["pending", "confirmed", "cancelled", "completed"] as const;

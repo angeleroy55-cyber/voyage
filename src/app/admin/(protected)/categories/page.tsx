@@ -9,9 +9,15 @@ import {
   saveCategory,
   setCategoryActive,
 } from "@/server/actions/categories";
-import { CATEGORY_ICONS, FORM_FIELDS } from "@/lib/constants";
+import {
+  CATEGORY_ACCENTS,
+  CATEGORY_ICONS,
+  CATEGORY_KINDS,
+  FORM_FIELDS,
+  OFFER_RULES,
+} from "@/lib/constants";
 
-export const metadata = { title: "Types de voyage" };
+export const metadata = { title: "Catégories" };
 export const dynamic = "force-dynamic";
 
 const INPUT =
@@ -20,8 +26,8 @@ const INPUT =
 const MESSAGES: Record<string, string> = {
   libelle: "Le libellé est obligatoire.",
   slug: "Le libellé ne produit aucun identifiant d'URL exploitable.",
-  doublon: "Un autre type de voyage utilise déjà cet identifiant d'URL.",
-  offres: "Ce type de voyage porte encore des offres : il ne peut pas être supprimé.",
+  doublon: "Une autre catégorie utilise déjà cet identifiant d'URL.",
+  offres: "Cette catégorie porte encore des offres : elle ne peut pas être supprimée.",
 };
 
 export default async function CategoriesAdminPage({
@@ -38,10 +44,11 @@ export default async function CategoriesAdminPage({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">Types de voyage</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">Catégories</h1>
       <p className="mt-1 text-sm text-navy-600">
-        Chaque type devient un onglet du moteur de recherche. Les champs cochés décident de ce que
-        le visiteur peut saisir avant de lancer sa recherche.
+        Chaque catégorie devient une page à la racine du site, et les dix premières forment le menu
+        principal. Au-delà, cocher « Sous Voir plus » pour la ranger dans le menu déroulant sans lui
+        faire perdre sa page.
       </p>
 
       {erreur && (
@@ -57,17 +64,17 @@ export default async function CategoriesAdminPage({
           )}
         </AdminNotice>
       )}
-      {sp.enregistre && <AdminNotice>Type de voyage enregistré.</AdminNotice>}
-      {sp.supprime && <AdminNotice>Type de voyage supprimé.</AdminNotice>}
+      {sp.enregistre && <AdminNotice>Catégorie enregistrée.</AdminNotice>}
+      {sp.supprime && <AdminNotice>Catégorie supprimée.</AdminNotice>}
 
       <section className="mt-5 rounded-2xl border border-navy-100 bg-white p-5">
-        <h2 className="text-base font-extrabold text-navy-900">Ajouter un type de voyage</h2>
+        <h2 className="text-base font-extrabold text-navy-900">Ajouter une catégorie</h2>
         <CategoryFields action={saveCategory.bind(null, null)} submitLabel="Ajouter" />
       </section>
 
       {categories.length === 0 ? (
         <p className="mt-5 rounded-2xl border border-dashed border-navy-200 p-10 text-center text-sm text-navy-500">
-          Aucun type de voyage pour l&apos;instant. Le moteur de recherche reste vide tant qu&apos;il
+          Aucune catégorie pour l&apos;instant. La navigation reste vide tant qu&apos;il
           n&apos;y en a pas au moins un.
         </p>
       ) : (
@@ -80,9 +87,23 @@ export default async function CategoriesAdminPage({
                     <Icon name={category.icon} className="size-5" />
                   </span>
                   <div>
-                    <p className="font-extrabold text-navy-900">{category.label}</p>
+                    <p className="flex flex-wrap items-center gap-2 font-extrabold text-navy-900">
+                      {category.label}
+                      {category.isOverflow && (
+                        <span className="rounded bg-navy-100 px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-navy-600">
+                          Voir plus
+                        </span>
+                      )}
+                    </p>
                     <p className="text-xs text-navy-500">
-                      /recherche/{category.slug} · {category._count.offers} offre(s)
+                      /{category.slug} ·{" "}
+                      {CATEGORY_KINDS.find((k) => k.id === category.kind)?.label ?? category.kind}
+                      {/* Un listing calculé n'a pas d'offre en propre : afficher
+                          « 0 offre » laisserait croire à une page vide. */}
+                      {category.kind === "catalogue" && ` · ${category._count.offers} offre(s)`}
+                      {category.kind === "dynamique" &&
+                        category.rule &&
+                        ` · ${OFFER_RULES.find((r) => r.id === category.rule)?.label ?? category.rule}`}
                     </p>
                   </div>
                 </div>
@@ -129,12 +150,12 @@ export default async function CategoriesAdminPage({
               <div className="mt-3 border-t border-navy-100 pt-3">
                 <ConfirmButton
                   action={deleteCategory.bind(null, category.id)}
-                  label="Supprimer ce type de voyage"
+                  label="Supprimer cette catégorie"
                   title={`Supprimer « ${category.label} » ?`}
                   description={
                     category._count.offers > 0
-                      ? `« ${category.label} » porte ${category._count.offers} offre(s). La suppression sera refusée tant qu'elles n'auront pas changé de type.`
-                      : `« ${category.label} » disparaîtra du moteur de recherche. Cette action est définitive.`
+                      ? `« ${category.label} » porte ${category._count.offers} offre(s). La suppression sera refusée tant qu'elles n'auront pas changé de catégorie.`
+                      : `« ${category.label} » disparaîtra de la navigation et sa page ne répondra plus. Cette action est définitive.`
                   }
                   confirmLabel="Supprimer"
                 />
@@ -150,8 +171,14 @@ export default async function CategoriesAdminPage({
 type CategoryRow = {
   slug: string;
   label: string;
+  title: string;
   icon: string;
   blurb: string;
+  kind: string;
+  rule: string;
+  accent: string;
+  isOverflow: boolean;
+  showDiscountPercent: boolean;
   formFields: string;
   active: boolean;
 };
@@ -191,6 +218,24 @@ function CategoryFields({
           placeholder="Déduit du libellé si vide"
           className={INPUT}
         />
+        <span className="mt-1 block text-xs text-navy-500">
+          Devient l&apos;adresse de la page : /{category?.slug || "sejours"}
+        </span>
+      </label>
+
+      <label className="block sm:col-span-2">
+        <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+          Titre long de la page
+        </span>
+        <input
+          name="title"
+          defaultValue={category?.title}
+          placeholder="Repris du libellé si vide, ex. « Séjours & Vol + Hôtel »"
+          className={INPUT}
+        />
+        <span className="mt-1 block text-xs text-navy-500">
+          Le libellé sert au menu, ce titre au H1 et à la balise title.
+        </span>
       </label>
 
       <label className="block sm:col-span-2">
@@ -204,6 +249,60 @@ function CategoryFields({
           className={INPUT}
         />
       </label>
+
+      <label className="block">
+        <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+          Ce que contient la catégorie
+        </span>
+        <select name="kind" defaultValue={category?.kind ?? "catalogue"} className={INPUT}>
+          {CATEGORY_KINDS.map((k) => (
+            <option key={k.id} value={k.id}>
+              {k.label} : {k.hint}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="block">
+        <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+          Règle du listing calculé
+        </span>
+        <select name="rule" defaultValue={category?.rule ?? ""} className={INPUT}>
+          <option value="">Aucune</option>
+          {OFFER_RULES.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.label} : {r.hint}
+            </option>
+          ))}
+        </select>
+        <span className="mt-1 block text-xs text-navy-500">
+          Ignorée si la catégorie n&apos;est pas un listing calculé.
+        </span>
+      </label>
+
+      <fieldset className="sm:col-span-2">
+        <legend className="text-xs font-medium uppercase tracking-wide text-navy-500">
+          Couleur du badge sur les cartes
+        </legend>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {CATEGORY_ACCENTS.map((a) => (
+            <label key={a.id} className="cursor-pointer">
+              <input
+                type="radio"
+                name="accent"
+                value={a.id}
+                defaultChecked={(category?.accent ?? "navy") === a.id}
+                className="peer sr-only"
+              />
+              <span
+                className={`block rounded-lg px-3 py-1.5 text-xs font-bold opacity-45 transition peer-checked:opacity-100 peer-checked:ring-2 peer-checked:ring-navy-400 peer-checked:ring-offset-1 ${a.badge}`}
+              >
+                {a.label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <fieldset className="sm:col-span-2">
         <legend className="text-xs font-medium uppercase tracking-wide text-navy-500">
@@ -255,17 +354,49 @@ function CategoryFields({
         </div>
       </fieldset>
 
-      <label className="flex items-center gap-2 text-sm text-navy-700">
-        <input
-          type="checkbox"
-          name="active"
-          defaultChecked={category?.active ?? true}
-          className="size-4 rounded accent-gold-500"
-        />
-        Visible sur le site
-      </label>
+      <div className="grid gap-2 sm:col-span-2 sm:grid-cols-3">
+        <label className="flex items-center gap-2 text-sm text-navy-700">
+          <input
+            type="checkbox"
+            name="active"
+            defaultChecked={category?.active ?? true}
+            className="size-4 rounded accent-gold-500"
+          />
+          Visible sur le site
+        </label>
 
-      <button className="rounded-xl bg-gold-400 px-4 py-2.5 text-sm font-bold text-navy-900 hover:bg-gold-500 sm:justify-self-end">
+        <label className="flex items-start gap-2 text-sm text-navy-700">
+          <input
+            type="checkbox"
+            name="isOverflow"
+            defaultChecked={category?.isOverflow ?? false}
+            className="mt-0.5 size-4 rounded accent-gold-500"
+          />
+          <span>
+            Sous « Voir plus »
+            <span className="block text-xs text-navy-500">
+              Hors du menu principal, limité à dix entrées.
+            </span>
+          </span>
+        </label>
+
+        <label className="flex items-start gap-2 text-sm text-navy-700">
+          <input
+            type="checkbox"
+            name="showDiscountPercent"
+            defaultChecked={category?.showDiscountPercent ?? false}
+            className="mt-0.5 size-4 rounded accent-gold-500"
+          />
+          <span>
+            Afficher la remise en %
+            <span className="block text-xs text-navy-500">
+              Le montant économisé en euros, lui, s&apos;affiche partout.
+            </span>
+          </span>
+        </label>
+      </div>
+
+      <button className="rounded-xl bg-gold-400 px-4 py-2.5 text-sm font-bold text-navy-900 hover:bg-gold-500 sm:col-span-2 sm:justify-self-end">
         {submitLabel}
       </button>
     </form>

@@ -6,7 +6,7 @@ import Icon from "@/components/ui/Icon";
 import { getCustomer } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
 import { getOfferBySlug } from "@/server/catalogue";
-import { durationLabel, photo, price } from "@/lib/format";
+import { durationFull, photo, price } from "@/lib/format";
 
 /**
  * Étape 2 de la réservation : récapitulatif du séjour, coordonnées du client et
@@ -142,11 +142,16 @@ export default async function ReservationPage({
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-bold leading-snug text-navy-900">{offer.title}</p>
+                {/* Troisième des quatre endroits imposés par le cahier : le
+                    numéro suit le client du listing jusqu'au règlement. */}
+                <p className="mt-0.5 font-mono text-[11px] text-navy-400">
+                  Réf. {offer.reference}
+                </p>
                 <p className="mt-0.5 text-xs text-navy-500">
                   {offer.destination}, {offer.country}
                 </p>
                 <p className="mt-0.5 text-xs text-navy-500">
-                  {durationLabel(offer.nights, offer.category)} · {offer.board}
+                  {durationFull(offer.category, offer.days, offer.nights)} · {offer.board}
                 </p>
               </div>
             </div>

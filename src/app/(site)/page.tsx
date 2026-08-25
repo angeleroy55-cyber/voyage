@@ -9,6 +9,7 @@ import Benefits from "@/components/home/Benefits";
 import GiftCard from "@/components/home/GiftCard";
 import Testimonials from "@/components/home/Testimonials";
 import BlogSection from "@/components/home/BlogSection";
+import VideoSection from "@/components/home/VideoSection";
 import SearchWidget from "@/components/search/SearchWidget";
 import Reveal from "@/components/ui/Reveal";
 import {
@@ -17,6 +18,7 @@ import {
   getOffers,
   getPosts,
   getReviews,
+  getRuleOffers,
   getSearchCategories,
   getSettings,
 } from "@/server/catalogue";
@@ -26,18 +28,24 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [deals, all, destinations, reviews, posts, settings, categories] = await Promise.all([
-    getBestDeals(8),
-    getOffers(),
-    getDestinations(),
-    getReviews(6),
-    getPosts(4),
-    getSettings(),
-    getSearchCategories(),
-  ]);
+  const [deals, lastMinute, france, all, destinations, reviews, posts, settings, categories] =
+    await Promise.all([
+      getBestDeals(8),
+      getRuleOffers("derniere-minute", 8),
+      // Séjours France est mis en avant ici sans occuper une entrée de menu :
+      // c'est la compensation prévue par le cahier, la cible étant française à
+      // plus de la moitié, sans créer d'URL qui cannibaliserait Séjours.
+      getRuleOffers("france", 8),
+      getOffers(),
+      getDestinations(),
+      getReviews(6),
+      getPosts(4),
+      getSettings(),
+      getSearchCategories(),
+    ]);
 
   const topBooked = [...all]
-    .filter((offer) => offer.category !== "voitures")
+    .filter((offer) => offer.category !== "location-voiture")
     .sort((a, b) => b.reviews - a.reviews)
     .slice(0, 9);
 
@@ -55,9 +63,9 @@ export default async function HomePage() {
       subtitle: "Guide francophone, transferts et visites principales inclus.",
     },
     {
-      slug: "campings",
-      title: "Campings et clubs en famille",
-      subtitle: "Mobil-homes équipés, espaces aquatiques et clubs enfants.",
+      slug: "camping-escapades",
+      title: "Camping et escapades en famille",
+      subtitle: "Mobil-homes équipés, espaces aquatiques et week-ends prolongés.",
     },
   ];
 
@@ -100,12 +108,26 @@ export default async function HomePage() {
           <Selections />
         </Reveal>
 
+        {/* L'ordre suit le cahier : l'urgence d'abord, la remise ensuite, le
+            large en dernier. Chaque rayon renvoie vers sa propre page, qui
+            porte la liste complète. */}
+        {lastMinute.length > 0 && (
+          <Reveal>
+            <OfferRail
+              title="Départs de dernière minute"
+              subtitle="Moins de trois semaines avant le départ, aux derniers prix."
+              href="/derniere-minute"
+              offers={lastMinute}
+            />
+          </Reveal>
+        )}
+
         {deals.length > 0 && (
           <Reveal>
             <OfferRail
               title="Les meilleures remises du moment"
               subtitle="Stocks limités, prix valables jusqu'à épuisement."
-              href="/recherche/vol-hotel"
+              href="/bons-plans-promos"
               offers={deals}
             />
           </Reveal>
@@ -122,7 +144,7 @@ export default async function HomePage() {
             <OfferRail
               title={rail.title}
               subtitle={rail.subtitle}
-              href={`/recherche/${rail.slug}`}
+              href={`/${rail.slug}`}
               offers={rail.offers}
             />
           </Reveal>
@@ -141,11 +163,26 @@ export default async function HomePage() {
             <OfferRail
               title={rail.title}
               subtitle={rail.subtitle}
-              href={`/recherche/${rail.slug}`}
+              href={`/${rail.slug}`}
               offers={rail.offers}
             />
           </Reveal>
         ))}
+
+        {france.length > 0 && (
+          <Reveal>
+            <OfferRail
+              title="Séjours en France"
+              subtitle="Littoral, montagne et villes d'art, sans avion ni formalités."
+              href="/sejours-france"
+              offers={france}
+            />
+          </Reveal>
+        )}
+
+        <Reveal>
+          <VideoSection />
+        </Reveal>
 
         <Reveal>
           <Benefits />

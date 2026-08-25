@@ -12,6 +12,11 @@ const FIELDS = [
   { key: "site.name", label: "Nom du site", hint: "Affiché dans les métadonnées" },
   { key: "site.tagline", label: "Signature", hint: "Voyages • Séjours • Expériences" },
   { key: "site.phone", label: "Téléphone", hint: "Barre supérieure et pied de page" },
+  {
+    key: "site.whatsapp",
+    label: "Numéro WhatsApp",
+    hint: "Au format international, ex. +33 7 59 82 38 73. Vide, le bouton disparaît.",
+  },
   { key: "site.email", label: "E-mail de contact", hint: "" },
   { key: "hero.title", label: "Titre de la page d'accueil", hint: "" },
   { key: "hero.subtitle", label: "Sous-titre de la page d'accueil", hint: "" },

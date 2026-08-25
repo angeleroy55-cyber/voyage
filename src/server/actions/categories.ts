@@ -4,16 +4,23 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/server/prisma";
 import { requireSession } from "@/server/session";
-import { FORM_FIELDS, type FormFieldId } from "@/lib/constants";
+import {
+  CATEGORY_ACCENTS,
+  CATEGORY_KINDS,
+  FORM_FIELDS,
+  OFFER_RULES,
+  type FormFieldId,
+} from "@/lib/constants";
 import { slugify } from "@/lib/slug";
 
 /**
- * Types de voyage du moteur de recherche.
+ * Catégories de navigation.
  *
- * Une catégorie ne porte pas seulement un onglet : `formFields` décide des
- * champs affichés par le moteur, et `active` retire la catégorie du site sans
- * toucher aux offres. C'est le seul endroit du back-office où une saisie change
- * la forme d'un formulaire public, d'où les validations strictes ci-dessous.
+ * Une catégorie ne porte pas seulement un onglet : `slug` devient une URL de
+ * premier niveau, `kind` décide si elle possède ses offres ou les sélectionne à
+ * la lecture, `formFields` fixe les champs du moteur, et `active` la retire du
+ * site sans toucher aux offres. C'est l'endroit du back-office où une saisie a
+ * le plus d'effet sur le site public, d'où les validations strictes ci-dessous.
  */
 
 function refresh() {
@@ -49,11 +56,24 @@ export async function saveCategory(id: string | null, formData: FormData) {
     redirect(`/admin/categories?erreur=doublon${id ? `&ligne=${id}` : ""}`);
   }
 
+  const kind = String(formData.get("kind") ?? "catalogue");
+  const rule = String(formData.get("rule") ?? "");
+
   const data = {
     label,
     slug,
+    title: String(formData.get("title") ?? "").trim(),
     icon: String(formData.get("icon") ?? "pin").trim() || "pin",
     blurb: String(formData.get("blurb") ?? "").trim(),
+    kind: CATEGORY_KINDS.some((k) => k.id === kind) ? kind : "catalogue",
+    // La règle n'a de sens que pour un listing calculé : la conserver ailleurs
+    // laisserait une catégorie du catalogue avec un filtre fantôme.
+    rule: kind === "dynamique" && OFFER_RULES.some((r) => r.id === rule) ? rule : "",
+    accent: CATEGORY_ACCENTS.some((a) => a.id === formData.get("accent"))
+      ? String(formData.get("accent"))
+      : "navy",
+    isOverflow: formData.get("isOverflow") === "on",
+    showDiscountPercent: formData.get("showDiscountPercent") === "on",
     formFields: readFormFields(formData),
     active: formData.get("active") === "on",
   };

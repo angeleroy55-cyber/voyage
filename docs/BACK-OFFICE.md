@@ -11,7 +11,7 @@ devinent pas à la lecture de l'interface.
   (`src/server/auth.ts`). Elle porte l'identité, jamais de secret.
 - Deux rôles : `owner` et `editor`. `editor` gère tout le contenu ; `owner` seul
   administre l'équipe et efface des données personnelles.
-- Il doit rester en permanence au moins un `owner` actif — les actions qui
+- Il doit rester en permanence au moins un `owner` actif : les actions qui
   fermeraient cette porte sont refusées.
 
 En développement, `node scripts/dev-session.mjs` imprime un cookie de session
@@ -36,7 +36,7 @@ près qui sont volontaires.
 | `Subscriber` | `/admin/abonnes` | ajouter, retirer, filtrer par thème, exporter |
 | `AdminUser` | `/admin/equipe`, `/admin/profil` | CRUD, rôles, réinitialisation |
 | `Setting` | `/admin/parametres` | modifier, recalculer les compteurs |
-| `Favourite` | — | créé et supprimé par le voyageur seul ; visible en lecture sur la fiche client |
+| `Favourite` | aucune | créé et supprimé par le voyageur seul ; visible en lecture sur la fiche client |
 
 ## Points qui ne se devinent pas
 
@@ -59,7 +59,7 @@ plusieurs dizaines de cartes, où une agrégation par ligne coûterait cher à c
 affichage.
 
 `src/server/counters.ts` les remet à jour, et toutes les actions concernées
-l'appellent — modération et suppression d'un avis, création, modification,
+l'appellent : modération et suppression d'un avis, création, modification,
 changement de statut et suppression d'une offre. Un changement de destination
 recalcule les deux destinations, celle qu'on quitte et celle qu'on rejoint.
 
@@ -77,7 +77,7 @@ l'ouverture des ventes ne tombe pas à 0 €.
 
 ### Réservations : le montant est libre
 
-Le parcours public recalcule le total côté serveur — un prix envoyé par le
+Le parcours public recalcule le total côté serveur : un prix envoyé par le
 navigateur serait modifiable. Le back-office fait l'inverse : un conseiller saisit
 ce qu'il a négocié au téléphone, donc le total est ce qu'il indique. Les
 garde-fous portent ailleurs :
@@ -118,7 +118,7 @@ Si une traçabilité durable devient nécessaire, il faudra un modèle `AdminLog
 ## Conventions pour la suite
 
 - Toute action serveur commence par `await requireSession()`, puis
-  `revalidatePath("/", "layout")` et le chemin concerné — voir l'assistant
+  `revalidatePath("/", "layout")` et le chemin concerné, voir l'assistant
   `refresh()` de `src/server/actions/admin.ts`.
 - Un gestionnaire de route (`route.ts`, comme les exports CSV) **ne traverse pas
   le layout** : il porte sa propre garde de session.

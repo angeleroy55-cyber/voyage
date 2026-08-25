@@ -33,7 +33,7 @@ type BookingRow = {
  *
  * Le même formulaire sert à la création et à la modification : les règles
  * métier sont identiques, seule l'action serveur change. Le montant est libre,
- * contrairement au parcours public où il est recalculé — un dossier téléphonique
+ * contrairement au parcours public où il est recalculé : un dossier téléphonique
  * peut porter une remise négociée que le catalogue ignore.
  */
 export default function BookingForm({
@@ -57,7 +57,7 @@ export default function BookingForm({
           </option>
           {offers.map((offer) => (
             <option key={offer.id} value={offer.id}>
-              {offer.destination} — {offer.title} ({offer.price} €/pers.)
+              {offer.destination} · {offer.title} ({offer.price} €/pers.)
             </option>
           ))}
         </select>

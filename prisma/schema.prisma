@@ -15,23 +15,53 @@ datasource db {
 
 // ---- Catalogue ----
 
-/// Type de voyage : vol+hôtel, croisière, circuit… Pilote les onglets du moteur
-/// de recherche et les champs affichés dans le formulaire.
+/// Entrée de navigation : séjours, croisière, circuit, bons plans… Pilote le
+/// menu, les onglets du moteur de recherche et les champs du formulaire.
 model Category {
   id       String  @id @default(cuid())
   slug     String  @unique
   label    String
+  /// Intitulé long, pour le H1 et la balise title : « Séjours » en menu,
+  /// « Séjours & Vol + Hôtel » en tête de page. Vide, `label` sert aux deux.
+  title    String  @default("")
   icon     String  @default("pin")
   blurb    String  @default("")
+
+  /// Ce que la catégorie sait faire :
+  /// `catalogue`  : elle possède ses offres, rattachées par `Offer.categoryId` ;
+  /// `dynamique`  : listing calculé à la lecture (Bons Plans, Dernière Minute),
+  ///                aucune offre ne lui appartient en propre ;
+  /// `hub`        : renvoie vers une page dédiée (Destinations) ;
+  /// `editorial`  : page de contenu, sans offre.
+  kind String @default("catalogue")
+  /// Règle de sélection d'une catégorie `dynamique`, cf. OFFER_RULES
+  /// (src/lib/constants.ts) : promos, derniere-minute, tout-compris, france.
+  rule String @default("")
+
   /// Champs du moteur de recherche, séparés par des virgules
   /// (origin, destination, dates, travellers, driver).
   formFields String @default("destination,dates,travellers")
+
+  /// Hors des 10 entrées du menu principal : regroupée sous « Voir plus de
+  /// voyages ». La page reste publique et indexable, elle ne prend simplement
+  /// pas de place dans une barre limitée à 10 entrées (loi de Hick).
+  isOverflow Boolean @default(false)
+
+  /// Affichage du taux de remise (−20 %) sur les cartes de cette catégorie. Le
+  /// montant économisé en euros, lui, est affiché partout : le pourcentage est
+  /// réservé aux univers où la remise est l'argument principal.
+  showDiscountPercent Boolean @default(false)
+
+  /// Couleur du badge « type d'offre » en coin d'image, cf. CATEGORY_ACCENTS.
+  accent String @default("navy")
+
   position Int     @default(0)
   active   Boolean @default(true)
 
   offers Offer[]
 
   @@index([position])
+  @@index([isOverflow, position])
 }
 
 model Destination {
@@ -39,32 +69,62 @@ model Destination {
   slug        String  @unique
   name        String
   country     String  @default("")
+  /// Continent du hub /destinations, pour l'arborescence continent, pays, ville.
+  continent   String  @default("")
   region      String  @default("")
+  /// Texte éditorial affiché en tête de page : ce qu'on vient y chercher.
+  blurb       String  @default("")
   imageUrl    String  @default("")
   /// Identifiant Cloudinary, pour pouvoir supprimer le média à la source.
   imageId     String  @default("")
+  /// Crédit du visuel, quand sa licence l'exige (auteur et licence).
+  imageCredit String  @default("")
+  /// Page d'origine du visuel, vers laquelle pointe le crédit.
+  imageCreditUrl String @default("")
   fromPrice   Int     @default(0)
   offersCount Int     @default(0)
   featured    Boolean @default(false)
   position    Int     @default(0)
 
+  /// Même règle que pour une offre : le seed ne retire que ses propres lignes,
+  /// jamais une destination créée depuis le back-office.
+  origin String @default("admin")
+
   offers Offer[]
 
   @@index([featured, position])
+  @@index([continent, country])
 }
 
 model Offer {
   id            String  @id @default(cuid())
   slug          String  @unique
+  /// Numéro de référence public, au format GSJ-XXXXXX. Unique, attribué à la
+  /// création et jamais recyclé, même après suppression de l'offre : le support
+  /// client doit pouvoir retrouver un dossier des années plus tard. Le compteur
+  /// vit dans `Counter` (cf. src/server/references.ts).
+  reference     String  @unique
   categoryId    String
+  /// Sous-type à l'intérieur de la catégorie : `vol_hotel` et `tout_compris`
+  /// sont des séjours, pas des catégories. Sert de filtre, jamais d'URL propre,
+  /// pour ne pas créer deux adresses pour un même contenu.
+  subtype       String  @default("")
   destinationId String?
 
   title         String
   destination   String
   country       String  @default("")
   region        String  @default("")
+  /// Continent au sens du hub /destinations (Europe, Asie, Afrique du Nord…).
+  /// Distinct de `region`, qui reste un libellé commercial (Îles grecques,
+  /// Fluvial, Soleil d'hiver).
+  continent     String  @default("")
   departureCity String  @default("Paris")
 
+  /// Durée en jours et en nuits : « 8 jours / 7 nuits ». Les deux sont stockés
+  /// car l'écart n'est pas constant (un circuit compte ses jours de route, une
+  /// croisière ses nuits à bord).
+  days   Int    @default(0)
   nights Int    @default(0)
   stars  Int    @default(0)
   board  String @default("Sans repas")
@@ -72,11 +132,22 @@ model Offer {
   /// Prix par personne, en euros entiers : les tarifs du catalogue n'ont pas de
   /// centimes et l'entier évite les erreurs d'arrondi des flottants.
   price    Int
+  /// Prix de référence, relevé chez un concurrent, affiché barré au-dessus du
+  /// prix GoSéjour. L'économie en euros s'en déduit et n'est donc pas stockée.
   oldPrice Int?
+  /// Nom du site d'où vient `oldPrice`. Interne : jamais affiché au public, il
+  /// sert à tracer la politique de prix (10 à 30 % sous la référence).
+  referencePriceSource String @default("")
 
   rating       Float @default(0)
   reviewsCount Int   @default(0)
 
+  /// Date de départ ferme, celle qui ancre la décision sur la carte offre. Elle
+  /// pilote aussi le badge « Dernière minute », calculé à la lecture et jamais
+  /// saisi à la main.
+  departureDate DateTime?
+  /// Période commerciale en toutes lettres (« Départs de mars à octobre »),
+  /// affichée quand aucune date ferme n'est arrêtée.
   dates       String @default("")
   description String @default("")
 
@@ -91,6 +162,14 @@ model Offer {
   featured Boolean @default(false)
   position Int     @default(0)
 
+  /// D'où vient l'offre : `catalogue` pour une ligne posée par le seed,
+  /// `admin` pour une offre créée au back-office.
+  ///
+  /// Le seed ne retire que les siennes quand elles quittent le catalogue
+  /// source. Une offre saisie par l'équipe n'est jamais supprimée par un
+  /// `db:seed`, quelle que soit l'évolution du catalogue.
+  origin String @default("admin")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -104,6 +183,21 @@ model Offer {
   @@index([categoryId, status])
   @@index([status, featured])
   @@index([destinationId])
+  /// Listing « Dernière minute » : départs les plus proches d'abord.
+  @@index([status, departureDate])
+  /// Pages pays et ville du hub /destinations.
+  @@index([country, destination])
+}
+
+/// Compteurs monotones, une ligne par compteur (`offer.reference` aujourd'hui).
+///
+/// Une table plutôt qu'une séquence PostgreSQL : `prisma db push` ne sait pas
+/// créer de séquence nommée, et l'incrément passe ici par un `UPDATE ... SET
+/// value = value + 1` atomique, sûr même si deux offres sont créées en même
+/// temps. La valeur ne redescend jamais, donc aucun numéro n'est réattribué.
+model Counter {
+  key   String @id
+  value Int    @default(0)
 }
 
 model OfferImage {
@@ -113,6 +207,11 @@ model OfferImage {
   /// public_id Cloudinary ; vide pour un fichier servi depuis /public.
   publicId String @default("")
   alt      String @default("")
+  /// Auteur et licence, quand le visuel vient d'une banque libre qui les exige.
+  /// Vide pour une photo fournie par l'agence, qui n'a personne à créditer.
+  credit    String @default("")
+  /// Page d'origine du visuel, vers laquelle pointe le crédit.
+  creditUrl String @default("")
   position Int    @default(0)
 
   offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)

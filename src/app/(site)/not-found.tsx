@@ -29,7 +29,7 @@ export default async function NotFound() {
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/recherche/${category.id}`}
+            href={`/${category.id}`}
             className="flex items-center gap-2 rounded-xl border border-navy-200 px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
           >
             <Icon name={category.icon} className="size-4" />

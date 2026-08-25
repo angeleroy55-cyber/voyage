@@ -21,7 +21,7 @@ npm run dev        # terminal 2 : http://localhost:3000
 Si la base est vide (premier lancement, ou dossier `.pglite/` supprimé) :
 
 ```bash
-npm run setup      # db:push + db:seed
+npm run setup      # db:upgrade + db:push + db:seed
 ```
 
 **Accès au back-office** : http://localhost:3000/admin
@@ -45,10 +45,18 @@ supprimer ce dossier puis relancer `npm run setup`.
 | Script | Rôle |
 | --- | --- |
 | `npm run db:local` | Démarre PostgreSQL (PGlite) sur le port 5432 |
+| `npm run db:upgrade` | Reprises à faire avant `db:push` (voir ci-dessous) |
 | `npm run db:push` | Applique `prisma/schema.prisma` à la base |
 | `npm run db:seed` | Remplit la base (46 offres, destinations, avis, articles, compte admin) |
 | `npm run db:studio` | Explorateur Prisma Studio |
-| `npm run setup` | `db:push` puis `db:seed` |
+| `npm run photos` | Récupère les visuels du catalogue sur Wikimedia Commons |
+| `npm run setup` | `db:upgrade`, `db:push`, puis `db:seed` |
+
+`db:upgrade` prépare ce que `db push` ne sait pas faire seul : ajouter à une
+table déjà peuplée une colonne à la fois obligatoire et unique. C'est le cas du
+numéro de référence des offres. Le script remplit la colonne puis pose la
+contrainte sur des données déjà valides, ce qui évite d'avoir à passer
+`--accept-data-loss`. Il est sans effet sur une base neuve ou déjà à jour.
 
 Le seed est idempotent : il peut être relancé sans créer de doublons, et ne
 réécrit jamais le mot de passe d'un compte admin existant.
@@ -67,6 +75,93 @@ CLOUDINARY_API_SECRET=""
 Sans elles, les téléversements du back-office sont écrits dans
 `public/uploads/` : l'administration reste pleinement utilisable sans compte
 Cloudinary. Le statut effectif est affiché dans **Réglages → État du système**.
+
+## Le catalogue
+
+Le catalogue vit dans `src/lib/catalogue-source.ts` : 61 destinations et
+215 offres réparties sur les 10 catégories. Le seed le pose en base, rien n'est
+saisi à la main.
+
+**Ce qui est réel.** Les destinations, les pays, les villes, les régions, les
+itinéraires de circuits et de croisières, les lignes aériennes, les durées
+d'usage du marché, et les niveaux de prix, relevés en août 2026 sur Logitravel,
+Salaün Holidays, Carrefour Voyages, Edentour et Promoséjours.
+
+**Ce qui est générique.** Les intitulés d'hébergement. Une offre s'appelle
+« Resort tout compris à Costa Adeje », pas du nom d'un hôtel précis. Reprendre
+les fiches d'un concurrent serait une contrefaçon, et annoncer un établissement
+nommé qu'on ne peut pas confirmer serait pire. Les noms d'établissements
+arriveront avec le flux d'affiliation, qui les fournit avec la disponibilité et
+le prix du jour.
+
+**Les prix.** Chaque ligne du catalogue porte un prix de référence, celui du
+marché, et un taux de remise. Le prix GoSéjour s'en déduit, 10 % en dessous par
+défaut, jusqu'à 15 % sur les ventes flash. Le champ interne
+`referencePriceSource` garde la trace du relevé, sans jamais l'afficher.
+
+> Un point à trancher avant la mise en ligne : depuis la directive Omnibus,
+> un prix barré doit correspondre au prix le plus bas pratiqué par le vendeur
+> lui-même au cours des 30 derniers jours, et non au prix d'un concurrent.
+> Présenter le relevé concurrentiel comme prix barré expose à une sanction. Les
+> formulations conformes existent (« comparé à », « prix constaté ailleurs »,
+> hors du barré) et ne demandent qu'un changement d'affichage : la donnée, elle,
+> est déjà séparée en base.
+
+**Les visuels** viennent de Wikimedia Commons, sous licence libre réutilisable
+commercialement. `npm run photos` interroge l'API, écarte cartes, blasons,
+gravures anciennes et formats verticaux, préfère le domaine public aux licences
+à attribution, et écrit `src/lib/media/photos.json`, versionné. Le seed lit ce
+fichier : il ne fait aucun appel réseau, et deux installations donnent le même
+catalogue.
+
+Les crédits obligatoires sont stockés avec chaque image et affichés sous la
+galerie de la fiche offre. Ces photos illustrent la destination, jamais un
+établissement : elles tiennent la place des visuels du prestataire.
+
+```bash
+npm run photos            # complète ce qui manque
+npm run photos -- --tout  # refait tout le catalogue
+```
+
+## Catégories et navigation
+
+L'arborescence suit le cahier de catégorisation. Chaque catégorie devient une
+page à la racine du site, son slug étant l'URL : `/sejours`, `/circuits`,
+`/bons-plans-promos`. Les dix premières forment le menu, les suivantes portent
+`isOverflow` et se rangent sous « Voir plus de voyages », sans perdre ni leur
+page ni leurs liens depuis le pied de page.
+
+Une catégorie a l'un de ces quatre rôles, porté par son champ `kind` :
+
+| Rôle | Ce que la page affiche | Exemples |
+| --- | --- | --- |
+| `catalogue` | Les offres qui lui sont rattachées (`Offer.categoryId`) | Séjours, Circuits, Hôtels |
+| `dynamique` | Une sélection calculée à la lecture, selon `rule` | Bons Plans, Dernière Minute |
+| `hub` | Renvoie vers `/destinations` | Destinations |
+| `editorial` | Du contenu et un contact, sans catalogue | Sur-mesure, Assurance |
+
+Les catégories `dynamique` traversent le catalogue au lieu de le dupliquer :
+une même offre apparaît dans Bons Plans, dans Dernière Minute et dans sa
+catégorie de rattachement, mais ne possède qu'une seule adresse, celle de cette
+dernière. C'est la règle anti-cannibalisation du cahier, jamais deux URLs pour
+un même contenu. Même logique pour les sous-types (`vol_hotel`, `tout_compris`,
+`camping`) : ce sont des filtres, pas des pages.
+
+Le badge « Dernière minute » n'est pas un champ : il se calcule à chaque
+lecture à partir de `departureDate`, sous le seuil de `LAST_MINUTE_DAYS`
+(21 jours). Une offre ne peut donc pas rester annoncée comme urgente après son
+départ.
+
+**Numéro de référence.** Chaque offre porte un `GSJ-XXXXXX` unique, attribué à
+la création et jamais réattribué, même après suppression. Il ne vient pas d'un
+tirage aléatoire mais d'un compteur strictement croissant, stocké dans la table
+`Counter` (`src/server/references.ts`). Le back-office le cherche comme critère
+de recherche prioritaire : « 48213 » retrouve `GSJ-048213`.
+
+Les anciennes adresses `/recherche/[categorie]` redirigent en 308 vers les
+nouvelles, y compris les quatre slugs renommés (`vol-hotel` vers `sejours`,
+`campings` et `escapades` vers `camping-escapades`, `voitures` vers
+`location-voiture`). Voir `next.config.ts`.
 
 ## Parcours de réservation
 
@@ -93,6 +188,7 @@ depuis le prix en base, jamais repris du formulaire.
 | Section | Ce qu'on y fait |
 | --- | --- |
 | Tableau de bord | Indicateurs, CA confirmé, dernières réservations, avis à modérer |
+| Catégories | Slug, rôle, règle de listing, ordre du menu, débordement, couleur du badge, affichage de la remise en % |
 | Offres | CRUD complet, galerie d'images, statut brouillon/en ligne/archivée, mise en avant |
 | Destinations | Création, édition en ligne, visuel, mise en avant sur l'accueil |
 | Réservations | Suivi, confirmation/annulation, notes internes |
@@ -106,6 +202,28 @@ en HMAC-SHA256, valable 12 h. Toute page et toute action du back-office passent
 par `requireSession()`. Le message d'échec de connexion est identique que le
 compte soit inconnu ou le mot de passe faux, pour ne pas permettre d'énumérer
 les adresses.
+
+## Contacts et réseaux
+
+| Élément | Où | Réglable |
+| --- | --- | --- |
+| Téléphone | Barre supérieure et pied de page | Réglages, `site.phone` |
+| WhatsApp | Bouton vert du pied de page | Réglages, `site.whatsapp` |
+| E-mail | Pied de page | Réglages, `site.email` |
+| Réseaux sociaux | Pastilles du pied de page | `src/components/ui/BrandLogos.tsx` |
+| Vidéos | Bloc « En vidéo » de l'accueil | `src/components/home/VideoSection.tsx` |
+
+Le bouton WhatsApp ouvre une conversation avec un message pré-rempli. Vider le
+réglage le fait disparaître : mieux vaut pas de bouton qu'un bouton vers un
+numéro que personne ne surveille.
+
+Les pastilles sociales ne listent que les comptes réellement tenus. Pinterest et
+TikTok ont été retirés, faute de compte : ils pointaient vers l'accueil des
+plateformes, ce qui est l'inverse d'un signe de confiance.
+
+Les trois vidéos ne chargent rien de YouTube tant que le visiteur n'a pas
+cliqué : la carte n'affiche qu'une vignette, et le lecteur (`youtube-nocookie`)
+ne s'insère qu'au clic. Cela évite trois iframes de traceurs sur l'accueil.
 
 ## Marque
 
@@ -134,9 +252,13 @@ src/
 │  ├─ auth.ts           scrypt + jetons de session
 │  ├─ session.ts        cookies, gardes
 │  ├─ media.ts          Cloudinary / repli local
+│  ├─ references.ts     compteur des numéros GSJ
 │  ├─ catalogue.ts      lectures du site public
 │  └─ actions/          Server Actions (écritures)
-└─ lib/                 types, formatage, constantes
+└─ lib/
+   ├─ catalogue-source.ts  destinations et offres réelles
+   ├─ media/photos.json    visuels résolus, versionnés
+   └─ types, formatage, constantes
 ```
 
 Le site public lit la base via `src/server/catalogue.ts`, qui rend exactement
@@ -151,5 +273,6 @@ npm run lint    # 0 avertissement
 ```
 
 Sondes de diagnostic conservées : `scripts/probe-db.mts` (connexions
-concurrentes) et `scripts/probe-auth.mts` (chaîne d'authentification), à lancer
-avec `npx tsx scripts/<fichier>`.
+concurrentes), `scripts/probe-auth.mts` (chaîne d'authentification) et
+`scripts/probe-categorisation.mts` (arborescence, numéros de référence, dates de
+départ), à lancer avec `npx tsx scripts/<fichier>`.

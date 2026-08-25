@@ -31,6 +31,9 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
     ...(query
       ? {
           OR: [
+            // Le numéro d'abord : c'est ce qu'un client dicte au téléphone,
+            // et « 48213 » doit suffire à retrouver GSJ-048213.
+            { reference: { contains: query, mode: "insensitive" as const } },
             { title: { contains: query, mode: "insensitive" as const } },
             { destination: { contains: query, mode: "insensitive" as const } },
             { country: { contains: query, mode: "insensitive" as const } },
@@ -150,7 +153,10 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
                     {offer.title}
                   </Link>
                   <p className="truncate text-xs text-navy-500">
-                    {offer.destination}, {offer.country} · {offer.category.label}
+                    <span className="font-mono font-semibold text-navy-600">
+                      {offer.reference}
+                    </span>{" "}
+                    · {offer.destination}, {offer.country} · {offer.category.label}
                   </p>
                   <p className="mt-0.5 text-xs text-navy-400">
                     {offer._count.bookings} réservation(s) · {offer._count.reviews} avis

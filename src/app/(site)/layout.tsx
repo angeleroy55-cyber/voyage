@@ -1,7 +1,7 @@
 import Header from "@/components/site/Header";
 import Footer from "@/components/site/Footer";
 import SitePopups from "@/components/site/SitePopups";
-import { getSearchCategories, getSiteSettings } from "@/server/catalogue";
+import { getNavigation, getSiteSettings } from "@/server/catalogue";
 import { getCustomerSession } from "@/server/customer-session";
 
 // L'en-tête et le pied de page affichent des valeurs éditées au back-office :
@@ -9,9 +9,9 @@ import { getCustomerSession } from "@/server/customer-session";
 export const dynamic = "force-dynamic";
 
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
-  const [settings, categories, session] = await Promise.all([
+  const [settings, navigation, session] = await Promise.all([
     getSiteSettings(),
-    getSearchCategories(),
+    getNavigation(),
     getCustomerSession(),
   ]);
 
@@ -23,9 +23,18 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header settings={settings} categories={categories} customer={customer} />
+      <Header
+        settings={settings}
+        categories={navigation.main}
+        overflow={navigation.overflow}
+        customer={customer}
+      />
       <main className="flex-1">{children}</main>
-      <Footer settings={settings} categories={categories} />
+      <Footer
+        settings={settings}
+        categories={navigation.main}
+        overflow={navigation.overflow}
+      />
       <SitePopups />
     </div>
   );

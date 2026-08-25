@@ -12,7 +12,7 @@ const SLIDES = [
     kicker: "Ventes flash jusqu'à dimanche",
     title: "Une semaine au soleil à partir de 419 €",
     text: "Séjours tout compris en Méditerranée, vol et transferts inclus.",
-    href: "/recherche/vol-hotel",
+    href: "/sejours",
     cta: "Voir les séjours",
   },
   {
@@ -20,7 +20,7 @@ const SLIDES = [
     kicker: "Croisières",
     title: "Embarquez pour 8 jours en pension complète",
     text: "Méditerranée, Canaries ou fjords : cabine extérieure sans supplément.",
-    href: "/recherche/croisieres",
+    href: "/croisieres",
     cta: "Découvrir les croisières",
   },
   {
@@ -28,7 +28,7 @@ const SLIDES = [
     kicker: "Circuits accompagnés",
     title: "Le Japon, l'Islande ou le Pérou avec un guide francophone",
     text: "Itinéraires clés en main, groupes limités, entrées des sites incluses.",
-    href: "/recherche/circuits",
+    href: "/circuits",
     cta: "Choisir un circuit",
   },
 ];

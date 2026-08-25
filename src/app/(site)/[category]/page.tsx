@@ -1,11 +1,30 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import ResultsView from "@/components/search/ResultsView";
 import SearchWidget from "@/components/search/SearchWidget";
 import Icon from "@/components/ui/Icon";
-import { getCategories, getOffers, getSearchCategories } from "@/server/catalogue";
+import {
+  getCategories,
+  getCategoryBySlug,
+  getOffers,
+  getRuleOffers,
+  getSearchCategories,
+} from "@/server/catalogue";
 import type { InitialFilters, Sort } from "@/components/search/ResultsView";
 import type { CategoryId } from "@/lib/types";
+
+/**
+ * Page de catégorie, à la racine : /sejours, /circuits, /bons-plans-promos…
+ *
+ * Le cahier de catégorisation fait du slug de catégorie une URL de premier
+ * niveau, la structure de mots-clés étant le premier des trois piliers du
+ * projet. Les anciennes adresses /recherche/[categorie] redirigent en 308
+ * depuis `next.config.ts`.
+ *
+ * Un segment dynamique à la racine attrape tout ce qui n'est pas déjà une route
+ * statique (/aide, /blog, /destinations…), qui restent prioritaires. Un slug
+ * inconnu tombe donc ici, et rend un 404.
+ */
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +53,7 @@ function integer(value: string | string[] | undefined): number | undefined {
   return Number.isFinite(parsed) && parsed >= 0 ? Math.round(parsed) : undefined;
 }
 
-/** Liste séparée par des virgules : « Spa,Famille » → ["Spa", "Famille"]. */
+/** Liste séparée par des virgules : « Spa,Famille » donne ["Spa", "Famille"]. */
 function list(value: string | string[] | undefined): string[] {
   const raw = text(value);
   if (!raw) return [];
@@ -62,27 +81,36 @@ function readFilters(sp: Params): InitialFilters {
   };
 }
 
-export async function generateMetadata({ params }: PageProps<"/recherche/[category]">) {
+export async function generateMetadata({ params }: PageProps<"/[category]">) {
   const { category } = await params;
-  const found = (await getCategories()).find((c) => c.slug === category);
-  if (!found) return { title: "Recherche" };
-  return { title: `${found.label} : nos offres`, description: found.blurb };
+  const found = await getCategoryBySlug(category);
+  if (!found) return { title: "Page introuvable" };
+  return { title: `${found.title || found.label} : nos offres`, description: found.blurb };
 }
 
-export default async function SearchPage({
+export default async function CategoryPage({
   params,
   searchParams,
-}: PageProps<"/recherche/[category]">) {
+}: PageProps<"/[category]">) {
   const { category } = await params;
   const sp = await searchParams;
 
-  const categories = await getCategories();
-  const found = categories.find((c) => c.slug === category);
+  const found = await getCategoryBySlug(category);
   if (!found) notFound();
+  // Le hub a sa propre page ; la route statique la sert avant d'arriver ici,
+  // cette redirection ne couvre qu'un alias créé au back-office.
+  if (found.kind === "hub") redirect("/destinations");
 
-  const [offers, searchCategories] = await Promise.all([
-    getOffers(found.slug),
+  const heading = found.title || found.label;
+
+  const [offers, searchCategories, categories] = await Promise.all([
+    found.kind === "dynamique"
+      ? getRuleOffers(found.rule)
+      : found.kind === "catalogue"
+        ? getOffers(found.slug)
+        : Promise.resolve([]),
     getSearchCategories(),
+    getCategories(),
   ]);
 
   // L'URL porte l'intégralité des critères : elle est donc décodée ici, côté
@@ -98,6 +126,12 @@ export default async function SearchPage({
     flex: text(sp.flex),
   };
 
+  // Le moteur de recherche n'a d'onglet que pour les catégories du catalogue :
+  // une page « Bons plans » ouvre donc sur l'onglet Séjours, le plus large.
+  const activeTab = searchCategories.some((c) => c.id === found.slug)
+    ? found.slug
+    : (searchCategories[0]?.id ?? "sejours");
+
   return (
     <>
       <div className="border-b border-navy-100 bg-navy-50/60 py-5">
@@ -110,11 +144,11 @@ export default async function SearchPage({
               Accueil
             </Link>
             <Icon name="chevronRight" className="size-3" />
-            <span className="font-semibold text-navy-800">{found.label}</span>
+            <span className="font-semibold text-navy-800">{heading}</span>
           </nav>
           <SearchWidget
             categories={searchCategories}
-            initial={found.slug as CategoryId}
+            initial={activeTab as CategoryId}
             values={{ ...carried, q: filters.q }}
             compact
           />
@@ -123,12 +157,14 @@ export default async function SearchPage({
 
       <div className="mx-auto max-w-page px-4 py-8">
         <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">
-          {found.label}
+          {heading}
           {filters.q && <span className="text-navy-500"> · « {filters.q} »</span>}
         </h1>
         <p className="mb-7 mt-1 text-sm text-navy-600">{found.blurb}</p>
 
-        {offers.length === 0 ? (
+        {found.kind === "editorial" ? (
+          <EditorialBlock label={heading} blurb={found.blurb} />
+        ) : offers.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-navy-200 p-12 text-center text-sm text-navy-500">
             Aucune offre publiée dans cette catégorie pour le moment.
           </p>
@@ -145,11 +181,11 @@ export default async function SearchPage({
           <h2 className="text-base font-extrabold text-navy-900">Autres façons de voyager</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {categories
-              .filter((c) => c.slug !== found.slug)
+              .filter((c) => c.slug !== found.slug && c.kind !== "editorial")
               .map((c) => (
                 <Link
                   key={c.id}
-                  href={`/recherche/${c.slug}`}
+                  href={`/${c.slug}`}
                   className="flex items-center gap-2 rounded-xl border border-navy-200 bg-white px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
                 >
                   <Icon name={c.icon} className="size-4" />
@@ -160,5 +196,30 @@ export default async function SearchPage({
         </div>
       </div>
     </>
+  );
+}
+
+/**
+ * Page de service, sans catalogue derrière : le sur-mesure, les groupes,
+ * l'assurance. Elle renvoie vers un conseiller au lieu d'afficher une liste
+ * vide, l'offre se construisant au téléphone.
+ */
+function EditorialBlock({ label, blurb }: { label: string; blurb: string }) {
+  return (
+    <div className="rounded-2xl border border-navy-100 bg-white p-8 shadow-card">
+      <h2 className="text-lg font-extrabold text-navy-900">{label}, comment ça marche</h2>
+      <p className="mt-2 max-w-2xl text-sm text-navy-600">{blurb}</p>
+      <p className="mt-4 max-w-2xl text-sm text-navy-600">
+        Cette prestation se construit avec un conseiller : décrivez votre projet,
+        nous revenons vers vous sous 48 heures avec une proposition chiffrée.
+      </p>
+      <Link
+        href="/aide#contact"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-400 px-5 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
+      >
+        Parler à un conseiller
+        <Icon name="chevronRight" className="size-4" />
+      </Link>
+    </div>
   );
 }

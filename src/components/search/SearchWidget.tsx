@@ -7,7 +7,7 @@ import { DEPARTURE_CITIES } from "@/lib/data";
 import type { SearchCategory } from "@/server/catalogue";
 
 type Props = {
-  /** Types de voyage actifs, lus en base par la page qui rend le moteur. */
+  /** Catégories du catalogue, lues en base par la page qui rend le moteur. */
   categories: SearchCategory[];
   /** Slug de la categorie preselectionnee ; les slugs viennent de la base. */
   initial?: string;
@@ -40,7 +40,7 @@ function isoOr(value: string | undefined, fallback: string): string {
 
 export default function SearchWidget({
   categories,
-  initial = "vol-hotel",
+  initial = "sejours",
   values = {},
   compact = false,
 }: Props) {
@@ -84,7 +84,7 @@ export default function SearchWidget({
     params.set("au", end);
     params.set("voyageurs", String(adults + children));
     if (flexible) params.set("flex", "1");
-    router.push(`/recherche/${active}?${params.toString()}`);
+    router.push(`/${active}?${params.toString()}`);
   }
 
   return (
@@ -140,7 +140,7 @@ export default function SearchWidget({
             <Field
               className={fields.includes("origin") ? "lg:col-span-3" : "lg:col-span-4"}
               icon="pin"
-              label={active === "voitures" ? "Lieu de prise en charge" : "Destination"}
+              label={active === "location-voiture" ? "Lieu de prise en charge" : "Destination"}
             >
               <input
                 value={destination}
@@ -148,7 +148,7 @@ export default function SearchWidget({
                 placeholder={
                   active === "croisieres"
                     ? "Méditerranée, Caraïbes…"
-                    : active === "voitures"
+                    : active === "location-voiture"
                       ? "Aéroport, ville…"
                       : "Ville, région ou hôtel"
                 }
@@ -219,8 +219,8 @@ export default function SearchWidget({
           {fields.includes("driver") && (
             <Field className="lg:col-span-4" icon="users" label="Âge du conducteur">
               <select className="w-full bg-transparent text-[15px] font-semibold text-navy-900 outline-none">
-                <option>25 – 65 ans</option>
-                <option>21 – 24 ans</option>
+                <option>25 à 65 ans</option>
+                <option>21 à 24 ans</option>
                 <option>Plus de 65 ans</option>
               </select>
             </Field>

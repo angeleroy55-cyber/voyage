@@ -8,24 +8,34 @@ import {
   SOCIAL_NETWORKS,
   SocialLogo,
 } from "@/components/ui/BrandLogos";
-import { FOOTER_LINKS } from "@/lib/data";
-import type { SearchCategory, SiteSettings } from "@/server/catalogue";
+import { FOOTER_LINKS, whatsappLink } from "@/lib/data";
+import type { NavCategory, SiteSettings } from "@/server/catalogue";
 
 export default function Footer({
   settings,
   categories,
+  overflow = [],
 }: {
   settings: SiteSettings;
-  categories: SearchCategory[];
+  categories: NavCategory[];
+  overflow?: NavCategory[];
 }) {
-  // La colonne « Réserver » liste les types de voyage réellement actifs et
-  // pointe vers leurs pages de résultats ; les autres colonnes restent
-  // éditoriales et renvoient vers l'aide.
+  const whatsapp = whatsappLink(
+    settings.whatsapp,
+    "Bonjour, je vous contacte au sujet d'un voyage.",
+  );
+  // La colonne « Réserver » liste les catégories réellement actives et pointe
+  // vers leurs pages ; les autres colonnes restent éditoriales et renvoient
+  // vers l'aide. Le débordement y figure aussi : hors du menu principal pour
+  // ne pas le surcharger, mais lié depuis le pied de page, donc indexé.
   const columns = FOOTER_LINKS.map((column) =>
     column.title === "Réserver"
       ? {
           title: column.title,
-          links: categories.map((c) => ({ label: c.label, href: `/recherche/${c.id}` })),
+          links: [...categories, ...overflow].map((c) => ({
+            label: c.label,
+            href: c.href,
+          })),
         }
       : {
           title: column.title,
@@ -51,11 +61,27 @@ export default function Footer({
             </p>
             <a
               href={`tel:${settings.phone.replace(/\s/g, "")}`}
-              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-navy-800 hover:text-gold-700"
+              className="mt-4 flex items-center gap-2 text-sm font-semibold text-navy-800 hover:text-gold-700"
             >
               <Icon name="phone" className="size-4" />
               {settings.phone}
             </a>
+
+            {/* WhatsApp est ici un moyen de contact à part entière, pas une
+                icône de réseau social : il ouvre une conversation avec le
+                service client, d'où le bouton plein plutôt qu'une pastille. */}
+            {whatsapp && (
+              <a
+                href={whatsapp}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-3.5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400"
+              >
+                <SocialLogo id="whatsapp" className="size-4.5" />
+                Écrire sur WhatsApp
+                <span className="sr-only"> (nouvelle fenêtre)</span>
+              </a>
+            )}
           </div>
 
           {columns.map((col) => (

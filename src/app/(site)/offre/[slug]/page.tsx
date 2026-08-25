@@ -9,7 +9,7 @@ import OfferCard, { RatingBadge, Stars } from "@/components/ui/OfferCard";
 import { getFavouriteSlugs } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
 import { getCategories, getOfferBySlug, getOfferReviews, getOffers, getPublishedOfferSlugs } from "@/server/catalogue";
-import { durationLabel, photo } from "@/lib/format";
+import { departureLabel, durationFull, photo } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +62,7 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/of
           Accueil
         </Link>
         <Icon name="chevronRight" className="size-3" />
-        <Link href={`/recherche/${offer.category}`} className="hover:text-gold-700">
+        <Link href={`/${offer.category}`} className="hover:text-gold-700">
           {category?.label}
         </Link>
         <Icon name="chevronRight" className="size-3" />
@@ -80,6 +80,12 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/of
           <p className="mt-1.5 flex items-center gap-1.5 text-sm text-navy-600">
             <Icon name="pin" className="size-4 text-gold-600" />
             {offer.destination}, {offer.country} · {offer.region}
+          </p>
+          {/* Deuxième des quatre endroits où le cahier impose le numéro :
+              carte, fiche, tunnel, confirmation. C'est celui que le client a
+              sous les yeux quand il appelle le service client. */}
+          <p className="mt-1 font-mono text-xs text-navy-500">
+            Réf. <span className="font-semibold text-navy-700">{offer.reference}</span>
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -110,19 +116,40 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/of
           <div key={src} className="relative hidden aspect-4/3 md:block">
             <Image
               src={src}
-              alt={`${offer.title}, photo ${i + 2}`}
+              alt={`${offer.destination}, ${offer.country}, photo ${i + 2}`}
               fill
               sizes="25vw"
               className="object-cover"
             />
-            {i === 3 && (
-              <div className="absolute inset-0 grid place-items-center bg-navy-900/55 text-sm font-bold text-white">
-                +18 photos
-              </div>
-            )}
           </div>
         ))}
       </div>
+
+      {/* Mention obligatoire des visuels sous licence libre à attribution.
+          Elle est discrète mais présente : sans elle, la licence n'est pas
+          respectée, et une photo du domaine public n'en génère aucune. */}
+      {offer.imageCredits && offer.imageCredits.length > 0 && (
+        <p className="mt-2 text-[11px] leading-relaxed text-navy-400">
+          Photos de la destination :{" "}
+          {offer.imageCredits.map((credit, i) => (
+            <span key={`${credit.href}-${i}`}>
+              {i > 0 && " · "}
+              {credit.href ? (
+                <a
+                  href={credit.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="underline decoration-navy-200 underline-offset-2 hover:text-navy-600"
+                >
+                  {credit.text}
+                </a>
+              ) : (
+                credit.text
+              )}
+            </span>
+          ))}
+        </p>
+      )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div>
@@ -132,9 +159,15 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/of
 
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {[
-                { icon: "clock", label: "Durée", value: durationLabel(offer.nights, offer.category) },
+                { icon: "clock", label: "Durée", value: durationFull(offer.category, offer.days, offer.nights) },
                 { icon: "bed", label: "Formule", value: offer.board },
-                { icon: "calendar", label: "Disponibilité", value: offer.dates },
+                // La date ferme prime sur la période commerciale : c'est elle
+                // qui ancre la décision, comme sur la carte offre.
+                {
+                  icon: "calendar",
+                  label: offer.departureDate ? "Prochain départ" : "Disponibilité",
+                  value: departureLabel(offer.departureDate).replace("Départ le ", "") || offer.dates,
+                },
               ].map((s) => (
                 <div key={s.label} className="rounded-xl border border-navy-100 bg-white p-4">
                   <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-navy-500">

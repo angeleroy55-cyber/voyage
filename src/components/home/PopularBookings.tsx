@@ -6,7 +6,7 @@ import { durationLabel, price } from "@/lib/format";
 
 export default function PopularBookings({ offers }: { offers: Offer[] }) {
   const rows = [...offers]
-    .filter((o) => o.category !== "voitures")
+    .filter((o) => o.category !== "location-voiture")
     .sort((a, b) => b.reviews - a.reviews)
     .slice(0, 9);
 
