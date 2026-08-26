@@ -152,6 +152,11 @@ export default async function EditOfferPage({ params, searchParams }: PageProps<
             ...offer,
             destinationId: offer.destinationId,
             oldPrice: offer.oldPrice,
+            // Un champ `date` n'accepte que « AAAA-MM-JJ » ; la valeur est
+            // découpée en heure locale, celle qui a servi à la saisir.
+            departureDate: offer.departureDate
+              ? `${offer.departureDate.getFullYear()}-${String(offer.departureDate.getMonth() + 1).padStart(2, "0")}-${String(offer.departureDate.getDate()).padStart(2, "0")}`
+              : "",
           }}
           categories={categories}
           destinations={destinations}

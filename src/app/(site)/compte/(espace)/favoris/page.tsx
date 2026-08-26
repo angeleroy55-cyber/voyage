@@ -38,7 +38,7 @@ export default async function FavouritesPage() {
             le temps.
           </p>
           <Link
-            href="/recherche/vol-hotel"
+            href="/sejours"
             className="mt-4 inline-block rounded-xl bg-gold-400 px-6 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
           >
             Parcourir les séjours

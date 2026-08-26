@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
 import Modal from "@/components/ui/Modal";
-import { discount, durationLabel, price, ratingLabel } from "@/lib/format";
+import { discount, durationFull, price, ratingLabel } from "@/lib/format";
 import { galleryWithMediaFallback } from "@/lib/media";
 import type { Offer } from "@/lib/types";
 
@@ -151,7 +151,7 @@ export default function QuickView({ offer }: { offer: Offer }) {
 
             <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-navy-100 py-4 text-sm">
               {[
-                { label: "Durée", value: durationLabel(offer.nights, offer.category) },
+                { label: "Durée", value: durationFull(offer.category, offer.days, offer.nights) },
                 { label: "Formule", value: offer.board },
                 { label: "Départ de", value: offer.departureCity },
                 { label: "Disponibilité", value: offer.dates || "Toute l'année" },

@@ -1,8 +1,17 @@
 import "server-only";
 import { prisma } from "@/server/prisma";
-import { BRAND } from "@/lib/data";
+import { BRAND, CONTINENTS, continentOf } from "@/lib/data";
+import { LAST_MINUTE_DAYS } from "@/lib/constants";
 import { withMediaFallback } from "@/lib/media";
-import type { CategoryId, Destination, HeroSlide, Offer, Post, Review } from "@/lib/types";
+import type {
+  CategoryAccent,
+  CategoryId,
+  Destination,
+  HeroSlide,
+  Offer,
+  Post,
+  Review,
+} from "@/lib/types";
 import { listHeroSlides } from "@/server/hero-slides";
 
 /**
@@ -15,11 +24,15 @@ import { listHeroSlides } from "@/server/hero-slides";
 
 type OfferRow = {
   slug: string;
+  reference: string;
+  subtype: string;
   title: string;
   destination: string;
   country: string;
   region: string;
+  continent: string;
   departureCity: string;
+  days: number;
   nights: number;
   stars: number;
   board: string;
@@ -27,30 +40,45 @@ type OfferRow = {
   oldPrice: number | null;
   rating: number;
   reviewsCount: number;
+  departureDate: Date | null;
   dates: string;
   description: string;
   tags: string[];
   amenities: string[];
   highlights: string[];
   included: string[];
-  category: { slug: string };
-  images: { url: string }[];
+  category: { slug: string; label: string; accent: string; showDiscountPercent: boolean };
+  images: { url: string; credit: string; creditUrl: string }[];
 };
 
 function toOffer(row: OfferRow): Offer {
   const urls = row.images.map((image) => image.url);
   return {
     slug: row.slug,
+    reference: row.reference,
     category: row.category.slug as CategoryId,
+    categoryLabel: row.category.label,
+    categoryAccent: row.category.accent as CategoryAccent,
+    // L'affichage du taux de remise se règle par catégorie, jamais offre par
+    // offre : la carte porte donc le réglage de sa catégorie propriétaire.
+    showDiscountPercent: row.category.showDiscountPercent,
+    subtype: row.subtype,
     title: row.title,
     destination: row.destination,
     country: row.country,
     region: row.region,
+    continent: row.continent || continentOf(row.country),
     // Conservé pour le repli : une offre créée au back-office sans visuel
     // affiche un placeholder déterministe plutôt qu'un cadre vide.
     imageSeed: row.slug,
     image: urls[0],
     images: urls,
+    // Seuls les visuels dont la licence l'exige portent un crédit : la liste
+    // est donc souvent vide, et la fiche n'affiche alors aucune mention.
+    imageCredits: row.images
+      .filter((image) => image.credit)
+      .map((image) => ({ text: image.credit, href: image.creditUrl })),
+    days: row.days || row.nights + 1,
     nights: row.nights,
     stars: row.stars,
     board: row.board as Offer["board"],
@@ -59,6 +87,9 @@ function toOffer(row: OfferRow): Offer {
     oldPrice: row.oldPrice ?? undefined,
     rating: row.rating,
     reviews: row.reviewsCount,
+    // Sérialisée en `AAAA-MM-JJ` : la carte est un composant client, et une
+    // `Date` traversant la frontière serveur perdrait son fuseau au passage.
+    departureDate: row.departureDate ? isoDay(row.departureDate) : undefined,
     dates: row.dates,
     tags: row.tags,
     amenities: row.amenities,
@@ -68,13 +99,24 @@ function toOffer(row: OfferRow): Offer {
   };
 }
 
+/** Jour civil local, au format `AAAA-MM-JJ`. */
+function isoDay(date: Date): string {
+  const mois = String(date.getMonth() + 1).padStart(2, "0");
+  const jour = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${mois}-${jour}`;
+}
+
 const OFFER_SELECT = {
   slug: true,
+  reference: true,
+  subtype: true,
   title: true,
   destination: true,
   country: true,
   region: true,
+  continent: true,
   departureCity: true,
+  days: true,
   nights: true,
   stars: true,
   board: true,
@@ -82,21 +124,27 @@ const OFFER_SELECT = {
   oldPrice: true,
   rating: true,
   reviewsCount: true,
+  departureDate: true,
   dates: true,
   description: true,
   tags: true,
   amenities: true,
   highlights: true,
   included: true,
-  category: { select: { slug: true } },
-  images: { select: { url: true }, orderBy: { position: "asc" } },
+  category: {
+    select: { slug: true, label: true, accent: true, showDiscountPercent: true },
+  },
+  images: {
+    select: { url: true, credit: true, creditUrl: true },
+    orderBy: { position: "asc" },
+  },
 } as const;
 
 export async function getOffers(categorySlug?: string): Promise<Offer[]> {
   const rows = await prisma.offer.findMany({
     where: {
       status: "published",
-      // Désactiver un type de voyage au back-office doit suffire à retirer ses
+      // Désactiver une catégorie au back-office doit suffire à retirer ses
       // offres du site, sans avoir à les dépublier une par une.
       category: { active: true, ...(categorySlug ? { slug: categorySlug } : {}) },
     },
@@ -104,6 +152,68 @@ export async function getOffers(categorySlug?: string): Promise<Offer[]> {
     select: OFFER_SELECT,
   });
   return rows.map(toOffer);
+}
+
+/**
+ * Bornes du listing « Dernière minute » : d'aujourd'hui à J+21.
+ *
+ * Le seuil est calculé à chaque lecture, jamais stocké : une offre ne peut donc
+ * pas rester affichée comme urgente après sa date de départ, ni y entrer sans
+ * que personne ne la republie.
+ */
+function lastMinuteWindow(): { gte: Date; lte: Date } {
+  const debut = new Date();
+  debut.setHours(0, 0, 0, 0);
+  const fin = new Date(debut);
+  fin.setDate(fin.getDate() + LAST_MINUTE_DAYS);
+  return { gte: debut, lte: fin };
+}
+
+/**
+ * Offres d'une catégorie `dynamique`.
+ *
+ * Ces catégories ne possèdent aucune offre : elles traversent le catalogue
+ * selon leur règle. Une même offre nourrit donc Bons Plans, Dernière Minute et
+ * sa catégorie de rattachement sans être dupliquée, et garde une seule adresse,
+ * celle de sa catégorie propriétaire. C'est la règle anti-cannibalisation du
+ * cahier : jamais deux URLs pour un même contenu.
+ */
+export async function getRuleOffers(rule: string, take?: number): Promise<Offer[]> {
+  const commun = { status: "published", category: { active: true } } as const;
+
+  switch (rule) {
+    case "derniere-minute": {
+      const rows = await prisma.offer.findMany({
+        where: { ...commun, departureDate: lastMinuteWindow() },
+        // Le départ le plus proche d'abord : c'est l'urgence qui classe.
+        orderBy: { departureDate: "asc" },
+        take,
+        select: OFFER_SELECT,
+      });
+      return rows.map(toOffer);
+    }
+    case "tout-compris": {
+      const rows = await prisma.offer.findMany({
+        where: { ...commun, board: "Tout compris" },
+        orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+        take,
+        select: OFFER_SELECT,
+      });
+      return rows.map(toOffer);
+    }
+    case "france": {
+      const rows = await prisma.offer.findMany({
+        where: { ...commun, country: "France" },
+        orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+        take,
+        select: OFFER_SELECT,
+      });
+      return rows.map(toOffer);
+    }
+    case "promos":
+    default:
+      return getBestDeals(take);
+  }
 }
 
 export async function getFeaturedOffers(take = 8): Promise<Offer[]> {
@@ -116,16 +226,23 @@ export async function getFeaturedOffers(take = 8): Promise<Offer[]> {
   return rows.map(toOffer);
 }
 
-/** Meilleures remises : le tri se fait en mémoire, la remise étant calculée. */
-export async function getBestDeals(take = 8): Promise<Offer[]> {
+/**
+ * Meilleures remises, la plus forte d'abord.
+ *
+ * Le tri se fait en mémoire : la remise se déduit de deux colonnes de la même
+ * ligne, ce que le filtre de Prisma ne sait pas exprimer. Sans `take`, la liste
+ * complète est rendue, pour que la page Bons Plans n'écarte pas d'offres en
+ * silence ; les carrousels de l'accueil, eux, en demandent huit.
+ */
+export async function getBestDeals(take?: number): Promise<Offer[]> {
   const offers = await getOffers();
-  return offers
+  const deals = offers
     .filter((offer) => offer.oldPrice && offer.oldPrice > offer.price)
     .sort(
       (a, b) =>
         (b.oldPrice! - b.price) / b.oldPrice! - (a.oldPrice! - a.price) / a.oldPrice!,
-    )
-    .slice(0, take);
+    );
+  return take === undefined ? deals : deals.slice(0, take);
 }
 
 export async function getOfferBySlug(slug: string): Promise<Offer | null> {
@@ -157,7 +274,18 @@ export async function getBookingConfirmation(reference: string) {
       returnDate: true,
       customerEmail: true,
       customerId: true,
-      offer: { select: { slug: true, title: true, destination: true, country: true } },
+      offer: {
+        select: {
+          slug: true,
+          // Quatrième endroit imposé par le cahier : la confirmation. Le
+          // client repart avec deux numéros, celui de son dossier et celui de
+          // l'offre, et le service client retrouve les deux.
+          reference: true,
+          title: true,
+          destination: true,
+          country: true,
+        },
+      },
     },
   });
   if (!row) return null;
@@ -182,16 +310,68 @@ export async function getDestinations(onlyFeatured = false): Promise<Destination
     where: onlyFeatured ? { featured: true } : {},
     orderBy: [{ position: "asc" }, { name: "asc" }],
   });
-  return rows.map((row) => ({
+  return rows.map(toDestination);
+}
+
+function toDestination(row: {
+  slug: string;
+  name: string;
+  country: string;
+  continent: string;
+  region: string;
+  blurb: string;
+  imageUrl: string;
+  imageAlt: string;
+  imageCredit: string;
+  imageCreditUrl: string;
+  fromPrice: number;
+  offersCount: number;
+}): Destination {
+  return {
     slug: row.slug,
     name: row.name,
-    country: row.region || row.country,
+    country: row.country,
+    continent: row.continent || continentOf(row.country),
+    region: row.region,
+    blurb: row.blurb,
     imageSeed: row.slug,
+    // Le visuel vient de la base (Cloudinary) ; à défaut, un placeholder local
+    // plutôt qu'un service d'images distant.
     image: withMediaFallback(row.imageUrl),
     imageAlt: row.imageAlt || row.name,
+    imageCredit: row.imageCredit,
+    imageCreditUrl: row.imageCreditUrl,
     fromPrice: row.fromPrice,
     offersCount: row.offersCount,
-  }));
+  };
+}
+
+/**
+ * Hub Destinations : continent, puis destinations, dans l'ordre du cahier.
+ *
+ * Les continents vides ne sont pas rendus : une rubrique « Océanie » sans une
+ * seule offre derrière déçoit plus qu'elle ne promet. L'ordre suit celui de
+ * `CONTINENTS`, l'Europe d'abord, la cible étant française à plus de la moitié.
+ */
+export async function getDestinationTree(): Promise<
+  { id: string; label: string; destinations: Destination[] }[]
+> {
+  const rows = await prisma.destination.findMany({
+    orderBy: [{ offersCount: "desc" }, { name: "asc" }],
+  });
+  const destinations = rows.map(toDestination);
+
+  return CONTINENTS.map((continent) => ({
+    id: continent.id,
+    label: continent.label,
+    destinations: destinations.filter((d) => d.continent === continent.label),
+  })).filter((continent) => continent.destinations.length > 0);
+}
+
+/** Une destination par son slug, pour sa page dédiée. */
+export async function getDestinationBySlug(slug: string): Promise<Destination | null> {
+  const row = await prisma.destination.findUnique({ where: { slug } });
+  return row ? toDestination(row) : null;
 }
 
 export async function getReviews(take = 6): Promise<Review[]> {
@@ -281,26 +461,81 @@ export async function getCategories() {
   });
 }
 
+export async function getCategoryBySlug(slug: string) {
+  return prisma.category.findFirst({ where: { slug, active: true } });
+}
+
 /** Forme attendue par le moteur de recherche et la navigation (composants client). */
 export type SearchCategory = {
   id: string;
   label: string;
+  title: string;
   icon: string;
   blurb: string;
+  accent: string;
   form: string[];
 };
 
+/**
+ * Onglets du moteur de recherche.
+ *
+ * Seules les catégories `catalogue` y figurent : on ne cherche pas dans « Bons
+ * Plans », qui est une sélection de prix, ni dans « Destinations », qui est un
+ * hub. Y mettre les dix entrées du menu donnerait des onglets qui cherchent
+ * dans les mêmes offres sous deux angles différents.
+ */
 export async function getSearchCategories(): Promise<SearchCategory[]> {
   const rows = await getCategories();
-  return rows.map((row) => ({
+  return rows
+    .filter((row) => row.kind === "catalogue")
+    .map((row) => ({
+      id: row.slug,
+      label: row.label,
+      title: row.title || row.label,
+      icon: row.icon,
+      blurb: row.blurb,
+      accent: row.accent,
+      // Stocké en une seule colonne au format « origin,destination,dates » pour
+      // qu'ajouter un champ ne demande pas de table supplémentaire.
+      form: row.formFields.split(",").map((field) => field.trim()).filter(Boolean),
+    }));
+}
+
+/** Entrée de menu, telle que la consomment l'en-tête et le pied de page. */
+export type NavCategory = {
+  id: string;
+  label: string;
+  title: string;
+  icon: string;
+  blurb: string;
+  href: string;
+};
+
+/**
+ * Navigation principale et débordement.
+ *
+ * Le menu s'arrête à dix entrées : au-delà, le choix ralentit et la conversion
+ * baisse. Les catégories marquées `isOverflow` passent donc sous « Voir plus de
+ * voyages », sans rien perdre de leur visibilité pour les moteurs, qui suivent
+ * les liens dans les deux cas.
+ */
+export async function getNavigation(): Promise<{
+  main: NavCategory[];
+  overflow: NavCategory[];
+}> {
+  const rows = await getCategories();
+  const toNav = (row: (typeof rows)[number]): NavCategory => ({
     id: row.slug,
     label: row.label,
+    title: row.title || row.label,
     icon: row.icon,
     blurb: row.blurb,
-    // Stocké en une seule colonne au format « origin,destination,dates » pour
-    // qu'ajouter un champ ne demande pas de table supplémentaire.
-    form: row.formFields.split(",").map((field) => field.trim()).filter(Boolean),
-  }));
+    href: `/${row.slug}`,
+  });
+  return {
+    main: rows.filter((row) => !row.isOverflow).slice(0, 10).map(toNav),
+    overflow: rows.filter((row) => row.isOverflow).map(toNav),
+  };
 }
 
 /**
@@ -316,6 +551,10 @@ export async function getSiteSettings() {
     name: settings["site.name"] || BRAND.name,
     tagline: settings["site.tagline"] || BRAND.tagline,
     phone: settings["site.phone"] || BRAND.phone,
+    // Contrairement aux autres, la clé WhatsApp n'a pas de repli de marque :
+    // un bouton qui ouvre une conversation sur un numéro non surveillé coûte
+    // plus cher qu'un bouton absent. Vide, il ne s'affiche pas.
+    whatsapp: settings["site.whatsapp"] ?? BRAND.whatsapp,
     email: settings["site.email"] || BRAND.email,
   };
 }

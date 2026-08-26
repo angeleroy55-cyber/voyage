@@ -3,7 +3,7 @@ import Icon from "@/components/ui/Icon";
 /**
  * Retour d'une action du back-office. Les pages passent par ce composant plutôt
  * que par un bandeau maison à chaque fois, pour qu'un succès et un échec se
- * distinguent partout de la même façon — la couleur seule ne suffisant pas, le
+ * distinguent partout de la même façon, la couleur seule ne suffisant pas, le
  * pictogramme porte la même information.
  */
 export default function AdminNotice({

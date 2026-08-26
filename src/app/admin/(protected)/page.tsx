@@ -63,7 +63,7 @@ export default async function DashboardPage() {
     { label: "Réservations", value: bookings, hint: `${pendingBookings} à traiter`, href: "/admin/reservations", icon: "calendar" },
     { label: "Avis à modérer", value: pendingReviews, hint: "en attente", href: "/admin/avis", icon: "star" },
     { label: "Destinations", value: destinations, hint: `${subscribers} inscrit(s) newsletter`, href: "/admin/destinations", icon: "pin" },
-    { label: "Types de voyage", value: categories, hint: `${activeCategories} visible(s) sur le site`, href: "/admin/categories", icon: "route" },
+    { label: "Catégories", value: categories, hint: `${activeCategories} visible(s) sur le site`, href: "/admin/categories", icon: "route" },
     { label: "Clients", value: customers, hint: inactiveCustomers > 0 ? `${inactiveCustomers} compte(s) désactivé(s)` : "tous actifs", href: "/admin/clients", icon: "users" },
   ];
 

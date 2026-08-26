@@ -5,27 +5,32 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { DEPARTURE_CITIES } from "@/lib/data";
-import type { SearchCategory, SiteSettings } from "@/server/catalogue";
+import type { NavCategory, SiteSettings } from "@/server/catalogue";
 
 type Props = {
   settings: SiteSettings;
-  categories: SearchCategory[];
+  /** Les dix entrées du menu principal, dans l'ordre du back-office. */
+  categories: NavCategory[];
+  /** Ce qui se range sous « Voir plus de voyages ». */
+  overflow?: NavCategory[];
   /** Voyageur connecté, `null` sinon : pilote le bloc de droite de l'en-tête. */
   customer?: { name: string; firstName: string } | null;
 };
 
-export default function Header({ settings, categories, customer = null }: Props) {
+export default function Header({
+  settings,
+  categories,
+  overflow = [],
+  customer = null,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [city, setCity] = useState("Paris");
   const [moreOpen, setMoreOpen] = useState(false);
 
-  // La navigation suit les types de voyage actifs en base : désactiver une
-  // catégorie au back-office la retire du menu, ici comme sur mobile.
-  const primaryNav = [
-    { label: "Bons plans", href: "/recherche/vol-hotel?tri=remise" },
-    { label: "Destinations", href: "/destinations" },
-    ...categories.map((c) => ({ label: c.label, href: `/recherche/${c.id}` })),
-  ];
+  // La navigation suit les catégories actives en base : en désactiver une au
+  // back-office la retire du menu, ici comme sur mobile. L'ordre est celui du
+  // cahier, de la plus forte urgence vers la plus large.
+  const primaryNav = categories;
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -88,7 +93,7 @@ export default function Header({ settings, categories, customer = null }: Props)
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="rounded p-2 text-white transition hover:bg-white/10 lg:hidden"
+              className="rounded p-2 text-white transition hover:bg-white/10 xl:hidden"
               aria-label="Ouvrir le menu"
             >
               <Icon name="menu" className="size-6" />
@@ -97,45 +102,47 @@ export default function Header({ settings, categories, customer = null }: Props)
             <Logo name={settings.name} inverse />
           </div>
 
-          <nav className="hidden flex-1 items-center gap-1 lg:flex">
-            {primaryNav.slice(0, 7).map((item) => (
+          <nav className="hidden flex-1 items-center gap-0.5 xl:flex">
+            {primaryNav.map((item) => (
               <Link
-                key={item.label}
+                key={item.id}
                 href={item.href}
-                className="rounded-lg px-3 py-2 text-[15px] font-medium text-navy-700 transition hover:bg-navy-50 hover:text-navy-900"
+                className="rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50 hover:text-navy-900"
               >
                 {item.label}
               </Link>
             ))}
-            <div
-              className="relative"
-              onMouseEnter={() => setMoreOpen(true)}
-              onMouseLeave={() => setMoreOpen(false)}
-            >
-              <button
-                type="button"
-                onClick={() => setMoreOpen((v) => !v)}
-                className="flex items-center gap-1 rounded-lg px-3 py-2 text-[15px] font-medium text-navy-700 transition hover:bg-navy-50"
-                aria-expanded={moreOpen}
+            {overflow.length > 0 && (
+              <div
+                className="relative"
+                onMouseEnter={() => setMoreOpen(true)}
+                onMouseLeave={() => setMoreOpen(false)}
               >
-                Plus
-                <Icon name="chevronDown" className="size-4" />
-              </button>
-              {moreOpen && (
-                <div className="absolute left-0 top-full w-64 rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
-                  {categories.map((c) => (
-                    <Link
-                      key={c.id}
-                      href={`/recherche/${c.id}`}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-navy-700 hover:bg-navy-50"
-                    >
-                      <Icon name={c.icon} className="size-4.5 text-gold-600" />
-                      {c.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setMoreOpen((v) => !v)}
+                  className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50"
+                  aria-expanded={moreOpen}
+                >
+                  Voir plus
+                  <Icon name="chevronDown" className="size-4" />
+                </button>
+                {moreOpen && (
+                  <div className="absolute right-0 top-full w-72 rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
+                    {overflow.map((c) => (
+                      <Link
+                        key={c.id}
+                        href={c.href}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-navy-700 hover:bg-navy-50"
+                      >
+                        <Icon name={c.icon} className="size-4.5 text-gold-600" />
+                        {c.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
@@ -172,7 +179,7 @@ export default function Header({ settings, categories, customer = null }: Props)
 
       {/* Mobile drawer */}
       {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 xl:hidden">
           <div className="absolute inset-0 bg-navy-900/50" onClick={() => setOpen(false)} />
           <div className="absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col bg-white">
             <div className="flex h-16 items-center justify-between border-b border-navy-100 px-4">
@@ -190,7 +197,7 @@ export default function Header({ settings, categories, customer = null }: Props)
               {categories.map((c) => (
                 <Link
                   key={c.id}
-                  href={`/recherche/${c.id}`}
+                  href={c.href}
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-[15px] font-medium text-navy-800 hover:bg-navy-50"
                 >
@@ -198,9 +205,27 @@ export default function Header({ settings, categories, customer = null }: Props)
                   {c.label}
                 </Link>
               ))}
+              {overflow.length > 0 && (
+                <>
+                  <div className="my-3 border-t border-navy-100" />
+                  <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wide text-navy-500">
+                    Voir plus de voyages
+                  </p>
+                  {overflow.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={c.href}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] text-navy-700 hover:bg-navy-50"
+                    >
+                      <Icon name={c.icon} className="size-5 text-gold-600" />
+                      {c.label}
+                    </Link>
+                  ))}
+                </>
+              )}
               <div className="my-3 border-t border-navy-100" />
               {[
-                { label: "Destinations", href: "/destinations" },
                 { label: "Aide & FAQ", href: "/aide" },
                 customer
                   ? { label: "Mon espace client", href: "/compte/tableau-de-bord" }

@@ -1,24 +1,31 @@
-import { BOARDS } from "@/lib/constants";
+import { BOARDS, OFFER_SUBTYPES } from "@/lib/constants";
 
 type Category = { id: string; label: string };
 type Destination = { id: string; name: string };
 
 export type OfferFormValues = {
   slug?: string;
+  /** Numéro public, attribué à la création : affiché, jamais modifiable. */
+  reference?: string;
   title?: string;
   destination?: string;
   country?: string;
   region?: string;
   departureCity?: string;
   categoryId?: string;
+  subtype?: string;
   destinationId?: string | null;
+  days?: number;
   nights?: number;
   stars?: number;
   board?: string;
   price?: number;
   oldPrice?: number | null;
+  referencePriceSource?: string;
   rating?: number;
   reviewsCount?: number;
+  /** Format `AAAA-MM-JJ`, celui attendu par un champ date. */
+  departureDate?: string;
   dates?: string;
   description?: string;
   tags?: string[];
@@ -51,6 +58,18 @@ export default function OfferForm({
   return (
     <form action={action} className="space-y-5">
       <Card title="Identité de l'offre">
+        {/* Le numéro accompagne l'offre du listing à l'e-mail de confirmation :
+            il est affiché en tête de formulaire pour être retrouvé et dicté,
+            mais reste en lecture seule, sa règle étant de ne jamais changer. */}
+        <p className="mb-4 flex flex-wrap items-center gap-2 rounded-xl bg-navy-50 px-3.5 py-2.5 text-sm text-navy-700">
+          <span className="text-xs font-bold uppercase tracking-wide text-navy-500">
+            Numéro de référence
+          </span>
+          <span className="font-mono font-bold text-navy-900">
+            {values.reference ?? "attribué à l'enregistrement"}
+          </span>
+        </p>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Titre" required className="sm:col-span-2">
             <input
@@ -62,12 +81,26 @@ export default function OfferForm({
             />
           </Field>
 
-          <Field label="Type de voyage" required>
+          <Field label="Catégorie" required>
             <select name="categoryId" required defaultValue={values.categoryId} className={INPUT}>
               <option value="">Choisir…</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field
+            label="Sous-type"
+            hint="Filtre à l'intérieur de la catégorie, sans page propre"
+          >
+            <select name="subtype" defaultValue={values.subtype ?? ""} className={INPUT}>
+              <option value="">Aucun</option>
+              {OFFER_SUBTYPES.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
                 </option>
               ))}
             </select>
@@ -109,8 +142,17 @@ export default function OfferForm({
 
       <Card title="Séjour et tarif">
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Nuits / jours">
+          <Field label="Nuits">
             <input type="number" name="nights" min={0} defaultValue={values.nights ?? 7} className={INPUT} />
+          </Field>
+          <Field label="Jours" hint="Une nuit de plus par défaut">
+            <input
+              type="number"
+              name="days"
+              min={0}
+              defaultValue={values.days ?? (values.nights ?? 7) + 1}
+              className={INPUT}
+            />
           </Field>
           <Field label="Étoiles" hint="0 pour un vol ou une voiture">
             <input type="number" name="stars" min={0} max={5} defaultValue={values.stars ?? 4} className={INPUT} />
@@ -126,10 +168,33 @@ export default function OfferForm({
           <Field label="Prix par personne (€)" required>
             <input type="number" name="price" min={0} required defaultValue={values.price} className={INPUT} />
           </Field>
-          <Field label="Prix barré (€)" hint="Doit dépasser le prix courant">
+          <Field
+            label="Prix de référence (€)"
+            hint="Relevé chez un concurrent, affiché barré"
+          >
             <input type="number" name="oldPrice" min={0} defaultValue={values.oldPrice ?? ""} className={INPUT} />
           </Field>
-          <Field label="Disponibilité">
+          <Field
+            label="Source du prix de référence"
+            hint="Interne, jamais affichée au visiteur"
+          >
+            <input
+              name="referencePriceSource"
+              defaultValue={values.referencePriceSource}
+              placeholder="Nom du site relevé"
+              className={INPUT}
+            />
+          </Field>
+
+          <Field label="Date de départ" hint="Sous 21 jours, l'offre passe en dernière minute">
+            <input
+              type="date"
+              name="departureDate"
+              defaultValue={values.departureDate ?? ""}
+              className={INPUT}
+            />
+          </Field>
+          <Field label="Disponibilité" hint="Affichée à défaut de date ferme">
             <input
               name="dates"
               defaultValue={values.dates}

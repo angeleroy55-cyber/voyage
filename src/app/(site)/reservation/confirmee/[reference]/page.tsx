@@ -58,6 +58,13 @@ export default async function ConfirmationPage({
         <dl className="mt-3 grid gap-x-6 gap-y-3 sm:grid-cols-2">
           {[
             { label: "Séjour", value: booking.offer?.title ?? "Offre retirée du catalogue" },
+            // Quatrième et dernier endroit imposé par le cahier. Le client
+            // repart avec deux numéros : celui de son dossier, en tête de page,
+            // et celui de l'offre, qui identifie le produit chez le prestataire.
+            {
+              label: "Référence de l'offre",
+              value: booking.offer?.reference ?? "Non disponible",
+            },
             {
               label: "Destination",
               value: booking.offer

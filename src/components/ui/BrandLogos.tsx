@@ -15,8 +15,23 @@
 
 import { PAYMENT_METHODS, type PaymentId } from "@/lib/constants";
 
-type SocialId = "facebook" | "instagram" | "pinterest" | "youtube" | "tiktok" | "x";
+type SocialId =
+  | "facebook"
+  | "instagram"
+  | "pinterest"
+  | "youtube"
+  | "tiktok"
+  | "x"
+  | "whatsapp";
 
+/**
+ * Comptes réellement tenus, et eux seuls.
+ *
+ * Les pastilles Pinterest et TikTok pointaient vers l'accueil des plateformes,
+ * faute de compte : un lien de réassurance qui ne mène nulle part fait
+ * l'inverse de ce qu'on lui demande. Elles sont retirées jusqu'à l'ouverture
+ * des comptes correspondants.
+ */
 export const SOCIAL_NETWORKS: {
   id: SocialId;
   label: string;
@@ -26,19 +41,22 @@ export const SOCIAL_NETWORKS: {
   /** Dégradé officiel, quand la marque en utilise un plutôt qu'un aplat. */
   gradient?: string;
 }[] = [
-  { id: "facebook", label: "Facebook", href: "https://www.facebook.com/", color: "#0866FF" },
+  { id: "facebook", label: "Facebook", href: "https://www.facebook.com/govoyages", color: "#0866FF" },
   {
     id: "instagram",
     label: "Instagram",
-    href: "https://www.instagram.com/",
+    href: "https://www.instagram.com/go_voyages/",
     color: "#DD2A7B",
     gradient:
       "linear-gradient(45deg, #F58529 0%, #FEDA77 20%, #DD2A7B 55%, #8134AF 78%, #515BD4 100%)",
   },
-  { id: "pinterest", label: "Pinterest", href: "https://www.pinterest.fr/", color: "#E60023" },
-  { id: "youtube", label: "YouTube", href: "https://www.youtube.com/", color: "#FF0000" },
-  { id: "tiktok", label: "TikTok", href: "https://www.tiktok.com/", color: "#010101" },
-  { id: "x", label: "X", href: "https://x.com/", color: "#000000" },
+  { id: "x", label: "X", href: "https://x.com/Go_voyages", color: "#000000" },
+  {
+    id: "youtube",
+    label: "YouTube",
+    href: "https://www.youtube.com/@govoyages",
+    color: "#FF0000",
+  },
 ];
 
 /** Glyphe officiel du réseau, tracé dans la couleur courante. */
@@ -68,6 +86,8 @@ const SOCIAL_PATHS: Record<SocialId, string> = {
   tiktok:
     "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z",
   x: "M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z",
+  whatsapp:
+    "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.945c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.95 11.95 0 0 0 5.71 1.454h.006c6.585 0 11.946-5.359 11.949-11.945a11.87 11.87 0 0 0-3.48-8.408",
 };
 
 // La liste vit dans `src/lib/constants.ts` : elle est aussi lue par l'étape de

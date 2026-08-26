@@ -1,4 +1,4 @@
-# Prompt — accès total depuis le back-office
+# Prompt : accès total depuis le back-office
 
 Prompt prêt à coller pour compléter le back-office GoSéjour, afin qu'un
 administrateur connecté puisse tout piloter sans jamais toucher au code ni à la
@@ -11,7 +11,7 @@ les manques sont demandés.
 
 Tu travailles sur GoSéjour, une agence de voyages en ligne : Next.js 16 (App
 Router, Turbopack), React 19, Tailwind v4, Prisma 7 sur PostgreSQL. Lis
-`AGENTS.md` avant d'écrire quoi que ce soit — cette version de Next.js s'écarte
+`AGENTS.md` avant d'écrire quoi que ce soit : cette version de Next.js s'écarte
 de ce que tu connais, la doc fait foi et se trouve dans
 `node_modules/next/dist/docs/`.
 
@@ -41,14 +41,14 @@ totalité du modèle de données.
 
 - **Français partout** : libellés d'interface, messages d'erreur, commentaires.
 - Les commentaires expliquent **pourquoi**, jamais **quoi**. Densité et ton du
-  code existant — va lire `src/server/actions/admin.ts` et
+  code existant : va lire `src/server/actions/admin.ts` et
   `src/app/(site)/compte/(espace)/layout.tsx` avant de commenter.
 - Palette : uniquement les tokens `navy-*`, `gold-*`, `teal-*` de
   `src/app/globals.css`. Le texte sur fond bleu est en **blanc pur**, jamais un
   blanc translucide. Toute nouvelle teinte doit tenir le contraste WCAG AA.
 - Actions serveur : `"use server"` en tête de fichier, `await requireSession()`
   en première ligne de chaque action, puis `revalidatePath("/", "layout")` et
-  `revalidatePath(<page concernée>)` — reprends l'assistant `refresh()` de
+  `revalidatePath(<page concernée>)`. Reprends l'assistant `refresh()` de
   `src/server/actions/admin.ts`.
 - Les statuts restent des `String` en base, validés contre `src/lib/constants.ts`.
   N'introduis pas d'enum Prisma.
@@ -58,7 +58,7 @@ totalité du modèle de données.
 
 ## Travail demandé
 
-### 1. Catégories — la lacune la plus bloquante
+### 1. Catégories : la lacune la plus bloquante
 
 Le modèle `Category` (`prisma/schema.prisma`) n'a **aucune page ni action**. Les
 catégories pilotent les onglets du moteur de recherche et les champs de
@@ -105,7 +105,7 @@ Le modèle `Customer` n'est visible nulle part. Crée `/admin/clients`.
 
 Ajoute l'entrée au menu, après « Réservations ».
 
-### 3. Réservations — passer du suivi à la gestion
+### 3. Réservations : passer du suivi à la gestion
 
 Aujourd'hui `src/server/actions/admin.ts` ne permet que `setBookingStatus` et
 `saveBookingNotes`. Complète :
@@ -114,7 +114,7 @@ Aujourd'hui `src/server/actions/admin.ts` ne permet que `setBookingStatus` et
   choix de l'offre, coordonnées, rattachement facultatif à un `Customer`
   existant, voyageurs, dates, assurance, montant, moyen de paiement,
   échéancier. La référence suit le format `GS-XXXXXX` déjà produit par
-  `createBooking()` dans `src/server/actions/public.ts` — factorise plutôt que
+  `createBooking()` dans `src/server/actions/public.ts`, factorise plutôt que
   de dupliquer.
 - **Modifier** une réservation existante : mêmes champs.
 - **Enregistrer un règlement** : incrémenter `paidAmount`, afficher le reste dû
@@ -125,12 +125,12 @@ Aujourd'hui `src/server/actions/admin.ts` ne permet que `setBookingStatus` et
 - Filtres : statut, période, offre, moyen de paiement, et « soldées / non
   soldées ».
 
-### 4. Abonnés — sortir de la lecture seule
+### 4. Abonnés : sortir de la lecture seule
 
 `/admin/abonnes` n'affiche que des chiffres. Ajoute la suppression (obligation
 RGPD), l'export CSV filtré par centre d'intérêt, et l'ajout manuel d'une adresse.
 
-### 5. Compteurs dénormalisés — corriger un défaut existant
+### 5. Compteurs dénormalisés : corriger un défaut existant
 
 Plusieurs champs sont stockés au lieu d'être calculés, et **ne sont jamais mis à
 jour** :

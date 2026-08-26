@@ -10,7 +10,7 @@ import { prisma } from "@/server/prisma";
  *
  * La contrepartie, c'est qu'ils se périment en silence. Toute action du
  * back-office qui touche un avis, une offre ou son rattachement doit donc
- * appeler la fonction correspondante — et `/admin/parametres` expose une reprise
+ * appeler la fonction correspondante, et `/admin/parametres` expose une reprise
  * complète pour rattraper les écarts hérités.
  */
 
@@ -64,8 +64,8 @@ export async function recomputeDestinationStats(destinationId: string | null | u
  * Nombre de lignes dont le compteur stocké diverge de la réalité.
  *
  * Sert à annoncer l'effet de la reprise avant de la lancer : les valeurs du jeu
- * de démonstration sont éditoriales — des chiffres d'affichage saisis par le
- * seed, sans avis ni offre derrière — et la reprise les remplacerait par les
+ * de démonstration sont éditoriales (des chiffres d'affichage saisis par le
+ * seed, sans avis ni offre derrière), et la reprise les remplacerait par les
  * valeurs réelles, le plus souvent nulles. Compter d'abord évite de vider le
  * catalogue sur un clic.
  *

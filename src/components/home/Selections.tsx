@@ -4,30 +4,30 @@ import Icon from "@/components/ui/Icon";
 const SELECTIONS = [
   {
     label: "Départs de dernière minute",
-    hint: "Sous 30 jours",
+    hint: "Sous 21 jours",
     icon: "bolt",
-    href: "/recherche/vol-hotel?tri=prix",
+    href: "/derniere-minute",
     tone: "bg-gold-50 text-gold-700 border-gold-200",
   },
   {
     label: "Les meilleures remises",
     hint: "Jusqu'à −35 %",
     icon: "tag",
-    href: "/recherche/vol-hotel?tri=remise",
+    href: "/bons-plans-promos",
     tone: "bg-teal-50 text-teal-600 border-teal-100",
   },
   {
     label: "Soleil d'arrière-saison",
     hint: "Septembre & octobre",
     icon: "compass",
-    href: "/recherche/hotels?tri=note",
+    href: "/hotels?tri=note",
     tone: "bg-amber-50 text-amber-700 border-amber-100",
   },
   {
     label: "Week-ends prolongés",
     hint: "2 à 3 nuits",
     icon: "sparkles",
-    href: "/recherche/escapades",
+    href: "/camping-escapades",
     tone: "bg-navy-50 text-navy-700 border-navy-100",
   },
 ];

@@ -42,7 +42,7 @@ function Tile({
 }) {
   return (
     <Link
-      href={`/recherche/vol-hotel?q=${encodeURIComponent(destination.name)}`}
+      href={`/sejours?q=${encodeURIComponent(destination.name)}`}
       className={`group relative overflow-hidden rounded-2xl ${
         short ? "aspect-16/9" : "aspect-4/3 md:aspect-auto md:min-h-44"
       } ${className}`}
