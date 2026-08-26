@@ -108,6 +108,27 @@ function Price({ offer, size }: { offer: Offer; size: "sm" | "lg" }) {
   );
 }
 
+/**
+ * Pastille d'économie, en coin d'image.
+ *
+ * Le montant en euros plutôt que le pourcentage : « 378 € de moins » se
+ * comprend sans calcul, là où « 29 % » suppose de connaître le prix de départ.
+ * Le taux ne s'ajoute que là où la remise est l'argument principal, réglé
+ * catégorie par catégorie au back-office.
+ */
+function SavingsBadge({ offer }: { offer: Offer }) {
+  const economie = savings(offer.price, offer.oldPrice);
+  if (economie === null) return null;
+  const taux = offer.showDiscountPercent ? discount(offer.price, offer.oldPrice) : null;
+
+  return (
+    <span className="absolute bottom-3 left-3 z-10 rounded-lg bg-rose-600 px-2.5 py-1.5 text-xs font-extrabold text-white shadow-card">
+      &minus;{price(economie)}
+      {taux !== null && <span className="ml-1 font-bold opacity-90">({taux}&nbsp;%)</span>}
+    </span>
+  );
+}
+
 export default function OfferCard({
   offer,
   layout = "grid",
@@ -154,6 +175,7 @@ export default function OfferCard({
               )}
             </div>
           </Link>
+          <SavingsBadge offer={offer} />
           <QuickView offer={offer} />
         </div>
 
@@ -230,6 +252,7 @@ export default function OfferCard({
             )}
           </div>
         </Link>
+        <SavingsBadge offer={offer} />
         <QuickView offer={offer} />
       </div>
 

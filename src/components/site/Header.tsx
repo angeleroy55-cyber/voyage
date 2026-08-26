@@ -28,7 +28,7 @@ export default function Header({
   const [moreOpen, setMoreOpen] = useState(false);
   // La ville vient du contexte : elle est détectée, mémorisée, et partagée avec
   // le moteur de recherche de la page.
-  const { city, setCity, detected } = useDepartureCity();
+  const { city, setCity, detected, canLocate, locate, locating } = useDepartureCity();
 
   // La navigation suit les catégories actives en base : en désactiver une au
   // back-office la retire du menu, ici comme sur mobile. L'ordre est celui du
@@ -68,7 +68,7 @@ export default function Header({
               {/* Repérée automatiquement, et modifiable : la mention le dit,
                   pour que personne ne se demande pourquoi sa ville est là. */}
               {detected && (
-                <span className="text-gold-300" title="Détectée depuis votre connexion">
+                <span className="text-gold-300" title="Détectée depuis votre position">
                   Vous partez de
                 </span>
               )}
@@ -88,6 +88,21 @@ export default function Header({
                   </optgroup>
                 ))}
               </select>
+              {/* Rattrapage manuel : celui qui a refusé la première fois, ou
+                  dont la position a changé, peut la redemander sans avoir à
+                  fouiller dans les réglages de son navigateur. */}
+              {canLocate && (
+                <button
+                  type="button"
+                  onClick={locate}
+                  disabled={locating}
+                  title="Utiliser ma position"
+                  className="rounded p-0.5 text-white/70 transition hover:text-gold-300 disabled:opacity-50"
+                >
+                  <Icon name="compass" className={`size-3.5 ${locating ? "animate-pulse" : ""}`} />
+                  <span className="sr-only">Utiliser ma position</span>
+                </button>
+              )}
             </label>
             <span className="flex items-center gap-1.5">
               <Icon name="globe" className="size-3.5" />

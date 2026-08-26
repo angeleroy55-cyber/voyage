@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { PaymentLogo } from "@/components/ui/BrandLogos";
-import { getBookingConfirmation } from "@/server/catalogue";
+import { getBankDetails, getBookingConfirmation } from "@/server/catalogue";
 import { getCustomerSession } from "@/server/customer-session";
 import { PAYMENT_METHODS, paymentLabel, type PaymentId } from "@/lib/constants";
 import { dateRange, price } from "@/lib/format";
@@ -29,6 +29,10 @@ export default async function ConfirmationPage({
 
   const session = await getCustomerSession();
   const known = PAYMENT_METHODS.some((m) => m.id === booking.paymentMethod);
+
+  // Les coordonnées bancaires ne sont lues que pour un dossier réglé par
+  // virement : elles ne vont pas vers une page qui n'a pas à les montrer.
+  const banque = booking.paymentMethod === "sepa" ? await getBankDetails() : null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -110,6 +114,48 @@ export default async function ConfirmationPage({
             </span>
           </span>
         </div>
+
+        {/* Coordonnées du virement, montrées au seul client qui l'a choisi et
+            sur son propre dossier. La référence est rappelée comme libellé :
+            sans elle, un virement arrive sans qu'on sache à quoi le rattacher. */}
+        {banque && (
+          <div className="mt-4 rounded-xl border border-navy-200 bg-white p-4">
+            <h3 className="text-sm font-extrabold text-navy-900">
+              Coordonnées pour votre virement
+            </h3>
+            <dl className="mt-3 space-y-2 text-sm">
+              {banque.holder && (
+                <div className="flex flex-wrap justify-between gap-2">
+                  <dt className="text-navy-500">Titulaire</dt>
+                  <dd className="font-semibold text-navy-900">{banque.holder}</dd>
+                </div>
+              )}
+              <div className="flex flex-wrap justify-between gap-2">
+                <dt className="text-navy-500">IBAN</dt>
+                <dd className="font-mono font-semibold tracking-wide text-navy-900">
+                  {banque.iban}
+                </dd>
+              </div>
+              {banque.bic && (
+                <div className="flex flex-wrap justify-between gap-2">
+                  <dt className="text-navy-500">BIC</dt>
+                  <dd className="font-mono font-semibold tracking-wide text-navy-900">
+                    {banque.bic}
+                  </dd>
+                </div>
+              )}
+              <div className="flex flex-wrap justify-between gap-2 border-t border-navy-100 pt-2">
+                <dt className="text-navy-500">Libellé à indiquer</dt>
+                <dd className="font-semibold text-navy-900">{booking.reference}</dd>
+              </div>
+            </dl>
+            <p className="mt-3 text-xs leading-relaxed text-navy-500">
+              N&apos;effectuez le virement qu&apos;après notre confirmation de disponibilité. Nous ne
+              vous demanderons jamais ces coordonnées par téléphone, et elles ne changent pas :
+              en cas de doute sur un message reçu, appelez-nous avant de payer.
+            </p>
+          </div>
+        )}
 
         <p className="mt-3 rounded-xl bg-navy-50 p-3 text-xs text-navy-600">
           Aucun montant n&apos;a été débité. Le règlement par{" "}

@@ -8,6 +8,7 @@ import {
   subtypeBlurb,
   subtypeLabel,
 } from "@/lib/constants";
+import { seasonRange, upcomingSeason } from "@/lib/seasons";
 import type {
   CategoryAccent,
   CategoryId,
@@ -217,6 +218,134 @@ export async function getRuleOffers(rule: string, take?: number): Promise<Offer[
     default:
       return getBestDeals(take);
   }
+}
+
+/**
+ * Bandeaux d'accroche de la page d'accueil.
+ *
+ * Ils sont construits depuis le catalogue et non écrits à la main : l'image est
+ * celle d'une offre réelle, le prix est celui qu'on trouvera en cliquant, et la
+ * période mise en avant suit le calendrier. Un bandeau rédigé en dur annonce
+ * tôt ou tard un prix qui n'existe plus, ou une saison passée.
+ *
+ * L'accroche tient en cinq mots au plus. Au-delà, elle n'est pas lue : sur une
+ * image, on retient une promesse, pas une phrase.
+ */
+export type HeroSlide = {
+  id: string;
+  /** Surtitre : l'urgence ou le contexte, en trois ou quatre mots. */
+  kicker: string;
+  /** Promesse principale, cinq mots au plus. */
+  title: string;
+  /** Prix d'appel réel, déjà remisé. */
+  fromPrice: number;
+  /** Ce que le prix achète : « 8 jours, tout compris ». */
+  detail: string;
+  href: string;
+  cta: string;
+  image: string;
+  alt: string;
+};
+
+export async function getHeroSlides(): Promise<HeroSlide[]> {
+  const saison = upcomingSeason();
+  const { gte, lte } = seasonRange(saison);
+
+  const commun = { status: "published", category: { active: true } } as const;
+  const parPrix = [{ price: "asc" as const }];
+
+  const [saisonniere, derniereMinute, croisiere, circuit] = await Promise.all([
+    prisma.offer.findFirst({
+      where: { ...commun, departureDate: { gte, lte } },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+    prisma.offer.findFirst({
+      where: { ...commun, departureDate: lastMinuteWindow() },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+    prisma.offer.findFirst({
+      where: { ...commun, category: { slug: "croisieres", active: true } },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+    prisma.offer.findFirst({
+      where: { ...commun, category: { slug: "circuits", active: true } },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+  ]);
+
+  // La plus forte remise du catalogue, calculée en mémoire : la comparaison de
+  // deux colonnes d'une même ligne échappe au filtre de Prisma.
+  const promo = (await getBestDeals(1))[0] ?? null;
+
+  const slides: (HeroSlide | null)[] = [
+    saisonniere &&
+      construireSlide(toOffer(saisonniere), {
+        id: `saison-${saison.id}`,
+        kicker: "Prochaine période à réserver",
+        title: saison.label,
+        href: `/bons-plans-promos?saison=${saison.id}`,
+        cta: "Voir les départs",
+      }),
+    promo &&
+      construireSlide(promo, {
+        id: "promo",
+        kicker: "Vente flash en cours",
+        title: `Jusqu'à ${discountOf(promo)} % de remise`,
+        href: "/bons-plans-promos",
+        cta: "Voir les bons plans",
+      }),
+    derniereMinute &&
+      construireSlide(toOffer(derniereMinute), {
+        id: "derniere-minute",
+        kicker: "Départ sous trois semaines",
+        title: "Dernière minute",
+        href: "/derniere-minute",
+        cta: "Partir maintenant",
+      }),
+    croisiere &&
+      construireSlide(toOffer(croisiere), {
+        id: "croisieres",
+        kicker: "Pension complète incluse",
+        title: "Croisières au départ d'Europe",
+        href: "/croisieres",
+        cta: "Découvrir les croisières",
+      }),
+    circuit &&
+      construireSlide(toOffer(circuit), {
+        id: "circuits",
+        kicker: "Guide francophone",
+        title: "Circuits accompagnés",
+        href: "/circuits",
+        cta: "Choisir un circuit",
+      }),
+  ];
+
+  // Cinq bandeaux au plus : au-delà, les derniers ne sont jamais vus.
+  return slides.filter((slide): slide is HeroSlide => slide !== null).slice(0, 5);
+}
+
+/** Remise d'une offre, arrondie, pour l'accroche d'un bandeau. */
+function discountOf(offer: Offer): number {
+  if (!offer.oldPrice || offer.oldPrice <= offer.price) return 0;
+  return Math.round(((offer.oldPrice - offer.price) / offer.oldPrice) * 100);
+}
+
+function construireSlide(
+  offer: Offer,
+  base: { id: string; kicker: string; title: string; href: string; cta: string },
+): HeroSlide {
+  const nuits = offer.nights > 0 ? `${offer.days ?? offer.nights + 1} jours` : "aller-retour";
+  return {
+    ...base,
+    fromPrice: offer.price,
+    detail: `${offer.destination}, ${nuits}`,
+    image: offer.image ?? photo(offer.slug, 1600, 700),
+    alt: `${offer.destination}, ${offer.country}`,
+  };
 }
 
 export async function getFeaturedOffers(take = 8): Promise<Offer[]> {
@@ -611,6 +740,32 @@ export async function getSiteSettings() {
     // plus cher qu'un bouton absent. Vide, il ne s'affiche pas.
     whatsapp: settings["site.whatsapp"] ?? BRAND.whatsapp,
     email: settings["site.email"] || BRAND.email,
+  };
+}
+
+/**
+ * Coordonnées du virement bancaire.
+ *
+ * Aucune valeur de repli : sans IBAN renseigné au back-office, le virement
+ * n'est tout simplement pas proposé. Mieux vaut un moyen de paiement absent
+ * qu'un RIB erroné, qui envoie l'argent d'un client on ne sait où.
+ *
+ * Cette fonction est appelée sur la confirmation d'un dossier réglé par
+ * virement, jamais sur une page publique : un IBAN affiché en clair sur un
+ * site ouvert se retrouve dans les campagnes de faux virements.
+ */
+export async function getBankDetails(): Promise<{
+  holder: string;
+  iban: string;
+  bic: string;
+} | null> {
+  const settings = await getSettings();
+  const iban = (settings["payment.iban"] ?? "").trim();
+  if (!iban) return null;
+  return {
+    holder: (settings["payment.holder"] ?? "").trim(),
+    iban,
+    bic: (settings["payment.bic"] ?? "").trim(),
   };
 }
 

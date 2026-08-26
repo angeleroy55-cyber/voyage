@@ -208,21 +208,36 @@ export const BOOKING_TIMELINE = [
  * serveur : un identifiant absent d'ici est refusé.
  */
 export const PAYMENT_METHODS = [
+  { id: "cb", label: "Carte bancaire", hint: "Visa, Mastercard et CB. Débit à la confirmation du séjour" },
   { id: "visa", label: "Visa", hint: "Débit à la confirmation du séjour" },
   { id: "mastercard", label: "Mastercard", hint: "Débit à la confirmation du séjour" },
-  { id: "cb", label: "Cartes Bancaires", hint: "Débit à la confirmation du séjour" },
+  { id: "sepa", label: "Virement bancaire", hint: "Coordonnées transmises avec la confirmation" },
   { id: "paypal", label: "PayPal", hint: "Vous validez depuis votre compte PayPal" },
-  { id: "sepa", label: "Virement SEPA", hint: "Coordonnées bancaires envoyées par e-mail" },
   { id: "instalments", label: "Paiement en 4× sans frais", hint: "Une échéance par mois" },
 ] as const;
 
 export type PaymentId = (typeof PAYMENT_METHODS)[number]["id"];
 
 /**
- * Moyens sélectionnables à l'étape « paiement ». Le 4× n'y figure pas : c'est
- * un échéancier, choisi séparément, et il s'applique au moyen retenu ici.
+ * Moyens réellement ouverts à la réservation, aujourd'hui.
+ *
+ * La carte bancaire seule, le temps que les autres contrats soient signés.
+ * Visa et Mastercard n'y figurent pas comme choix distincts : ce sont des
+ * réseaux acceptés par le paiement CB, pas des moyens que le client sélectionne.
+ * PayPal et le virement restent définis plus haut, ils sont donc reconnus sur
+ * les dossiers déjà enregistrés et réapparaîtront ici sans autre changement.
+ *
+ * Le pied de page, lui, continue d'afficher les marques acceptées : c'est une
+ * réassurance, pas une liste de choix.
  */
-export const PAYMENT_CHOICES = PAYMENT_METHODS.filter((m) => m.id !== "instalments");
+export const PAYMENT_ENABLED: PaymentId[] = ["cb", "sepa"];
+
+export const PAYMENT_CHOICES = PAYMENT_METHODS.filter(
+  (m) => m.id !== "instalments" && PAYMENT_ENABLED.includes(m.id),
+);
+
+/** Marques affichées en réassurance au pied de page, dans cet ordre. */
+export const PAYMENT_BADGES: PaymentId[] = ["cb", "visa", "mastercard"];
 
 export function paymentLabel(id: string): string {
   return PAYMENT_METHODS.find((m) => m.id === id)?.label ?? "Non précisé";

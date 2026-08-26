@@ -18,6 +18,7 @@ import {
   getBestDeals,
   getDestinations,
   getOffers,
+  getHeroSlides,
   getPosts,
   getReviews,
   getRuleOffers,
@@ -30,9 +31,10 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [deals, lastMinute, france, all, destinations, reviews, posts, settings, categories] =
+  const [deals, heroSlides, lastMinute, france, all, destinations, reviews, posts, settings, categories] =
     await Promise.all([
       getBestDeals(8),
+      getHeroSlides(),
       getRuleOffers("derniere-minute", 8),
       // Séjours France est mis en avant ici sans occuper une entrée de menu :
       // c'est la compensation prévue par le cahier, la cible étant française à
@@ -106,7 +108,7 @@ export default async function HomePage() {
       </div>
 
       <div className="mx-auto -mt-16 max-w-page px-4">
-        <HeroCarousel />
+        <HeroCarousel slides={heroSlides} />
       </div>
 
       <Reveal variant="fade" className="mt-10">
