@@ -78,13 +78,6 @@ function urgency(offer: Offer): { label: string; className: string } | null {
   return null;
 }
 
-/** Référence, en petit et en gris, sous le titre. Se sélectionne et se dicte. */
-function Reference({ value }: { value: string }) {
-  return (
-    <p className="mt-1 font-mono text-[11px] tracking-tight text-navy-400">Réf. {value}</p>
-  );
-}
-
 /** Bloc de prix : référence barrée, prix GoSéjour, économie, mention par personne. */
 function Price({ offer, size }: { offer: Offer; size: "sm" | "lg" }) {
   const economie = savings(offer.price, offer.oldPrice);
@@ -175,7 +168,6 @@ export default function OfferCard({
                 {offer.title}
               </Link>
             </h3>
-            <Reference value={offer.reference} />
             <Stars count={offer.stars} className="mt-1.5" />
             <p className="mt-2 line-clamp-2 text-sm text-navy-600">{offer.description}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -251,7 +243,6 @@ export default function OfferCard({
             {offer.title}
           </Link>
         </h3>
-        <Reference value={offer.reference} />
 
         <div className="mt-1.5 flex items-center gap-2">
           <Stars count={offer.stars} />

@@ -176,6 +176,24 @@ export const DESTINATIONS: SourceDestination[] = [
     blurb: "Six heures de vol, du soleil de novembre à avril, et une escale naturelle vers l'océan Indien ou l'Asie." },
   { slug: "jordanie", name: "Jordanie", country: "Jordanie", region: "Moyen-Orient", photo: "Petra Treasury Jordan",
     blurb: "Petra, le Wadi Rum et la mer Morte : un circuit d'une semaine sur des routes faciles." },
+
+  // ---- Océanie et compléments ----
+  { slug: "australie", name: "Australie", country: "Australie", region: "Océanie", photo: "Sydney Opera House",
+    blurb: "Vingt-quatre heures de vol, six mois de décalage de saison : on y part quand l'hiver s'installe ici." },
+  { slug: "polynesie-francaise", name: "Polynésie française", country: "Polynésie française", region: "Océanie", photo: "Bora Bora lagoon",
+    blurb: "Bora-Bora, Moorea et Tahiti : les lagons les plus photographiés du Pacifique, en français." },
+  { slug: "singapour", name: "Singapour", country: "Singapour", region: "Asie du Sud-Est", photo: "Singapore Marina Bay Sands",
+    blurb: "Escale idéale vers l'Asie ou l'Océanie, et une ville qui tient en trois jours." },
+  { slug: "pologne", name: "Pologne", country: "Pologne", region: "Europe", photo: "Krakow Main Square",
+    blurb: "Cracovie et Varsovie : des villes classées à prix d'Europe centrale, à deux heures et demie de vol." },
+  { slug: "finlande", name: "Finlande", country: "Finlande", region: "Europe du Nord", photo: "Lapland northern lights",
+    blurb: "La Laponie en hiver : aurores boréales, traîneaux et village du père Noël." },
+  { slug: "suede", name: "Suède", country: "Suède", region: "Europe du Nord", photo: "Stockholm Gamla Stan",
+    blurb: "Stockholm sur ses quatorze îles, et l'archipel à portée de bateau l'été." },
+  { slug: "alpes-francaises", name: "Alpes françaises", country: "France", region: "Alpes", photo: "French Alps ski resort",
+    blurb: "Le plus grand domaine skiable du monde, de Chamonix aux Trois Vallées, à trois heures de Paris." },
+  { slug: "andorre", name: "Andorre", country: "Andorre", region: "Pyrénées", photo: "Andorra Pyrenees mountains",
+    blurb: "Du ski à prix contenu dans les Pyrénées, et des achats détaxés au passage." },
 ];
 
 // ---------------------------------------------------------------------------
@@ -213,7 +231,7 @@ const RAW: RawOffer[] = [
   ["hammamet-yasmine-club", "sejours", "tout_compris", "Club familial à Yasmine Hammamet", "Hammamet", "Tunisie", "Afrique du Nord", "Paris", 7, 4, "Tout compris", 349, 12, 8.2, 1108, ["Tout compris", "Famille"]],
   ["sousse-corniche", "sejours", "tout_compris", "Hôtel 4★ sur la corniche de Sousse", "Sousse", "Tunisie", "Afrique du Nord", "Marseille", 7, 4, "Tout compris", 335, 10, 8.1, 764, ["Tout compris"]],
   ["hurghada-recifs", "sejours", "tout_compris", "Club plongée face aux récifs de Hurghada", "Hurghada", "Égypte", "Mer Rouge", "Paris", 7, 5, "Tout compris", 549, 12, 8.8, 2140, ["Tout compris", "Plongée"]],
-  ["charm-el-cheikh-naama", "sejours", "tout_compris", "Resort 5★ à Naama Bay", "Charm el-Cheikh", "Égypte", "Mer Rouge", "Paris", 7, 5, "Tout compris", 589, 15, 8.7, 1830, ["Tout compris", "Plongée"]],
+  ["charm-el-cheikh-naama", "sejours", "tout_compris", "Resort 5★ à Naama Bay", "Charm el-Cheikh", "Égypte", "Mer Rouge", "Paris", 7, 5, "Tout compris", 589, 26, 8.7, 1830, ["Tout compris", "Plongée"]],
   ["marsa-alam-jardin-corail", "sejours", "tout_compris", "Lagon et jardin de corail à Marsa Alam", "Marsa Alam", "Égypte", "Mer Rouge", "Paris", 7, 5, "Tout compris", 619, 12, 8.9, 940, ["Tout compris", "Plongée"]],
 
   // ---- Séjours : Espagne, Baléares, Canaries ----
@@ -224,7 +242,7 @@ const RAW: RawOffer[] = [
   ["fuerteventura-corralejo", "sejours", "vol_hotel", "Hôtel sur les dunes de Corralejo", "Fuerteventura", "Espagne", "Canaries", "Paris", 7, 4, "Demi-pension", 499, 10, 8.5, 1470, ["Canaries"]],
   ["lanzarote-puerto-del-carmen", "sejours", "tout_compris", "Club face à Puerto del Carmen", "Lanzarote", "Espagne", "Canaries", "Lyon", 7, 4, "Tout compris", 519, 10, 8.4, 1120, ["Canaries", "Tout compris"]],
   ["grande-canarie-maspalomas", "sejours", "tout_compris", "Tout compris aux dunes de Maspalomas", "Grande Canarie", "Espagne", "Canaries", "Paris", 7, 4, "Tout compris", 529, 12, 8.5, 1390, ["Canaries", "Tout compris"]],
-  ["costa-brava-lloret", "sejours", "vol_hotel", "Séjour plage à Lloret de Mar", "Lloret de Mar", "Espagne", "Méditerranée", "Paris", 7, 3, "Demi-pension", 289, 10, 7.9, 1640, ["Petit prix"]],
+  ["costa-brava-lloret", "sejours", "vol_hotel", "Séjour plage à Lloret de Mar", "Lloret de Mar", "Espagne", "Méditerranée", "Paris", 7, 3, "Demi-pension", 289, 24, 7.9, 1640, ["Petit prix"]],
   ["costa-del-sol-torremolinos", "sejours", "tout_compris", "Front de mer à Torremolinos", "Torremolinos", "Espagne", "Méditerranée", "Paris", 7, 4, "Tout compris", 379, 10, 8.2, 1210, ["Tout compris"]],
 
   // ---- Séjours : Grèce, Italie, Portugal, Méditerranée ----
@@ -237,7 +255,7 @@ const RAW: RawOffer[] = [
   ["madere-funchal-atlantique", "sejours", "vol_hotel", "Balcon sur l'Atlantique à Funchal", "Madère", "Portugal", "Atlantique", "Paris", 7, 4, "Petit-déjeuner", 449, 10, 8.9, 731, ["Nature", "Randonnée"]],
   ["sicile-taormine", "sejours", "vol_hotel", "Entre Etna et mer Ionienne à Taormine", "Taormine", "Italie", "Méditerranée", "Paris", 7, 4, "Demi-pension", 569, 10, 8.6, 540, ["Coup de cœur"]],
   ["sardaigne-costa-smeralda", "sejours", "vol_hotel", "Crique de Costa Smeralda", "Olbia", "Italie", "Méditerranée", "Paris", 7, 4, "Demi-pension", 649, 10, 8.5, 470, ["Méditerranée"]],
-  ["antalya-lara-beach", "sejours", "tout_compris", "Resort ultra tout compris à Lara Beach", "Antalya", "Turquie", "Méditerranée", "Paris", 7, 5, "Tout compris", 599, 15, 8.8, 2410, ["Tout compris", "Vente flash"]],
+  ["antalya-lara-beach", "sejours", "tout_compris", "Resort ultra tout compris à Lara Beach", "Antalya", "Turquie", "Méditerranée", "Paris", 7, 5, "Tout compris", 599, 28, 8.8, 2410, ["Tout compris", "Vente flash"]],
   ["chypre-larnaca", "sejours", "tout_compris", "Front de mer à Larnaca", "Larnaca", "Chypre", "Méditerranée", "Paris", 7, 4, "Tout compris", 559, 10, 8.4, 610, ["Tout compris"]],
   ["malte-sliema", "sejours", "vol_hotel", "Sur le front de mer de Sliema", "Sliema", "Malte", "Méditerranée", "Paris", 5, 4, "Petit-déjeuner", 419, 10, 8.5, 830, ["Ville"]],
   ["dubrovnik-lapad", "sejours", "vol_hotel", "Baie de Lapad, à Dubrovnik", "Dubrovnik", "Croatie", "Méditerranée", "Paris", 7, 4, "Petit-déjeuner", 629, 10, 8.7, 690, ["Coup de cœur"]],
@@ -246,16 +264,16 @@ const RAW: RawOffer[] = [
   ["cap-vert-sal-santa-maria", "sejours", "tout_compris", "Tout compris à Santa Maria, île de Sal", "Sal", "Cap-Vert", "Atlantique", "Paris", 7, 4, "Tout compris", 899, 12, 8.5, 780, ["Tout compris", "Soleil d'hiver"]],
   ["cap-vert-boa-vista-chaves", "sejours", "tout_compris", "Plage de Chaves, à Boa Vista", "Boa Vista", "Cap-Vert", "Atlantique", "Paris", 7, 4, "Tout compris", 949, 10, 8.4, 520, ["Tout compris", "Soleil d'hiver"]],
   ["maurice-flic-en-flac", "sejours", "tout_compris", "Lagon de Flic en Flac", "Flic en Flac", "Île Maurice", "Océan Indien", "Paris", 9, 4, "Tout compris", 1490, 12, 8.9, 960, ["Océan Indien", "Tout compris"]],
-  ["maurice-belle-mare", "sejours", "vol_hotel", "Côte est, sur la plage de Belle Mare", "Belle Mare", "Île Maurice", "Océan Indien", "Paris", 9, 5, "Demi-pension", 1890, 10, 9.0, 640, ["Océan Indien", "Luxe"]],
-  ["seychelles-mahe", "sejours", "vol_hotel", "Anse à la Mouche, à Mahé", "Mahé", "Seychelles", "Océan Indien", "Paris", 9, 4, "Petit-déjeuner", 1990, 10, 9.1, 380, ["Océan Indien", "Coup de cœur"]],
+  ["maurice-belle-mare", "sejours", "vol_hotel", "Côte est, sur la plage de Belle Mare", "Belle Mare", "Île Maurice", "Océan Indien", "Paris", 9, 5, "Demi-pension", 1890, 6, 9.0, 640, ["Océan Indien", "Luxe"]],
+  ["seychelles-mahe", "sejours", "vol_hotel", "Anse à la Mouche, à Mahé", "Mahé", "Seychelles", "Océan Indien", "Paris", 9, 4, "Petit-déjeuner", 1990, 6, 9.1, 380, ["Océan Indien", "Coup de cœur"]],
   ["zanzibar-nungwi", "sejours", "tout_compris", "Plage de Nungwi, au nord de Zanzibar", "Zanzibar", "Tanzanie", "Océan Indien", "Paris", 9, 4, "Tout compris", 1390, 12, 8.7, 540, ["Océan Indien", "Tout compris"]],
-  ["maldives-male-sud", "sejours", "tout_compris", "Bungalow sur pilotis, atoll de Malé Sud", "Malé", "Maldives", "Océan Indien", "Paris", 9, 5, "Tout compris", 2490, 10, 9.3, 720, ["Luxe", "Romantique"]],
+  ["maldives-male-sud", "sejours", "tout_compris", "Bungalow sur pilotis, atoll de Malé Sud", "Malé", "Maldives", "Océan Indien", "Paris", 9, 5, "Tout compris", 2490, 5, 9.3, 720, ["Luxe", "Romantique"]],
   ["reunion-saint-gilles", "sejours", "vol_hotel", "Lagon de Saint-Gilles, à La Réunion", "Saint-Gilles-les-Bains", "La Réunion", "Océan Indien", "Paris", 9, 4, "Petit-déjeuner", 1190, 10, 8.6, 520, ["Nature", "Randonnée"]],
   ["senegal-saly-petite-cote", "sejours", "tout_compris", "Petite Côte, à Saly", "Saly", "Sénégal", "Atlantique", "Paris", 7, 4, "Tout compris", 899, 10, 8.2, 380, ["Tout compris", "Soleil d'hiver"]],
   ["kenya-diani-beach", "sejours", "tout_compris", "Diani Beach, au sud de Mombasa", "Mombasa", "Kenya", "Afrique de l'Est", "Paris", 9, 4, "Tout compris", 1590, 10, 8.6, 290, ["Tout compris"]],
 
   // ---- Séjours : Caraïbes et Amériques ----
-  ["punta-cana-bavaro", "sejours", "tout_compris", "Pieds dans le sable à Bávaro", "Punta Cana", "République dominicaine", "Caraïbes", "Paris", 9, 5, "Tout compris", 1290, 15, 8.8, 1655, ["Tout compris", "Vente flash"]],
+  ["punta-cana-bavaro", "sejours", "tout_compris", "Pieds dans le sable à Bávaro", "Punta Cana", "République dominicaine", "Caraïbes", "Paris", 9, 5, "Tout compris", 1290, 25, 8.8, 1655, ["Tout compris", "Vente flash"]],
   ["riviera-maya-tout-compris", "sejours", "tout_compris", "Resort tout compris en Riviera Maya", "Riviera Maya", "Mexique", "Caraïbes", "Paris", 9, 5, "Tout compris", 1390, 12, 9.0, 843, ["Tout compris", "Longue distance"]],
   ["cancun-zona-hotelera", "sejours", "tout_compris", "Zona Hotelera, à Cancún", "Cancún", "Mexique", "Caraïbes", "Paris", 9, 4, "Tout compris", 1290, 10, 8.6, 690, ["Tout compris"]],
   ["varadero-presqu-ile", "sejours", "tout_compris", "Presqu'île de Varadero", "Varadero", "Cuba", "Caraïbes", "Paris", 9, 4, "Tout compris", 1190, 10, 8.4, 610, ["Tout compris"]],
@@ -286,7 +304,7 @@ const RAW: RawOffer[] = [
   ["croatie-dalmatie", "circuits", "circuit_accompagne", "La Dalmatie, de Split à Dubrovnik", "Split", "Croatie", "Méditerranée", "Paris", 7, 4, "Demi-pension", 1090, 10, 8.6, 380, ["Guide francophone"]],
   ["albanie-autotour", "circuits", "circuit_libre", "L'Albanie en autotour, de Tirana à Sarandë", "Tirana", "Albanie", "Méditerranée", "Paris", 8, 3, "Petit-déjeuner", 419, 10, 8.4, 210, ["Autotour", "Petit prix"]],
   ["sicile-autotour", "circuits", "circuit_libre", "La Sicile en autotour", "Catane", "Italie", "Méditerranée", "Paris", 8, 3, "Petit-déjeuner", 749, 10, 8.5, 340, ["Autotour"]],
-  ["japon-tokyo-kyoto-osaka", "circuits", "circuit_accompagne", "Japon essentiel : Tokyo, Kyoto, Osaka", "Tokyo", "Japon", "Asie", "Paris", 11, 4, "Demi-pension", 2890, 10, 9.3, 512, ["Longue distance", "Guide francophone"]],
+  ["japon-tokyo-kyoto-osaka", "circuits", "circuit_accompagne", "Japon essentiel : Tokyo, Kyoto, Osaka", "Tokyo", "Japon", "Asie", "Paris", 11, 4, "Demi-pension", 2890, 8, 9.3, 512, ["Longue distance", "Guide francophone"]],
   ["vietnam-nord-au-sud", "circuits", "circuit_accompagne", "Le Vietnam du nord au sud", "Hanoï", "Vietnam", "Asie du Sud-Est", "Paris", 12, 4, "Pension complète", 2190, 12, 9.0, 430, ["Longue distance", "Guide francophone"]],
   ["thailande-bangkok-nord", "circuits", "circuit_accompagne", "Bangkok et le nord de la Thaïlande", "Bangkok", "Thaïlande", "Asie du Sud-Est", "Paris", 11, 4, "Demi-pension", 1890, 10, 8.8, 620, ["Longue distance", "Guide francophone"]],
   ["cambodge-angkor", "circuits", "circuit_accompagne", "Angkor et le lac Tonlé Sap", "Siem Reap", "Cambodge", "Asie du Sud-Est", "Paris", 9, 4, "Demi-pension", 1990, 10, 8.9, 240, ["Longue distance", "Guide francophone"]],
@@ -294,15 +312,15 @@ const RAW: RawOffer[] = [
   ["sri-lanka-triangle-culturel", "circuits", "circuit_accompagne", "Sri Lanka, triangle culturel et plantations de thé", "Colombo", "Sri Lanka", "Océan Indien", "Paris", 10, 4, "Demi-pension", 1690, 10, 8.8, 280, ["Longue distance", "Guide francophone"]],
   ["chine-pekin-xian-shanghai", "circuits", "circuit_accompagne", "Chine impériale : Pékin, Xi'an, Shanghai", "Pékin", "Chine", "Asie", "Paris", 11, 4, "Pension complète", 2290, 10, 8.6, 190, ["Longue distance", "Guide francophone"]],
   ["ouzbekistan-route-de-la-soie", "circuits", "circuit_accompagne", "L'Ouzbékistan, sur la route de la Soie", "Tachkent", "Ouzbékistan", "Asie", "Paris", 9, 4, "Pension complète", 1890, 10, 8.9, 150, ["Guide francophone", "Coup de cœur"]],
-  ["perou-machu-picchu", "circuits", "circuit_accompagne", "Pérou, du Machu Picchu au lac Titicaca", "Cusco", "Pérou", "Amérique du Sud", "Paris", 12, 4, "Demi-pension", 3190, 10, 9.1, 220, ["Longue distance", "Guide francophone"]],
+  ["perou-machu-picchu", "circuits", "circuit_accompagne", "Pérou, du Machu Picchu au lac Titicaca", "Cusco", "Pérou", "Amérique du Sud", "Paris", 12, 4, "Demi-pension", 3190, 7, 9.1, 220, ["Longue distance", "Guide francophone"]],
   ["bresil-rio-iguacu-bahia", "circuits", "circuit_accompagne", "Brésil : Rio, Iguaçu et Salvador de Bahia", "Rio de Janeiro", "Brésil", "Amérique du Sud", "Paris", 11, 4, "Petit-déjeuner", 2890, 10, 8.8, 180, ["Longue distance"]],
   ["costa-rica-deux-oceans", "circuits", "circuit_accompagne", "Costa Rica, volcans et deux océans", "San José", "Costa Rica", "Amérique du Sud", "Paris", 11, 3, "Demi-pension", 2790, 10, 9.0, 210, ["Longue distance", "Nature"]],
-  ["argentine-patagonie", "circuits", "circuit_accompagne", "Argentine, de Buenos Aires à la Patagonie", "Buenos Aires", "Argentine", "Amérique du Sud", "Paris", 13, 4, "Petit-déjeuner", 3490, 10, 8.9, 140, ["Longue distance"]],
+  ["argentine-patagonie", "circuits", "circuit_accompagne", "Argentine, de Buenos Aires à la Patagonie", "Buenos Aires", "Argentine", "Amérique du Sud", "Paris", 13, 4, "Petit-déjeuner", 3490, 7, 8.9, 140, ["Longue distance"]],
   ["canada-est-ete-indien", "circuits", "circuit_accompagne", "L'est canadien à l'été indien", "Montréal", "Canada", "Amérique du Nord", "Paris", 9, 3, "Petit-déjeuner", 2490, 10, 8.9, 320, ["Longue distance", "Guide francophone"]],
   ["usa-ouest-americain", "circuits", "circuit_libre", "L'Ouest américain, de Las Vegas à San Francisco", "Las Vegas", "États-Unis", "Amérique du Nord", "Paris", 12, 3, "Petit-déjeuner", 2690, 10, 8.8, 410, ["Longue distance", "Autotour"]],
   ["afrique-du-sud-cap-safari", "circuits", "circuit_accompagne", "Afrique du Sud : Le Cap, route des jardins et safari", "Le Cap", "Afrique du Sud", "Afrique australe", "Paris", 11, 4, "Demi-pension", 2990, 10, 9.0, 190, ["Longue distance", "Safari"]],
   ["kenya-safari-masai-mara", "circuits", "circuit_accompagne", "Safari au Masai Mara et au lac Nakuru", "Nairobi", "Kenya", "Afrique de l'Est", "Paris", 8, 4, "Pension complète", 2590, 10, 9.1, 160, ["Safari", "Coup de cœur"]],
-  ["tanzanie-serengeti-zanzibar", "circuits", "circuit_accompagne", "Serengeti, Ngorongoro et Zanzibar", "Arusha", "Tanzanie", "Afrique de l'Est", "Paris", 11, 4, "Pension complète", 3290, 10, 9.2, 130, ["Safari", "Longue distance"]],
+  ["tanzanie-serengeti-zanzibar", "circuits", "circuit_accompagne", "Serengeti, Ngorongoro et Zanzibar", "Arusha", "Tanzanie", "Afrique de l'Est", "Paris", 11, 4, "Pension complète", 3290, 7, 9.2, 130, ["Safari", "Longue distance"]],
 
   // ---- Croisières ----
   ["mediterranee-occidentale-marseille", "croisieres", "croisiere_maritime", "Méditerranée occidentale au départ de Marseille", "Marseille", "France", "Méditerranée", "Marseille", 7, 4, "Pension complète", 749, 10, 8.6, 2233, ["Best-seller"]],
@@ -396,7 +414,7 @@ const RAW: RawOffer[] = [
   ["camping-cap-agde-aquatique", "camping-escapades", "camping", "Espace aquatique au Cap d'Agde", "Le Cap d'Agde", "France", "France", "Toulouse", 7, 4, "Sans repas", 399, 10, 8.1, 720, ["Famille", "Piscine", "France"]],
   ["camping-bretagne-benodet", "camping-escapades", "camping", "Bord de mer à Bénodet", "Bénodet", "France", "France", "Nantes", 7, 4, "Sans repas", 379, 10, 8.4, 510, ["Famille", "France"]],
   ["camping-corse-porto-vecchio", "camping-escapades", "camping", "Camping près des plages de Porto-Vecchio", "Porto-Vecchio", "France", "France", "Marseille", 7, 4, "Sans repas", 549, 10, 8.5, 430, ["France", "Nature"]],
-  ["camping-costa-brava-lloret", "camping-escapades", "camping", "Village vacances sur la Costa Brava", "Lloret de Mar", "Espagne", "Méditerranée", "Paris", 7, 4, "Sans repas", 329, 10, 8.2, 980, ["Famille", "Petit prix"]],
+  ["camping-costa-brava-lloret", "camping-escapades", "camping", "Village vacances sur la Costa Brava", "Lloret de Mar", "Espagne", "Méditerranée", "Paris", 7, 4, "Sans repas", 329, 22, 8.2, 980, ["Famille", "Petit prix"]],
   ["camping-toscane-viareggio", "camping-escapades", "camping", "Camping en Toscane, près de Viareggio", "Viareggio", "Italie", "Méditerranée", "Nice", 7, 4, "Sans repas", 449, 10, 8.3, 380, ["Famille"]],
   ["camping-croatie-porec", "camping-escapades", "camping", "Camping bord de mer à Poreč", "Poreč", "Croatie", "Méditerranée", "Paris", 7, 4, "Sans repas", 419, 10, 8.4, 340, ["Famille", "Nature"]],
 
@@ -439,13 +457,139 @@ const RAW: RawOffer[] = [
   ["voiture-ajaccio-compacte", "location-voiture", "location", "Compacte à Ajaccio", "Ajaccio", "France", "France", "Marseille", 7, 0, "Sans repas", 209, 10, 8.3, 470, ["France", "Annulation gratuite"]],
 
   // ---- Parcs de loisirs ----
-  ["disneyland-paris-2-jours", "parcs-loisirs", "", "Disneyland Paris, 2 jours et 1 nuit", "Marne-la-Vallée", "France", "France", "Paris", 1, 3, "Petit-déjeuner", 249, 10, 8.5, 2140, ["Famille", "France"]],
-  ["parc-asterix-sejour", "parcs-loisirs", "", "Parc Astérix, 2 jours et 1 nuit", "Plailly", "France", "France", "Paris", 1, 3, "Petit-déjeuner", 179, 10, 8.4, 940, ["Famille", "France"]],
-  ["puy-du-fou-sejour", "parcs-loisirs", "", "Le Puy du Fou, 2 jours et 1 nuit", "Les Epesses", "France", "France", "Nantes", 1, 3, "Petit-déjeuner", 229, 10, 9.1, 1610, ["Famille", "France", "Coup de cœur"]],
-  ["futuroscope-sejour", "parcs-loisirs", "", "Futuroscope, 2 jours et 1 nuit", "Poitiers", "France", "France", "Paris", 1, 3, "Petit-déjeuner", 189, 10, 8.6, 880, ["Famille", "France"]],
-  ["portaventura-salou", "parcs-loisirs", "", "PortAventura World, 3 jours et 2 nuits", "Salou", "Espagne", "Méditerranée", "Paris", 2, 4, "Petit-déjeuner", 289, 10, 8.5, 720, ["Famille"]],
-  ["europa-park-rust", "parcs-loisirs", "", "Europa-Park, 3 jours et 2 nuits", "Rust", "Allemagne", "Europe", "Strasbourg", 2, 4, "Petit-déjeuner", 319, 10, 8.9, 640, ["Famille", "Coup de cœur"]],
-  ["orlando-parcs-semaine", "parcs-loisirs", "", "Orlando, une semaine au pays des parcs", "Orlando", "États-Unis", "Amérique du Nord", "Paris", 7, 3, "Sans repas", 1290, 10, 8.7, 410, ["Famille", "Longue distance"]],
+  ["disneyland-paris-2-jours", "parcs-loisirs", "parc", "Disneyland Paris, 2 jours et 1 nuit", "Marne-la-Vallée", "France", "France", "Paris", 1, 3, "Petit-déjeuner", 249, 10, 8.5, 2140, ["Famille", "France"]],
+  ["parc-asterix-sejour", "parcs-loisirs", "parc", "Parc Astérix, 2 jours et 1 nuit", "Plailly", "France", "France", "Paris", 1, 3, "Petit-déjeuner", 179, 10, 8.4, 940, ["Famille", "France"]],
+  ["puy-du-fou-sejour", "parcs-loisirs", "parc", "Le Puy du Fou, 2 jours et 1 nuit", "Les Epesses", "France", "France", "Nantes", 1, 3, "Petit-déjeuner", 229, 10, 9.1, 1610, ["Famille", "France", "Coup de cœur"]],
+  ["futuroscope-sejour", "parcs-loisirs", "parc", "Futuroscope, 2 jours et 1 nuit", "Poitiers", "France", "France", "Paris", 1, 3, "Petit-déjeuner", 189, 10, 8.6, 880, ["Famille", "France"]],
+  ["portaventura-salou", "parcs-loisirs", "parc", "PortAventura World, 3 jours et 2 nuits", "Salou", "Espagne", "Méditerranée", "Paris", 2, 4, "Petit-déjeuner", 289, 10, 8.5, 720, ["Famille"]],
+  ["europa-park-rust", "parcs-loisirs", "parc", "Europa-Park, 3 jours et 2 nuits", "Rust", "Allemagne", "Europe", "Strasbourg", 2, 4, "Petit-déjeuner", 319, 10, 8.9, 640, ["Famille", "Coup de cœur"]],
+  ["orlando-parcs-semaine", "parcs-loisirs", "parc", "Orlando, une semaine au pays des parcs", "Orlando", "États-Unis", "Amérique du Nord", "Paris", 7, 3, "Sans repas", 1290, 10, 8.7, 410, ["Famille", "Longue distance"]],
+
+  // ---- Montagne et ski ----
+  ["ski-tignes-val-claret", "sejours", "club", "Résidence club à Tignes Val Claret", "Tignes", "France", "Alpes", "Lyon", 7, 4, "Demi-pension", 749, 12, 8.6, 940, ["Ski", "France", "Famille"]],
+  ["ski-les-arcs-1800", "sejours", "club", "Club aux Arcs 1800, skis aux pieds", "Les Arcs", "France", "Alpes", "Lyon", 7, 4, "Pension complète", 869, 10, 8.7, 720, ["Ski", "France"]],
+  ["ski-alpe-d-huez", "sejours", "vol_hotel", "Appartement à l'Alpe d'Huez", "L'Alpe d'Huez", "France", "Alpes", "Grenoble", 7, 3, "Sans repas", 549, 25, 8.3, 610, ["Ski", "France", "Petit prix"]],
+  ["ski-chamonix-mont-blanc", "sejours", "vol_hotel", "Face au Mont-Blanc, à Chamonix", "Chamonix", "France", "Alpes", "Genève", 7, 4, "Petit-déjeuner", 899, 10, 8.9, 830, ["Ski", "France", "Coup de cœur"]],
+  ["ski-serre-chevalier", "sejours", "club", "Village club à Serre Chevalier", "Serre Chevalier", "France", "Alpes", "Marseille", 7, 3, "Pension complète", 699, 12, 8.4, 480, ["Ski", "France", "Famille"]],
+  ["ski-la-plagne", "sejours", "club", "Club famille à La Plagne", "La Plagne", "France", "Alpes", "Lyon", 7, 4, "Pension complète", 799, 10, 8.5, 660, ["Ski", "France", "Famille"]],
+  ["ski-les-2-alpes", "sejours", "vol_hotel", "Résidence aux Deux Alpes", "Les Deux Alpes", "France", "Alpes", "Grenoble", 7, 3, "Sans repas", 519, 26, 8.2, 540, ["Ski", "France", "Petit prix"]],
+  ["ski-font-romeu-pyrenees", "sejours", "vol_hotel", "Font-Romeu, soleil des Pyrénées", "Font-Romeu", "France", "Pyrénées", "Toulouse", 7, 3, "Demi-pension", 599, 12, 8.3, 320, ["Ski", "France"]],
+  ["ski-andorre-pas-de-la-case", "sejours", "tout_compris", "Tout compris au Pas de la Case", "Pas de la Case", "Andorre", "Pyrénées", "Toulouse", 7, 4, "Tout compris", 649, 15, 8.4, 410, ["Ski", "Tout compris"]],
+  ["ski-autriche-tyrol", "sejours", "vol_hotel", "Chalet au Tyrol autrichien", "Innsbruck", "Autriche", "Alpes", "Paris", 7, 4, "Demi-pension", 899, 10, 8.7, 290, ["Ski"]],
+  ["ski-italie-val-gardena", "sejours", "vol_hotel", "Dolomites, au Val Gardena", "Val Gardena", "Italie", "Alpes", "Paris", 7, 4, "Demi-pension", 949, 10, 8.8, 250, ["Ski", "Coup de cœur"]],
+  ["montagne-annecy-ete", "camping-escapades", "week_end", "Lac d'Annecy en été", "Annecy", "France", "Alpes", "Lyon", 3, 4, "Petit-déjeuner", 329, 10, 8.8, 420, ["France", "Nature"]],
+
+  // ---- Marchés de Noël et fêtes ----
+  ["noel-strasbourg-marche", "camping-escapades", "week_end", "Marché de Noël de Strasbourg", "Strasbourg", "France", "France", "Paris", 2, 4, "Petit-déjeuner", 289, 10, 8.8, 740, ["Noël", "France", "Week-end"]],
+  ["noel-colmar-marche", "camping-escapades", "week_end", "Marchés de Noël de Colmar", "Colmar", "France", "France", "Paris", 2, 3, "Petit-déjeuner", 249, 10, 8.7, 520, ["Noël", "France", "Week-end"]],
+  ["noel-vienne-marche", "camping-escapades", "week_end", "Vienne à l'Avent", "Vienne", "Autriche", "Europe", "Paris", 3, 4, "Petit-déjeuner", 349, 10, 8.8, 380, ["Noël", "Week-end"]],
+  ["noel-prague-avent", "camping-escapades", "week_end", "Prague sous la neige", "Prague", "Tchéquie", "Europe", "Paris", 3, 4, "Petit-déjeuner", 299, 12, 8.7, 460, ["Noël", "Week-end"]],
+  ["noel-budapest-thermes", "camping-escapades", "week_end", "Budapest, marchés et bains thermaux", "Budapest", "Hongrie", "Europe", "Paris", 3, 4, "Petit-déjeuner", 279, 12, 8.6, 340, ["Noël", "Week-end", "Spa"]],
+  ["noel-laponie-rovaniemi", "circuits", "circuit_accompagne", "Laponie finlandaise et aurores boréales", "Rovaniemi", "Finlande", "Europe du Nord", "Paris", 4, 4, "Pension complète", 1490, 10, 9.2, 280, ["Noël", "Famille", "Coup de cœur"]],
+  ["nouvel-an-marrakech", "sejours", "vol_hotel", "Nouvel An à Marrakech", "Marrakech", "Maroc", "Afrique du Nord", "Paris", 4, 5, "Demi-pension", 749, 10, 8.8, 390, ["Noël", "Fêtes"]],
+
+  // ---- Clubs tout compris ----
+  ["club-djerba-famille", "sejours", "club", "Club famille avec parc aquatique à Djerba", "Djerba", "Tunisie", "Afrique du Nord", "Paris", 7, 4, "Tout compris", 399, 25, 8.4, 1420, ["Club", "Famille", "Tout compris"]],
+  ["club-hammamet-animations", "sejours", "club", "Club animations à Hammamet", "Hammamet", "Tunisie", "Afrique du Nord", "Lyon", 7, 4, "Tout compris", 429, 18, 8.3, 980, ["Club", "Famille"]],
+  ["club-agadir-parc-aquatique", "sejours", "club", "Club avec parc aquatique à Agadir", "Agadir", "Maroc", "Afrique du Nord", "Paris", 7, 4, "Tout compris", 459, 15, 8.5, 1120, ["Club", "Famille"]],
+  ["club-hurghada-plongee", "sejours", "club", "Club plongée et animations, Hurghada", "Hurghada", "Égypte", "Mer Rouge", "Paris", 7, 5, "Tout compris", 629, 27, 8.7, 1640, ["Club", "Plongée"]],
+  ["club-fuerteventura-jandia", "sejours", "club", "Club de Jandía, Fuerteventura", "Fuerteventura", "Espagne", "Canaries", "Paris", 7, 4, "Tout compris", 649, 15, 8.5, 870, ["Club", "Canaries"]],
+  ["club-crete-malia", "sejours", "club", "Club bord de mer à Malia", "Crète", "Grèce", "Îles grecques", "Paris", 7, 4, "Tout compris", 619, 15, 8.4, 760, ["Club", "Îles grecques"]],
+  ["club-majorque-famille", "sejours", "club", "Club famille à Majorque", "Palma de Majorque", "Espagne", "Baléares", "Nantes", 7, 4, "Tout compris", 559, 12, 8.5, 940, ["Club", "Famille"]],
+  ["club-antalya-ultra", "sejours", "club", "Club ultra tout compris à Antalya", "Antalya", "Turquie", "Méditerranée", "Paris", 7, 5, "Tout compris", 699, 30, 8.9, 1980, ["Club", "Vente flash"]],
+  ["club-punta-cana-famille", "sejours", "club", "Club famille à Punta Cana", "Punta Cana", "République dominicaine", "Caraïbes", "Paris", 9, 4, "Tout compris", 1390, 18, 8.6, 720, ["Club", "Famille", "Longue distance"]],
+  ["club-maurice-cote-ouest", "sejours", "club", "Club de la côte ouest mauricienne", "Flic en Flac", "Île Maurice", "Océan Indien", "Paris", 9, 4, "Tout compris", 1590, 15, 8.8, 480, ["Club", "Océan Indien"]],
+
+  // ---- Voyages combinés ----
+  ["combine-thailande-bangkok-phuket", "circuits", "combine", "Bangkok et les plages de Phuket", "Bangkok", "Thaïlande", "Asie du Sud-Est", "Paris", 13, 4, "Demi-pension", 1990, 15, 8.9, 540, ["Combiné", "Longue distance"]],
+  ["combine-vietnam-cambodge", "circuits", "combine", "Vietnam et Cambodge, du Mékong à Angkor", "Hanoï", "Vietnam", "Asie du Sud-Est", "Paris", 15, 4, "Pension complète", 2690, 12, 9.1, 320, ["Combiné", "Longue distance"]],
+  ["combine-dubai-maurice", "circuits", "combine", "Escale à Dubaï puis plage à Maurice", "Dubaï", "Émirats arabes unis", "Océan Indien", "Paris", 12, 5, "Demi-pension", 2290, 15, 8.9, 260, ["Combiné", "Luxe"]],
+  ["combine-new-york-punta-cana", "circuits", "combine", "New York puis Punta Cana", "New York", "États-Unis", "Caraïbes", "Paris", 12, 4, "Petit-déjeuner", 2190, 12, 8.7, 340, ["Combiné", "Longue distance"]],
+  ["combine-bali-lombok", "circuits", "combine", "Bali et les îles Gili", "Denpasar", "Indonésie", "Asie du Sud-Est", "Paris", 14, 4, "Petit-déjeuner", 1890, 15, 8.8, 410, ["Combiné", "Longue distance"]],
+  ["combine-maroc-desert-plage", "circuits", "combine", "Désert marocain puis plage à Agadir", "Marrakech", "Maroc", "Afrique du Nord", "Paris", 10, 4, "Demi-pension", 999, 15, 8.6, 380, ["Combiné"]],
+  ["combine-egypte-nil-mer-rouge", "circuits", "combine", "Croisière sur le Nil et séjour en mer Rouge", "Louxor", "Égypte", "Mer Rouge", "Paris", 12, 4, "Tout compris", 1290, 24, 8.8, 620, ["Combiné", "Tout compris"]],
+  ["combine-japon-ville-nature", "circuits", "combine", "Japon urbain et Japon rural", "Tokyo", "Japon", "Asie", "Paris", 14, 4, "Petit-déjeuner", 3190, 10, 9.2, 190, ["Combiné", "Longue distance"]],
+  ["combine-kenya-safari-plage", "circuits", "combine", "Safari au Kenya puis plage à Diani", "Nairobi", "Kenya", "Afrique de l'Est", "Paris", 12, 4, "Pension complète", 2890, 12, 9.0, 210, ["Combiné", "Safari"]],
+  ["combine-perou-bolivie", "circuits", "combine", "Pérou et Bolivie, des Andes au salar", "Cusco", "Pérou", "Amérique du Sud", "Paris", 16, 4, "Demi-pension", 3690, 10, 9.1, 130, ["Combiné", "Longue distance"]],
+
+  // ---- Séjours supplémentaires, toutes saisons ----
+  ["seville-printemps-feria", "camping-escapades", "week_end", "Séville au printemps", "Séville", "Espagne", "Europe", "Paris", 3, 4, "Petit-déjeuner", 279, 12, 8.9, 640, ["Week-end", "Printemps"]],
+  ["amsterdam-tulipes", "camping-escapades", "week_end", "Amsterdam à la saison des tulipes", "Amsterdam", "Pays-Bas", "Europe", "Paris", 3, 4, "Petit-déjeuner", 289, 10, 8.6, 520, ["Week-end", "Printemps"]],
+  ["kyoto-cerisiers", "circuits", "circuit_accompagne", "Japon à la floraison des cerisiers", "Kyoto", "Japon", "Asie", "Paris", 11, 4, "Demi-pension", 3290, 8, 9.4, 280, ["Printemps", "Coup de cœur"]],
+  ["provence-lavande", "camping-escapades", "week_end", "Provence, saison de la lavande", "Avignon", "France", "France", "Paris", 3, 4, "Petit-déjeuner", 359, 10, 8.7, 380, ["France", "Été"]],
+  ["corse-plages-ete", "sejours", "vol_hotel", "Plages du sud de la Corse", "Porto-Vecchio", "France", "France", "Marseille", 7, 4, "Demi-pension", 899, 10, 8.7, 610, ["France", "Été"]],
+  ["bretagne-cotes-armor", "camping-escapades", "camping", "Côtes-d'Armor, entre plages et falaises", "Saint-Brieuc", "France", "France", "Paris", 7, 4, "Sans repas", 419, 12, 8.4, 340, ["France", "Famille"]],
+  ["pays-basque-cote", "camping-escapades", "camping", "Côte basque, de Biarritz à Hendaye", "Biarritz", "France", "France", "Bordeaux", 7, 4, "Sans repas", 489, 10, 8.5, 420, ["France", "Famille"]],
+  ["normandie-plages-debarquement", "circuits", "circuit_libre", "Normandie, plages du Débarquement en autotour", "Caen", "France", "France", "Paris", 4, 3, "Petit-déjeuner", 449, 10, 8.6, 290, ["France", "Autotour"]],
+  ["chateaux-de-la-loire", "circuits", "circuit_libre", "Châteaux de la Loire en autotour", "Tours", "France", "France", "Paris", 4, 3, "Petit-déjeuner", 429, 10, 8.7, 350, ["France", "Autotour"]],
+  ["alsace-route-des-vins", "circuits", "circuit_libre", "Route des vins d'Alsace", "Colmar", "France", "France", "Paris", 4, 3, "Demi-pension", 469, 10, 8.8, 310, ["France", "Autotour"]],
+
+  // ---- Longs courriers supplémentaires ----
+  ["bali-ubud-rizieres", "sejours", "vol_hotel", "Ubud, entre rizières et temples", "Ubud", "Indonésie", "Asie du Sud-Est", "Paris", 11, 4, "Petit-déjeuner", 1390, 15, 8.9, 680, ["Longue distance", "Nature"]],
+  ["thailande-koh-samui", "sejours", "vol_hotel", "Koh Samui, plage de Chaweng", "Koh Samui", "Thaïlande", "Asie du Sud-Est", "Paris", 11, 4, "Petit-déjeuner", 1290, 12, 8.7, 520, ["Longue distance"]],
+  ["vietnam-hoi-an-plage", "sejours", "vol_hotel", "Hoi An, vieille ville et plage d'An Bang", "Hoi An", "Vietnam", "Asie du Sud-Est", "Paris", 11, 4, "Petit-déjeuner", 1190, 15, 8.8, 340, ["Longue distance", "Coup de cœur"]],
+  ["mexique-tulum", "sejours", "vol_hotel", "Tulum, entre ruines mayas et cénotes", "Tulum", "Mexique", "Caraïbes", "Paris", 9, 4, "Petit-déjeuner", 1490, 12, 8.8, 420, ["Longue distance"]],
+  ["costa-rica-guanacaste", "sejours", "tout_compris", "Plages du Guanacaste", "Guanacaste", "Costa Rica", "Amérique du Sud", "Paris", 10, 4, "Tout compris", 1890, 12, 8.7, 190, ["Tout compris", "Longue distance"]],
+  ["bresil-nordeste-natal", "sejours", "tout_compris", "Plages du Nordeste, à Natal", "Natal", "Brésil", "Amérique du Sud", "Paris", 10, 4, "Tout compris", 1590, 15, 8.5, 230, ["Tout compris", "Longue distance"]],
+  ["afrique-du-sud-plage-safari", "sejours", "vol_hotel", "Le Cap et la route des vins", "Le Cap", "Afrique du Sud", "Afrique australe", "Paris", 10, 4, "Petit-déjeuner", 1690, 12, 8.9, 260, ["Longue distance"]],
+  ["australie-sydney-cote-est", "circuits", "circuit_libre", "Côte est australienne en autotour", "Sydney", "Australie", "Océanie", "Paris", 16, 3, "Petit-déjeuner", 3890, 6, 9.0, 90, ["Longue distance", "Autotour"]],
+  ["polynesie-tahiti-bora-bora", "sejours", "vol_hotel", "Tahiti, Moorea et Bora-Bora", "Papeete", "Polynésie française", "Océanie", "Paris", 12, 5, "Demi-pension", 4290, 5, 9.3, 110, ["Luxe", "Romantique"]],
+  ["canada-rocheuses", "circuits", "circuit_libre", "Rocheuses canadiennes en autotour", "Vancouver", "Canada", "Amérique du Nord", "Paris", 13, 3, "Petit-déjeuner", 2890, 10, 9.0, 180, ["Longue distance", "Autotour"]],
+
+  // ---- Hôtels supplémentaires ----
+  ["montpellier-ecusson", "hotels", "hotel_seul", "Dans l'Écusson, à Montpellier", "Montpellier", "France", "France", "Montpellier", 2, 4, "Petit-déjeuner", 209, 10, 8.5, 540, ["Ville", "France"]],
+  ["strasbourg-petite-france", "hotels", "hotel_seul", "Quartier de la Petite France", "Strasbourg", "France", "France", "Strasbourg", 2, 4, "Petit-déjeuner", 229, 10, 8.7, 620, ["Ville", "France"]],
+  ["annecy-vieille-ville", "hotels", "hotel_seul", "Vieille ville d'Annecy, au bord des canaux", "Annecy", "France", "France", "Lyon", 2, 4, "Petit-déjeuner", 259, 10, 8.8, 480, ["Ville", "France"]],
+  ["biarritz-grande-plage", "hotels", "hotel_seul", "Face à la Grande Plage de Biarritz", "Biarritz", "France", "France", "Bordeaux", 2, 4, "Petit-déjeuner", 289, 10, 8.6, 510, ["France"]],
+  ["cannes-croisette", "hotels", "hotel_seul", "À deux pas de la Croisette", "Cannes", "France", "France", "Nice", 2, 4, "Petit-déjeuner", 319, 10, 8.5, 640, ["France"]],
+  ["valence-espagne-centre", "hotels", "hotel_seul", "Centre historique de Valence", "Valence", "Espagne", "Europe", "Paris", 3, 4, "Petit-déjeuner", 219, 12, 8.7, 720, ["Ville"]],
+  ["naples-centro-storico", "hotels", "hotel_seul", "Centre historique de Naples", "Naples", "Italie", "Europe", "Paris", 3, 3, "Petit-déjeuner", 199, 12, 8.4, 810, ["Ville", "Petit prix"]],
+  ["cracovie-vieille-ville", "hotels", "hotel_seul", "Vieille ville de Cracovie", "Cracovie", "Pologne", "Europe", "Paris", 3, 4, "Petit-déjeuner", 179, 15, 8.7, 590, ["Ville", "Petit prix"]],
+  ["copenhague-nyhavn", "hotels", "hotel_seul", "À côté de Nyhavn", "Copenhague", "Danemark", "Europe du Nord", "Paris", 3, 4, "Petit-déjeuner", 379, 10, 8.6, 430, ["Ville"]],
+  ["stockholm-gamla-stan", "hotels", "hotel_seul", "Gamla Stan, la vieille ville", "Stockholm", "Suède", "Europe du Nord", "Paris", 3, 4, "Petit-déjeuner", 359, 10, 8.7, 380, ["Ville"]],
+  ["singapour-marina", "hotels", "hotel_seul", "Vue sur Marina Bay", "Singapour", "Singapour", "Asie du Sud-Est", "Paris", 4, 5, "Petit-déjeuner", 749, 10, 9.1, 620, ["Ville", "Luxe"]],
+  ["tokyo-shinjuku", "hotels", "hotel_seul", "Shinjuku, au cœur de Tokyo", "Tokyo", "Japon", "Asie", "Paris", 5, 4, "Petit-déjeuner", 690, 10, 8.9, 840, ["Ville", "Longue distance"]],
+
+  // ---- Vols supplémentaires ----
+  ["vol-paris-marseille", "vols", "vol_seul", "Vol Paris-Marseille aller-retour", "Marseille", "France", "France", "Paris", 0, 0, "Vol seul", 99, 10, 7.9, 2410, ["Vol direct", "France"]],
+  ["vol-paris-nice", "vols", "vol_seul", "Vol Paris-Nice aller-retour", "Nice", "France", "France", "Paris", 0, 0, "Vol seul", 109, 10, 8.0, 3120, ["Vol direct", "France"]],
+  ["vol-paris-ajaccio", "vols", "vol_seul", "Vol Paris-Ajaccio aller-retour", "Ajaccio", "France", "France", "Paris", 0, 0, "Vol seul", 149, 10, 7.8, 1240, ["Vol direct", "France"]],
+  ["vol-paris-seville", "vols", "vol_seul", "Vol Paris-Séville aller-retour", "Séville", "Espagne", "Europe", "Paris", 0, 0, "Vol seul", 119, 12, 8.1, 940, ["Vol direct"]],
+  ["vol-paris-palma", "vols", "vol_seul", "Vol Paris-Palma de Majorque aller-retour", "Palma de Majorque", "Espagne", "Baléares", "Paris", 0, 0, "Vol seul", 129, 12, 8.0, 1640, ["Vol direct"]],
+  ["vol-paris-tenerife", "vols", "vol_seul", "Vol Paris-Ténérife aller-retour", "Ténérife", "Espagne", "Canaries", "Paris", 0, 0, "Vol seul", 199, 10, 8.1, 1180, ["Vol direct"]],
+  ["vol-paris-naples", "vols", "vol_seul", "Vol Paris-Naples aller-retour", "Naples", "Italie", "Europe", "Paris", 0, 0, "Vol seul", 119, 10, 8.0, 860, ["Vol direct"]],
+  ["vol-paris-heraklion", "vols", "vol_seul", "Vol Paris-Héraklion aller-retour", "Crète", "Grèce", "Îles grecques", "Paris", 0, 0, "Vol seul", 179, 10, 8.0, 720, ["Vol direct"]],
+  ["vol-paris-varsovie", "vols", "vol_seul", "Vol Paris-Varsovie aller-retour", "Varsovie", "Pologne", "Europe", "Paris", 0, 0, "Vol seul", 109, 12, 7.9, 640, ["Vol direct", "Petit prix"]],
+  ["vol-paris-singapour", "vols", "vol_seul", "Vol Paris-Singapour aller-retour", "Singapour", "Singapour", "Asie du Sud-Est", "Paris", 0, 0, "Vol seul", 749, 10, 8.6, 890, ["Vol direct", "Longue distance"]],
+  ["vol-paris-sydney", "vols", "vol_seul", "Vol Paris-Sydney aller-retour", "Sydney", "Australie", "Océanie", "Paris", 0, 0, "Vol seul", 1290, 8, 8.4, 410, ["Longue distance"]],
+  ["vol-paris-papeete", "vols", "vol_seul", "Vol Paris-Papeete aller-retour", "Papeete", "Polynésie française", "Océanie", "Paris", 0, 0, "Vol seul", 1490, 8, 8.3, 320, ["Longue distance"]],
+  ["vol-lyon-marrakech", "vols", "vol_seul", "Vol Lyon-Marrakech aller-retour", "Marrakech", "Maroc", "Afrique du Nord", "Lyon", 0, 0, "Vol seul", 159, 10, 8.0, 740, ["Vol direct"]],
+  ["vol-nantes-lisbonne", "vols", "vol_seul", "Vol Nantes-Lisbonne aller-retour", "Lisbonne", "Portugal", "Atlantique", "Nantes", 0, 0, "Vol seul", 129, 10, 8.1, 520, ["Vol direct"]],
+  ["vol-lille-barcelone", "vols", "vol_seul", "Vol Lille-Barcelone aller-retour", "Barcelone", "Espagne", "Europe", "Lille", 0, 0, "Vol seul", 109, 12, 8.0, 480, ["Vol direct", "Petit prix"]],
+
+  // ---- Croisières supplémentaires ----
+  ["croisiere-antilles-fort-de-france", "croisieres", "croisiere_maritime", "Antilles au départ de Fort-de-France", "Fort-de-France", "Martinique", "Caraïbes", "Paris", 8, 4, "Pension complète", 1290, 15, 8.7, 340, ["Antilles françaises"]],
+  ["croisiere-mediterranee-barcelone", "croisieres", "croisiere_maritime", "Méditerranée au départ de Barcelone", "Barcelone", "Espagne", "Méditerranée", "Paris", 7, 4, "Pension complète", 699, 30, 8.5, 810, ["Méditerranée", "Vente flash"]],
+  ["croisiere-adriatique-venise", "croisieres", "croisiere_maritime", "Adriatique au départ de Venise", "Venise", "Italie", "Méditerranée", "Paris", 7, 4, "Pension complète", 789, 15, 8.6, 520, ["Méditerranée"]],
+  ["croisiere-islande-groenland", "croisieres", "croisiere_maritime", "Islande et Groenland", "Reykjavik", "Islande", "Europe du Nord", "Paris", 11, 5, "Pension complète", 3290, 10, 9.2, 120, ["Nature", "Longue distance"]],
+  ["croisiere-seine-normandie", "croisieres", "croisiere_fluviale", "La Seine normande, de Rouen au Havre", "Rouen", "France", "Fluvial", "Paris", 5, 4, "Pension complète", 890, 12, 8.6, 280, ["Fluvial", "France"]],
+  ["croisiere-garonne-bordeaux", "croisieres", "croisiere_fluviale", "Garonne et Gironde, vignobles bordelais", "Bordeaux", "France", "Fluvial", "Bordeaux", 6, 4, "Pension complète", 1090, 12, 8.8, 240, ["Fluvial", "France"]],
+  ["croisiere-mekong", "croisieres", "croisiere_fluviale", "Le Mékong, du Cambodge au Vietnam", "Siem Reap", "Cambodge", "Fluvial", "Paris", 12, 4, "Pension complète", 2890, 10, 9.0, 110, ["Fluvial", "Longue distance"]],
+
+  // ---- Location de voiture supplémentaire ----
+  ["voiture-lisbonne-suv", "location-voiture", "location", "SUV à Lisbonne, kilométrage illimité", "Lisbonne", "Portugal", "Atlantique", "Paris", 10, 0, "Sans repas", 249, 12, 8.4, 620, ["Annulation gratuite"]],
+  ["voiture-seville-compacte", "location-voiture", "location", "Compacte à Séville", "Séville", "Espagne", "Europe", "Paris", 7, 0, "Sans repas", 149, 12, 8.3, 410, ["Annulation gratuite"]],
+  ["voiture-split-compacte", "location-voiture", "location", "Compacte à Split, Croatie", "Split", "Croatie", "Méditerranée", "Paris", 7, 0, "Sans repas", 179, 10, 8.2, 290, ["Annulation gratuite"]],
+  ["voiture-le-cap-suv", "location-voiture", "location", "SUV au Cap, Afrique du Sud", "Le Cap", "Afrique du Sud", "Afrique australe", "Paris", 12, 0, "Sans repas", 439, 10, 8.5, 180, ["Nature"]],
+  ["voiture-los-angeles-cabriolet", "location-voiture", "location", "Cabriolet à Los Angeles", "Los Angeles", "États-Unis", "Amérique du Nord", "Paris", 10, 0, "Sans repas", 549, 10, 8.4, 320, ["Annulation gratuite"]],
+  ["voiture-maurice-citadine", "location-voiture", "location", "Citadine à l'île Maurice", "Flic en Flac", "Île Maurice", "Océan Indien", "Paris", 9, 0, "Sans repas", 269, 10, 8.5, 240, ["Océan Indien"]],
+
+  // ---- Parcs de loisirs supplémentaires ----
+  ["disneyland-paris-3-jours", "parcs-loisirs", "parc", "Disneyland Paris, 3 jours et 2 nuits", "Marne-la-Vallée", "France", "France", "Paris", 2, 4, "Petit-déjeuner", 449, 12, 8.6, 1840, ["Famille", "France"]],
+  ["walibi-rhone-alpes", "parcs-loisirs", "parc", "Walibi Rhône-Alpes, 2 jours et 1 nuit", "Les Avenières", "France", "France", "Lyon", 1, 3, "Petit-déjeuner", 169, 10, 8.2, 520, ["Famille", "France"]],
+  ["nigloland-sejour", "parcs-loisirs", "parc", "Nigloland, 2 jours et 1 nuit", "Dolancourt", "France", "France", "Paris", 1, 3, "Petit-déjeuner", 179, 10, 8.5, 610, ["Famille", "France"]],
+  ["puy-du-fou-cinescenie", "parcs-loisirs", "parc", "Le Puy du Fou et la Cinéscénie, 3 jours", "Les Epesses", "France", "France", "Nantes", 2, 3, "Petit-déjeuner", 389, 10, 9.2, 940, ["Famille", "France", "Coup de cœur"]],
+  ["efteling-pays-bas", "parcs-loisirs", "parc", "Efteling, 2 jours et 1 nuit", "Kaatsheuvel", "Pays-Bas", "Europe", "Lille", 1, 4, "Petit-déjeuner", 249, 10, 8.8, 380, ["Famille"]],
 ];
 
 // ---------------------------------------------------------------------------
@@ -607,18 +751,125 @@ function includedFor(category: string, subtype: string, board: Board): string[] 
  * Écarts au départ, en jours, appliqués en boucle au catalogue.
  *
  * Les valeurs sous le seuil des 21 jours alimentent Dernière Minute, les autres
- * s'étalent sur l'année. Les dates réelles sont calculées au moment du seed :
- * un catalogue daté en dur cesserait de déclencher le badge dès le lendemain.
+ * s'étalent sur plus d'une année, pour qu'aucune saison ne se retrouve vide.
+ * Les dates réelles sont calculées au moment du seed : un catalogue daté en dur
+ * cesserait de déclencher le badge dès le lendemain.
  */
 export const DEPARTURE_OFFSETS = [
   38, 12, 96, 6, 145, 61, 19, 220, 44, 9, 178, 75, 27, 120, 15, 260, 52, 88, 4, 310,
-  33, 160, 23, 68, 195, 11, 105, 47, 240, 17,
+  33, 160, 23, 68, 195, 11, 105, 47, 240, 17, 285, 130, 205, 335, 58, 172, 30, 250,
+  82, 360, 141, 21, 300, 115, 190,
 ];
+
+/**
+ * Offres rattachées à une période de l'année.
+ *
+ * Un séjour au ski ne part pas en juillet, un marché de Noël pas en mai : la
+ * date de départ de ces offres est tirée dans la fenêtre de leur saison, et non
+ * dans la rotation générale. Le seed s'en charge, en visant la prochaine
+ * occurrence de la période, de sorte que le catalogue reste juste d'une année
+ * sur l'autre sans qu'on y retouche.
+ *
+ * Les identifiants sont ceux de `src/lib/seasons.ts`.
+ */
+export const SEASON_BY_SLUG: Record<string, string> = {
+  // Ski et montagne : vacances d'hiver.
+  "ski-tignes-val-claret": "ski",
+  "ski-les-arcs-1800": "ski",
+  "ski-alpe-d-huez": "ski",
+  "ski-chamonix-mont-blanc": "ski",
+  "ski-serre-chevalier": "ski",
+  "ski-la-plagne": "ski",
+  "ski-les-2-alpes": "ski",
+  "ski-font-romeu-pyrenees": "ski",
+  "ski-andorre-pas-de-la-case": "ski",
+  "ski-autriche-tyrol": "ski",
+  "ski-italie-val-gardena": "ski",
+
+  // Fêtes de fin d'année.
+  "noel-strasbourg-marche": "noel",
+  "noel-colmar-marche": "noel",
+  "noel-vienne-marche": "noel",
+  "noel-prague-avent": "noel",
+  "noel-budapest-thermes": "noel",
+  "noel-laponie-rovaniemi": "noel",
+  "nouvel-an-marrakech": "noel",
+
+  // Printemps.
+  "seville-printemps-feria": "paques",
+  "amsterdam-tulipes": "paques",
+  "kyoto-cerisiers": "paques",
+  "chateaux-de-la-loire": "paques",
+  "alsace-route-des-vins": "paques",
+  "normandie-plages-debarquement": "pont-de-mai",
+
+  // Été et grandes vacances.
+  "provence-lavande": "ete",
+  "corse-plages-ete": "ete",
+  "bretagne-cotes-armor": "ete",
+  "pays-basque-cote": "ete",
+  "montagne-annecy-ete": "ete",
+  "camping-landes-biscarrosse": "ete",
+  "camping-ardeche-vallon": "ete",
+  "camping-var-frejus": "ete",
+  "camping-vendee-saint-jean-de-monts": "ete",
+  "camping-royan-pins": "ete",
+  "camping-cap-agde-aquatique": "ete",
+  "camping-bretagne-benodet": "ete",
+  "camping-corse-porto-vecchio": "ete",
+  "camping-costa-brava-lloret": "ete",
+  "camping-toscane-viareggio": "ete",
+  "camping-croatie-porec": "ete",
+
+  // Arrière-saison, la période la plus vendue en séjour balnéaire.
+  "crete-heraklion-village": "ete-indien",
+  "rhodes-faliraki": "ete-indien",
+  "corfou-sidari": "ete-indien",
+  "santorin-caldeira": "ete-indien",
+  "sicile-taormine": "ete-indien",
+  "sardaigne-costa-smeralda": "ete-indien",
+  "dubrovnik-lapad": "ete-indien",
+  "malte-sliema": "ete-indien",
+
+  // Soleil d'hiver : les destinations qu'on vend justement quand il fait froid.
+  "cap-vert-sal-santa-maria": "soleil-hiver",
+  "cap-vert-boa-vista-chaves": "soleil-hiver",
+  "tenerife-costa-adeje": "soleil-hiver",
+  "lanzarote-puerto-del-carmen": "soleil-hiver",
+  "grande-canarie-maspalomas": "soleil-hiver",
+  "fuerteventura-corralejo": "soleil-hiver",
+  "senegal-saly-petite-cote": "soleil-hiver",
+  "dubai-jumeirah-beach": "soleil-hiver",
+  "maurice-flic-en-flac": "soleil-hiver",
+  "maldives-male-sud": "soleil-hiver",
+
+  // Vacances de la Toussaint, très demandées en famille.
+  "club-djerba-famille": "toussaint",
+  "club-agadir-parc-aquatique": "toussaint",
+  "club-majorque-famille": "toussaint",
+  "disneyland-paris-2-jours": "toussaint",
+  "disneyland-paris-3-jours": "toussaint",
+  "parc-asterix-sejour": "toussaint",
+  "puy-du-fou-sejour": "toussaint",
+  "puy-du-fou-cinescenie": "toussaint",
+  "futuroscope-sejour": "toussaint",
+  "nigloland-sejour": "toussaint",
+  "walibi-rhone-alpes": "toussaint",
+  "efteling-pays-bas": "toussaint",
+  "portaventura-salou": "toussaint",
+  "europa-park-rust": "toussaint",
+};
 
 /** Offre du catalogue source : la référence est attribuée par la base, pas ici. */
 export type SourceOffer = Omit<Offer, "reference"> & {
   /** Départ dans N jours, converti en date réelle au moment du seed. */
   departureInDays: number;
+  /**
+   * Saison de départ, quand l'offre n'a de sens qu'à une période précise. Le
+   * seed vise alors la prochaine occurrence de cette période plutôt que
+   * d'appliquer l'écart en jours.
+   */
+  season?: string;
   /** Remise appliquée au prix de référence, en pourcentage. */
   discount: number;
 };
@@ -652,7 +903,10 @@ export const OFFERS: SourceOffer[] = RAW.map((o, index) => {
     rating,
     reviews,
     departureInDays: DEPARTURE_OFFSETS[index % DEPARTURE_OFFSETS.length],
-    dates: "Départs garantis toute l'année, selon disponibilité",
+    season: SEASON_BY_SLUG[slug],
+    dates: SEASON_BY_SLUG[slug]
+      ? "Départs sur la période, selon disponibilité"
+      : "Départs garantis toute l'année, selon disponibilité",
     tags,
     amenities: AMENITIES_BY_SUBTYPE[subtype] ?? AMENITIES_BY_CATEGORY[category] ?? [],
     description: describe(o),

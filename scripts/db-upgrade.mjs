@@ -20,8 +20,12 @@ loadEnv({ path: ".env", quiet: true });
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL est absente.");
 
-/** Premier numéro attribué : les références commencent donc à GSJ-048001. */
-const REFERENCE_START = 48000;
+/** Premier numéro attribué : les références commencent donc à GO-74001. */
+const REFERENCE_START = 74000;
+
+/** Préfixe des numéros d'offre, et sa longueur en chiffres. */
+const REFERENCE_PREFIX = "GO-";
+const REFERENCE_DIGITS = 5;
 
 const client = new pg.Client({ connectionString });
 await client.connect();
@@ -47,9 +51,30 @@ try {
   } else {
     await client.query(`ALTER TABLE "Offer" ADD COLUMN IF NOT EXISTS "reference" TEXT`);
 
+    // La contrainte est relâchée le temps de la reprise, puis reposée plus bas
+    // sur des données complètes. Sans cela, vider une référence pour la
+    // réattribuer se heurterait au NOT NULL posé au passage précédent.
+    await client.query(`ALTER TABLE "Offer" ALTER COLUMN "reference" DROP NOT NULL`);
+
+    // Passage de l'ancien format GSJ-048213 au format GO-74990 demandé par le
+    // client. Les numéros de l'ancienne série sont vidés puis réattribués par le
+    // bloc suivant, et le compteur repart de la nouvelle base. Le catalogue
+    // n'ayant jamais été mis en ligne, aucune référence GSJ n'a circulé.
+    const ancienFormat = await client.query(
+      `UPDATE "Offer" SET "reference" = NULL WHERE "reference" LIKE 'GSJ-%'`,
+    );
+    if (ancienFormat.rowCount > 0) {
+      await client.query(
+        `UPDATE "Counter" SET "value" = $1 WHERE "key" = 'offer.reference' AND "value" < $1`,
+        [REFERENCE_START],
+      );
+      console.log(`Références GSJ converties au format GO : ${ancienFormat.rowCount}.`);
+    }
+
     // Les offres déjà en base reçoivent leur numéro dans l'ordre de création,
     // pour que l'ancienneté d'un dossier se lise dans sa référence.
-    const filled = await client.query(`
+    const filled = await client.query(
+      `
       WITH manquantes AS (
         SELECT id, row_number() OVER (ORDER BY "createdAt", id) AS rang
         FROM "Offer"
@@ -59,17 +84,31 @@ try {
         SELECT "value" AS base FROM "Counter" WHERE "key" = 'offer.reference'
       )
       UPDATE "Offer" o
-      SET "reference" = 'GSJ-' || lpad((depart.base + manquantes.rang)::text, 6, '0')
+      SET "reference" = $1 || lpad((depart.base + manquantes.rang)::text, ${REFERENCE_DIGITS}, '0')
       FROM manquantes, depart
       WHERE o.id = manquantes.id
-    `);
+      `,
+      [REFERENCE_PREFIX],
+    );
 
-    // Le compteur repart du plus grand numéro attribué, jamais en dessous.
+    // Le compteur repart du plus grand numéro attribué, jamais en dessous : un
+    // compteur resté en arrière réattribuerait des numéros déjà pris à la
+    // première offre créée au back-office.
+    //
+    // L'indice de découpage est écrit en clair dans la requête, et non passé en
+    // paramètre : PostgreSQL n'infère pas le type d'un paramètre placé après
+    // `from` dans un `substring`, et l'expression rend alors NULL sans erreur,
+    // laissant le compteur inchangé. La valeur vient d'une constante du script,
+    // il n'y a donc rien à échapper.
+    const debutNumero = REFERENCE_PREFIX.length + 1;
     await client.query(`
       UPDATE "Counter" c
       SET "value" = GREATEST(
         c."value",
-        COALESCE((SELECT MAX(NULLIF(substring("reference" from 5), '')::int) FROM "Offer"), 0)
+        COALESCE(
+          (SELECT MAX(NULLIF(substring("reference" from ${debutNumero}), '')::int) FROM "Offer"),
+          0
+        )
       )
       WHERE c."key" = 'offer.reference'
     `);

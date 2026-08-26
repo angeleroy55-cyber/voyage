@@ -3,7 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { DEPARTURE_CITIES } from "@/lib/data";
+import { useDepartureCity } from "@/components/site/DepartureCity";
+import {
+  DEPARTURE_GROUPS,
+  WORLD_DESTINATIONS,
+  isDepartureCity,
+} from "@/lib/places";
 import type { SearchCategory } from "@/server/catalogue";
 
 type Props = {
@@ -46,9 +51,12 @@ export default function SearchWidget({
 }: Props) {
   const router = useRouter();
   const [active, setActive] = useState<string>(initial);
-  const [origin, setOrigin] = useState(
-    values.depart && DEPARTURE_CITIES.includes(values.depart) ? values.depart : "Paris",
-  );
+  // La ville de départ est celle de l'en-tête, détectée puis mémorisée. Un lien
+  // partagé qui porte déjà un départ l'emporte : il décrit une recherche
+  // précise, que la préférence du visiteur n'a pas à écraser.
+  const { city, setCity } = useDepartureCity();
+  const origin = isDepartureCity(values.depart) ? (values.depart as string) : city;
+  const setOrigin = setCity;
   const [destination, setDestination] = useState(values.q ?? "");
   const [start, setStart] = useState(isoOr(values.du, isoDate(30)));
   const [end, setEnd] = useState(isoOr(values.au, isoDate(37)));
@@ -116,6 +124,14 @@ export default function SearchWidget({
         })}
       </div>
 
+      {/* Une seule liste de suggestions pour tout le formulaire, partagée par
+          les champs destination et lieu de prise en charge. */}
+      <datalist id="gosejour-destinations">
+        {WORLD_DESTINATIONS.map((ville) => (
+          <option key={ville} value={ville} />
+        ))}
+      </datalist>
+
       <form onSubmit={submit} className="p-4 sm:p-5">
         <div className="grid gap-3 lg:grid-cols-12">
           {fields.includes("origin") && (
@@ -129,8 +145,12 @@ export default function SearchWidget({
                 onChange={(e) => setOrigin(e.target.value)}
                 className="w-full bg-transparent text-[15px] font-semibold text-navy-900 outline-none"
               >
-                {DEPARTURE_CITIES.map((c) => (
-                  <option key={c}>{c}</option>
+                {DEPARTURE_GROUPS.map((groupe) => (
+                  <optgroup key={groupe.label} label={groupe.label}>
+                    {groupe.cities.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </Field>
@@ -142,9 +162,14 @@ export default function SearchWidget({
               icon="pin"
               label={active === "location-voiture" ? "Lieu de prise en charge" : "Destination"}
             >
+              {/* Champ libre avec suggestions : le visiteur peut taper une
+                  ville absente de la liste, la recherche fonctionne quand même.
+                  Un menu fermé refuserait les milliers de villes du monde. */}
               <input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
+                list="gosejour-destinations"
+                autoComplete="off"
                 placeholder={
                   active === "croisieres"
                     ? "Méditerranée, Caraïbes…"

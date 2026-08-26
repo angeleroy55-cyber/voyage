@@ -10,8 +10,10 @@ import GiftCard from "@/components/home/GiftCard";
 import Testimonials from "@/components/home/Testimonials";
 import BlogSection from "@/components/home/BlogSection";
 import VideoSection from "@/components/home/VideoSection";
+import SeasonRail from "@/components/home/SeasonRail";
 import SearchWidget from "@/components/search/SearchWidget";
 import Reveal from "@/components/ui/Reveal";
+import { SEASONS, inSeason } from "@/lib/seasons";
 import {
   getBestDeals,
   getDestinations,
@@ -43,6 +45,17 @@ export default async function HomePage() {
       getSettings(),
       getSearchCategories(),
     ]);
+
+  // Volume réel par saison, compté une seule fois sur le catalogue déjà chargé
+  // plutôt que par huit requêtes d'agrégation supplémentaires.
+  const saisonnier: Record<string, number> = {};
+  for (const saison of SEASONS) {
+    saisonnier[saison.id] = all.filter(
+      (offre) =>
+        offre.departureDate &&
+        inSeason(new Date(`${offre.departureDate}T12:00:00`), saison),
+    ).length;
+  }
 
   const topBooked = [...all]
     .filter((offer) => offer.category !== "location-voiture")
@@ -132,6 +145,10 @@ export default async function HomePage() {
             />
           </Reveal>
         )}
+
+        <Reveal>
+          <SeasonRail counts={saisonnier} />
+        </Reveal>
 
         <Reveal>
           <DestinationGrid destinations={destinations} />

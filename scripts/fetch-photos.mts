@@ -52,9 +52,11 @@ const TITRES_EXCLUS = [
  * « 1893 ». Une image ainsi datée avant 1950 est une reproduction d’œuvre, pas
  * une photo de voyage exploitable sur une carte offre.
  */
-function estAncienne(titre: string): boolean {
-  const annees = titre.match(/(1[0-9]{3})/g);
-  return annees ? annees.some((a) => Number(a) < 1950) : false;
+function estAncienne(...textes: string[]): boolean {
+  return textes.some((texte) => {
+    const annees = (texte ?? "").match(/\b1[0-9]{3}\b/g);
+    return annees ? annees.some((a) => Number(a) < 1950) : false;
+  });
 }
 
 /**
@@ -147,7 +149,9 @@ async function chercher(requete: string): Promise<Trouvaille[]> {
       if (!image?.url) return false;
       const titre = image.titre.toLowerCase();
       if (TITRES_EXCLUS.some((mot) => titre.includes(mot))) return false;
-      if (estAncienne(image.titre)) return false;
+      // Le titre comme l'auteur trahissent une reproduction : « Munster,
+      // Sebastian, 1448-1552 » signe une gravure, pas une photo de voyage.
+      if (estAncienne(image.titre, image.auteur)) return false;
       if (!/\.(jpe?g|png)$/i.test(image.titre)) return false;
       // Une photo de voyage est large : le portrait et le carré cadrent mal
       // dans une carte en 16/10, et le panoramique extrême non plus.

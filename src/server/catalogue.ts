@@ -2,7 +2,12 @@ import "server-only";
 import { prisma } from "@/server/prisma";
 import { photo } from "@/lib/format";
 import { BRAND, CONTINENTS, continentOf } from "@/lib/data";
-import { LAST_MINUTE_DAYS } from "@/lib/constants";
+import {
+  LAST_MINUTE_DAYS,
+  SUBTYPE_ORDER,
+  subtypeBlurb,
+  subtypeLabel,
+} from "@/lib/constants";
 import type {
   CategoryAccent,
   CategoryId,
@@ -498,7 +503,64 @@ export type NavCategory = {
   icon: string;
   blurb: string;
   href: string;
+  /** Formules réellement proposées dans cette catégorie, avec leur volume. */
+  subcategories: NavSubcategory[];
 };
+
+export type NavSubcategory = {
+  id: string;
+  label: string;
+  blurb: string;
+  href: string;
+  count: number;
+};
+
+/**
+ * Sous-catégories du menu, déduites des offres publiées.
+ *
+ * Elles ne sont pas déclarées à la main : le menu liste ce que le catalogue
+ * contient vraiment, avec le nombre d'offres derrière. Une formule qui n'a plus
+ * d'offre disparaît d'elle-même, et personne ne clique sur une page vide.
+ *
+ * Une sous-catégorie n'a jamais d'URL propre : c'est un filtre sur la page de
+ * sa catégorie, `/sejours?formule=tout_compris`. Le cahier l'impose, pour que
+ * « Vol + Hôtel » ne se mette pas à concurrencer « Séjours » sur les moteurs.
+ */
+async function subcategoriesByCategory(): Promise<Map<string, NavSubcategory[]>> {
+  const lignes = await prisma.offer.groupBy({
+    by: ["categoryId", "subtype"],
+    where: { status: "published", category: { active: true }, subtype: { not: "" } },
+    _count: { _all: true },
+  });
+
+  const categories = await prisma.category.findMany({ select: { id: true, slug: true } });
+  const slugParId = new Map(categories.map((c) => [c.id, c.slug]));
+
+  const parCategorie = new Map<string, NavSubcategory[]>();
+  for (const ligne of lignes) {
+    const slug = slugParId.get(ligne.categoryId);
+    const label = subtypeLabel(ligne.subtype);
+    // Un sous-type inconnu des constantes n'est pas rendu : il viendrait d'une
+    // saisie libre, et afficherait un intitulé brut dans le menu.
+    if (!slug || !label) continue;
+    const liste = parCategorie.get(slug) ?? [];
+    liste.push({
+      id: ligne.subtype,
+      label,
+      blurb: subtypeBlurb(ligne.subtype),
+      href: `/${slug}?formule=${ligne.subtype}`,
+      count: ligne._count._all,
+    });
+    parCategorie.set(slug, liste);
+  }
+
+  for (const liste of parCategorie.values()) {
+    liste.sort(
+      (a, b) => SUBTYPE_ORDER.indexOf(a.id) - SUBTYPE_ORDER.indexOf(b.id),
+    );
+  }
+  return parCategorie;
+}
 
 /**
  * Navigation principale et débordement.
@@ -512,7 +574,10 @@ export async function getNavigation(): Promise<{
   main: NavCategory[];
   overflow: NavCategory[];
 }> {
-  const rows = await getCategories();
+  const [rows, sousCategories] = await Promise.all([
+    getCategories(),
+    subcategoriesByCategory(),
+  ]);
   const toNav = (row: (typeof rows)[number]): NavCategory => ({
     id: row.slug,
     label: row.label,
@@ -520,6 +585,7 @@ export async function getNavigation(): Promise<{
     icon: row.icon,
     blurb: row.blurb,
     href: `/${row.slug}`,
+    subcategories: sousCategories.get(row.slug) ?? [],
   });
   return {
     main: rows.filter((row) => !row.isOverflow).slice(0, 10).map(toNav),

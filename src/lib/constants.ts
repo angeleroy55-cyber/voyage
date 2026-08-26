@@ -86,23 +86,63 @@ export const LAST_MINUTE_DAYS = 21;
  * des catégories concurrentes.
  */
 export const OFFER_SUBTYPES = [
-  { id: "vol_hotel", label: "Vol + Hôtel" },
-  { id: "tout_compris", label: "Tout compris" },
-  { id: "club", label: "Club" },
-  { id: "hotel_seul", label: "Hôtel seul" },
-  { id: "vol_seul", label: "Vol seul" },
-  { id: "circuit_accompagne", label: "Circuit accompagné" },
-  { id: "circuit_libre", label: "Autotour" },
-  { id: "croisiere_maritime", label: "Croisière maritime" },
-  { id: "croisiere_fluviale", label: "Croisière fluviale" },
-  { id: "camping", label: "Camping" },
-  { id: "week_end", label: "Week-end" },
-  { id: "location", label: "Location de voiture" },
+  { id: "vol_hotel", label: "Vol + Hôtel", blurb: "Le vol et l'hébergement réservés ensemble" },
+  { id: "tout_compris", label: "Tout compris", blurb: "Repas, boissons et animations inclus" },
+  { id: "club", label: "Clubs", blurb: "Animations et clubs enfants toute la journée" },
+  { id: "hotel_seul", label: "Hôtel seul", blurb: "La chambre, sans transport" },
+  { id: "vol_seul", label: "Vol sec", blurb: "Le billet d'avion seul, aller-retour" },
+  {
+    id: "circuit_accompagne",
+    label: "Circuits accompagnés",
+    blurb: "En petit groupe, avec guide francophone",
+  },
+  { id: "circuit_libre", label: "Autotours", blurb: "Voiture et étapes réservées, à votre rythme" },
+  {
+    id: "combine",
+    label: "Voyages combinés",
+    blurb: "Deux destinations ou deux formules en un seul voyage",
+  },
+  { id: "croisiere_maritime", label: "Croisières maritimes", blurb: "En mer, escales quotidiennes" },
+  {
+    id: "croisiere_fluviale",
+    label: "Croisières fluviales",
+    blurb: "Sur les fleuves, amarrage en centre-ville",
+  },
+  { id: "camping", label: "Campings", blurb: "Mobil-homes et villages vacances" },
+  { id: "week_end", label: "Week-ends et courts séjours", blurb: "Deux ou trois nuits" },
+  { id: "location", label: "Location de voiture", blurb: "Au départ de l'aéroport ou en ville" },
+  { id: "parc", label: "Parcs de loisirs", blurb: "Billets et nuit d'hôtel réservés ensemble" },
 ] as const;
 
 export function subtypeLabel(id: string): string {
   return OFFER_SUBTYPES.find((s) => s.id === id)?.label ?? "";
 }
+
+export function subtypeBlurb(id: string): string {
+  return OFFER_SUBTYPES.find((s) => s.id === id)?.blurb ?? "";
+}
+
+/**
+ * Ordre d'affichage des sous-catégories dans le menu. Il ne suit pas l'ordre
+ * de déclaration : dans Séjours, « Tout compris » se cherche plus souvent que
+ * « Vol + Hôtel », et passe donc devant.
+ */
+export const SUBTYPE_ORDER: string[] = [
+  "tout_compris",
+  "club",
+  "vol_hotel",
+  "circuit_accompagne",
+  "circuit_libre",
+  "combine",
+  "croisiere_maritime",
+  "croisiere_fluviale",
+  "hotel_seul",
+  "vol_seul",
+  "camping",
+  "week_end",
+  "location",
+  "parc",
+];
 
 /**
  * Couleurs du badge « type d'offre », en coin d'image sur la carte.
