@@ -66,16 +66,21 @@ export default function QuickView({ offer }: { offer: Offer }) {
           </div>
         }
       >
-        <div className="-mx-5 -mt-5 grid gap-5 sm:grid-cols-2 sm:gap-6 sm:px-5 sm:pt-5">
-          <div>
+        {/* Deux colonnes qui ne débordent pas : chacune porte `min-w-0`, sans
+            quoi une grille CSS refuse de réduire un enfant sous la largeur de
+            son contenu et pousse la fenêtre au-delà de l'écran. */}
+        <div className="grid gap-0 sm:grid-cols-2 sm:gap-6 sm:p-5">
+          <div className="min-w-0">
             <div className="relative aspect-4/3 overflow-hidden sm:rounded-xl">
               <Image
-                key={gallery[index]}
                 src={gallery[index]}
                 alt={`${offer.title}, visuel ${index + 1} sur ${gallery.length}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 420px"
-                className="animate-fade-up object-cover"
+                // Pas d'animation d'entrée ni de remontage à chaque visuel :
+                // le décalage vertical de `fade-up` faisait sauter l'image à
+                // chaque flèche, dans un cadre pourtant fixe.
+                className="object-cover"
               />
               {off && (
                 <span className="absolute left-3 top-3 rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">
@@ -119,7 +124,7 @@ export default function QuickView({ offer }: { offer: Offer }) {
             </div>
           </div>
 
-          <div className="min-w-0 px-5 pb-1 sm:px-0">
+          <div className="min-w-0 px-5 pb-5 pt-5 sm:p-0">
             <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-navy-500">
               <Icon name="pin" className="size-3.5" />
               {offer.destination}, {offer.country}
@@ -127,6 +132,12 @@ export default function QuickView({ offer }: { offer: Offer }) {
             <h2 className="mt-1 text-xl font-extrabold leading-snug tracking-tight text-navy-900">
               {offer.title}
             </h2>
+            {/* Le numéro de référence n'apparaît qu'ici, à l'ouverture de
+                l'offre : la carte de listing reste lisible d'un coup d'œil, et
+                le numéro sert au moment où l'on s'intéresse vraiment au séjour. */}
+            <p className="mt-1.5 font-mono text-xs text-navy-500">
+              Réf. <span className="font-semibold text-navy-700">{offer.reference}</span>
+            </p>
 
             <div className="mt-2.5 flex flex-wrap items-center gap-3">
               <span className="flex items-center gap-2">

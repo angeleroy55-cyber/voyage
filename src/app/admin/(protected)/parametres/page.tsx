@@ -19,6 +19,20 @@ const FIELDS = [
     hint: "Au format international, ex. +33 7 59 82 38 73. Vide, le bouton disparaît.",
   },
   { key: "site.email", label: "E-mail de contact", hint: "" },
+  // Coordonnées bancaires du virement.
+  //
+  // Elles vivent en base, jamais dans le code : le dépôt est versionné et
+  // partagé, un IBAN écrit en dur y resterait dans l'historique même après
+  // effacement. Elles ne sont montrées qu'au client qui a choisi le virement,
+  // sur sa confirmation, et non sur une page publique où n'importe qui les
+  // relèverait.
+  {
+    key: "payment.holder",
+    label: "Titulaire du compte",
+    hint: "Affiché au client qui règle par virement",
+  },
+  { key: "payment.iban", label: "IBAN", hint: "Vide, le virement n'est pas proposé" },
+  { key: "payment.bic", label: "BIC", hint: "" },
   { key: "hero.title", label: "Titre de la page d'accueil", hint: "" },
   { key: "hero.subtitle", label: "Sous-titre de la page d'accueil", hint: "" },
 ];

@@ -22,6 +22,7 @@ import {
   REFERENCE_PRICE_SOURCE,
 } from "../src/lib/catalogue-source";
 import { creditFor, photoFor, photoQueryFor, photosFor } from "../src/lib/media/photos";
+import { seasonById, seasonRange } from "../src/lib/seasons";
 import { photo } from "../src/lib/format";
 import {
   OFFER_REFERENCE_COUNTER,
@@ -83,6 +84,30 @@ function departureFrom(days: number): Date {
   const date = new Date();
   date.setHours(12, 0, 0, 0);
   date.setDate(date.getDate() + days);
+  return date;
+}
+
+/**
+ * Date de départ d'une offre saisonnière, tirée dans la fenêtre de sa saison.
+ *
+ * Un séjour au ski ne part pas en juillet et un marché de Noël pas en mai : la
+ * date vise la prochaine occurrence de la période, pas un simple écart en jours.
+ * Le décalage est déterministe, calculé sur le rang de l'offre : deux
+ * installations du projet produisent le même catalogue, et les départs d'une
+ * même saison s'échelonnent au lieu de tomber tous le même jour.
+ */
+function departureInSeason(seasonId: string, rang: number): Date | null {
+  const saison = seasonById(seasonId);
+  if (!saison) return null;
+
+  const { gte, lte } = seasonRange(saison);
+  const jours = Math.max(
+    0,
+    Math.round((lte.getTime() - gte.getTime()) / (24 * 60 * 60 * 1000)),
+  );
+  const date = new Date(gte);
+  date.setDate(date.getDate() + (jours > 0 ? (rang * 7) % jours : 0));
+  date.setHours(12, 0, 0, 0);
   return date;
 }
 
@@ -317,7 +342,9 @@ async function main() {
       referencePriceSource: offer.oldPrice ? REFERENCE_PRICE_SOURCE : "",
       rating: offer.rating,
       reviewsCount: offer.reviews,
-      departureDate: departureFrom(offer.departureInDays),
+      departureDate:
+        (offer.season ? departureInSeason(offer.season, index) : null) ??
+        departureFrom(offer.departureInDays),
       dates: offer.dates,
       description: offer.description,
       tags: offer.tags,

@@ -15,9 +15,9 @@ export function bookingReference(): string {
 }
 
 /**
- * Numéro public d'une offre : GSJ- suivi de six chiffres, ex. GSJ-048213.
+ * Numéro public d'une offre : GO- suivi de cinq chiffres, ex. GO-74990.
  *
- * Six chiffres et un seul format pour toutes les catégories : c'est plus court
+ * Cinq chiffres et un seul format pour toutes les catégories : c'est plus court
  * à dicter au téléphone qu'un code porteur de sens, et un numéro n'a pas à
  * révéler la catégorie d'une offre, qui peut changer.
  *
@@ -26,21 +26,21 @@ export function bookingReference(): string {
  * pour qu'aucun ne soit réattribué après une suppression.
  */
 export function offerReference(counter: number): string {
-  return `GSJ-${String(counter).padStart(6, "0")}`;
+  return `GO-${String(counter).padStart(5, "0")}`;
 }
 
 /** Clé du compteur dans la table `Counter`. */
 export const OFFER_REFERENCE_COUNTER = "offer.reference";
 
-/** Dernier numéro considéré comme déjà pris : la série commence à GSJ-048001. */
-export const OFFER_REFERENCE_START = 48000;
+/** Dernier numéro considéré comme déjà pris : la série commence à GO-74001. */
+export const OFFER_REFERENCE_START = 74000;
 
 /** Reconnaît un numéro d'offre, tel qu'il apparaît dans une URL ou une recherche. */
 export function isOfferReference(value: string): boolean {
-  return /^GSJ-\d{6}$/i.test(value.trim());
+  return /^GO-\d{5,6}$/i.test(value.trim());
 }
 
-/** Forme canonique d'un numéro saisi à la main : « gsj 48213 » devient GSJ-048213. */
+/** Forme canonique d'un numéro saisi à la main : « go 74990 » devient GO-74990. */
 export function normaliseOfferReference(value: string): string | null {
   const digits = value.replace(/[^0-9]/g, "");
   if (!digits || digits.length > 6) return null;

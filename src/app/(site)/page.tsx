@@ -10,8 +10,10 @@ import GiftCard from "@/components/home/GiftCard";
 import Testimonials from "@/components/home/Testimonials";
 import BlogSection from "@/components/home/BlogSection";
 import VideoSection from "@/components/home/VideoSection";
+import SeasonRail from "@/components/home/SeasonRail";
 import SearchWidget from "@/components/search/SearchWidget";
 import Reveal from "@/components/ui/Reveal";
+import { SEASONS, inSeason } from "@/lib/seasons";
 import {
   getBestDeals,
   getDestinations,
@@ -29,32 +31,33 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [
-    deals,
-    lastMinute,
-    france,
-    all,
-    destinations,
-    reviews,
-    posts,
-    settings,
-    categories,
-    heroSlides,
-  ] = await Promise.all([
-    getBestDeals(8),
-    getRuleOffers("derniere-minute", 8),
-    // Séjours France est mis en avant ici sans occuper une entrée de menu :
-    // c'est la compensation prévue par le cahier, la cible étant française à
-    // plus de la moitié, sans créer d'URL qui cannibaliserait Séjours.
-    getRuleOffers("france", 8),
-    getOffers(),
-    getDestinations(),
-    getReviews(6),
-    getPosts(4),
-    getSettings(),
-    getSearchCategories(),
-    getHeroSlides(),
-  ]);
+  const [deals, heroSlides, lastMinute, france, all, destinations, reviews, posts, settings, categories] =
+    await Promise.all([
+      getBestDeals(8),
+      getHeroSlides(),
+      getRuleOffers("derniere-minute", 8),
+      // Séjours France est mis en avant ici sans occuper une entrée de menu :
+      // c'est la compensation prévue par le cahier, la cible étant française à
+      // plus de la moitié, sans créer d'URL qui cannibaliserait Séjours.
+      getRuleOffers("france", 8),
+      getOffers(),
+      getDestinations(),
+      getReviews(6),
+      getPosts(4),
+      getSettings(),
+      getSearchCategories(),
+    ]);
+
+  // Volume réel par saison, compté une seule fois sur le catalogue déjà chargé
+  // plutôt que par huit requêtes d'agrégation supplémentaires.
+  const saisonnier: Record<string, number> = {};
+  for (const saison of SEASONS) {
+    saisonnier[saison.id] = all.filter(
+      (offre) =>
+        offre.departureDate &&
+        inSeason(new Date(`${offre.departureDate}T12:00:00`), saison),
+    ).length;
+  }
 
   const topBooked = [...all]
     .filter((offer) => offer.category !== "location-voiture")
@@ -144,6 +147,10 @@ export default async function HomePage() {
             />
           </Reveal>
         )}
+
+        <Reveal>
+          <SeasonRail counts={saisonnier} />
+        </Reveal>
 
         <Reveal>
           <DestinationGrid destinations={destinations} />

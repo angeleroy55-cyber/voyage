@@ -2,12 +2,8 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import {
-  PAYMENT_METHODS,
-  PaymentLogo,
-  SOCIAL_NETWORKS,
-  SocialLogo,
-} from "@/components/ui/BrandLogos";
+import { PaymentLogo, SOCIAL_NETWORKS, SocialLogo } from "@/components/ui/BrandLogos";
+import { PAYMENT_BADGES } from "@/lib/constants";
 import { FOOTER_LINKS, whatsappLink } from "@/lib/data";
 import type { NavCategory, SiteSettings } from "@/server/catalogue";
 
@@ -136,10 +132,13 @@ export default function Footer({
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">Paiement</span>
             <div className="flex flex-wrap gap-2">
-              {PAYMENT_METHODS.map((method) => (
+              {/* Marques acceptées, pas moyens sélectionnables : le règlement
+                  se fait par carte, ces logos disent simplement lesquelles
+                  passent. La liste des choix vit dans PAYMENT_CHOICES. */}
+              {PAYMENT_BADGES.map((id) => (
                 <PaymentLogo
-                  key={method.id}
-                  id={method.id}
+                  key={id}
+                  id={id}
                   className="transition duration-200 hover:-translate-y-0.5 hover:shadow-card"
                 />
               ))}
@@ -147,10 +146,16 @@ export default function Footer({
           </div>
         </div>
 
-        <p className="mt-8 text-xs leading-relaxed text-navy-500">
-          © {new Date().getFullYear()} {settings.name}, projet de démonstration. Les offres, prix et avis
-          affichés sont fictifs et générés pour les besoins de la maquette. Photographies :
-          placeholders Picsum.
+        {/* La mention suit l'état réel du site, elle n'est pas décorative :
+            les prix de référence viennent d'un relevé concurrentiel et non de
+            nos propres tarifs passés, et les visuels illustrent la destination
+            et non l'établissement. L'écrire évite d'avoir à s'en expliquer. */}
+        <p className="mt-8 max-w-4xl text-xs leading-relaxed text-navy-500">
+          © {new Date().getFullYear()} {settings.name}. Les prix barrés correspondent à un relevé de
+          tarifs constatés chez d&apos;autres distributeurs, à la date indiquée sur la fiche, et non à
+          un prix précédemment pratiqué par {settings.name}. Les photographies illustrent la
+          destination et proviennent de Wikimedia Commons, sous licences libres ; le crédit de
+          chacune figure sur la fiche de l&apos;offre concernée.
         </p>
       </div>
     </footer>

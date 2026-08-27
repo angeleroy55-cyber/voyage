@@ -144,26 +144,44 @@ export default function Modal({
           />
         )}
 
-        <div className={`flex items-start gap-4 px-5 pt-5 ${hideTitle ? "pb-0" : "pb-4"}`}>
-          <div className={hideTitle ? "sr-only" : "min-w-0 flex-1"}>
-            <h2 id={titleId} className="text-lg font-extrabold tracking-tight text-navy-900">
-              {title}
-            </h2>
-            {description && <p className="mt-1 text-sm text-navy-600">{description}</p>}
+        {/* Titre masqué : aucune barre d'en-tête n'est rendue, seulement le
+            titre pour les lecteurs d'écran et le bouton de fermeture, posé en
+            absolu au-dessus du contenu. Une barre vide de 20 px laissait
+            auparavant un décalage que chaque appelant devait rattraper au
+            moyen d'une marge négative, source de débordements. */}
+        {hideTitle ? (
+          <h2 id={titleId} className="sr-only">
+            {title}
+          </h2>
+        ) : (
+          <div className="flex items-start gap-4 px-5 pb-4 pt-5">
+            <div className="min-w-0 flex-1">
+              <h2 id={titleId} className="text-lg font-extrabold tracking-tight text-navy-900">
+                {title}
+              </h2>
+              {description && <p className="mt-1 text-sm text-navy-600">{description}</p>}
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Fermer"
-            className={`shrink-0 rounded-lg p-2 text-navy-500 transition hover:bg-navy-50 hover:text-navy-900 ${
-              hideTitle ? "absolute right-3 top-3 z-10 bg-white/90 backdrop-blur" : ""
-            }`}
-          >
-            <Icon name="close" className="size-5" />
-          </button>
-        </div>
+        )}
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5">{children}</div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Fermer"
+          className={
+            hideTitle
+              ? "absolute right-3 top-3 z-20 rounded-lg bg-white/90 p-2 text-navy-600 shadow-card backdrop-blur transition hover:bg-white hover:text-navy-900"
+              : "absolute right-4 top-4 rounded-lg p-2 text-navy-500 transition hover:bg-navy-50 hover:text-navy-900"
+          }
+        >
+          <Icon name="close" className="size-5" />
+        </button>
+
+        {/* `overflow-y-auto` rend aussi l'axe horizontal scrollable : le
+            contenu doit donc tenir dans la largeur, sans marge négative. */}
+        <div className={`min-h-0 flex-1 overflow-y-auto ${hideTitle ? "" : "px-5 pb-5"}`}>
+          {children}
+        </div>
 
         {footer && (
           <div className="shrink-0 border-t border-navy-100 bg-navy-50/60 px-5 py-4">{footer}</div>

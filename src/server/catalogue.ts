@@ -1,13 +1,18 @@
 import "server-only";
 import { prisma } from "@/server/prisma";
 import { BRAND, CONTINENTS, continentOf } from "@/lib/data";
-import { LAST_MINUTE_DAYS } from "@/lib/constants";
+import {
+  LAST_MINUTE_DAYS,
+  SUBTYPE_ORDER,
+  subtypeBlurb,
+  subtypeLabel,
+} from "@/lib/constants";
+import { seasonRange, upcomingSeason } from "@/lib/seasons";
 import { withMediaFallback } from "@/lib/media";
 import type {
   CategoryAccent,
   CategoryId,
   Destination,
-  HeroSlide,
   Offer,
   Post,
   Review,
@@ -214,6 +219,134 @@ export async function getRuleOffers(rule: string, take?: number): Promise<Offer[
     default:
       return getBestDeals(take);
   }
+}
+
+/**
+ * Bandeaux d'accroche de la page d'accueil.
+ *
+ * Ils sont construits depuis le catalogue et non écrits à la main : l'image est
+ * celle d'une offre réelle, le prix est celui qu'on trouvera en cliquant, et la
+ * période mise en avant suit le calendrier. Un bandeau rédigé en dur annonce
+ * tôt ou tard un prix qui n'existe plus, ou une saison passée.
+ *
+ * L'accroche tient en cinq mots au plus. Au-delà, elle n'est pas lue : sur une
+ * image, on retient une promesse, pas une phrase.
+ */
+export type HeroSlide = {
+  id: string;
+  /** Surtitre : l'urgence ou le contexte, en trois ou quatre mots. */
+  kicker: string;
+  /** Promesse principale, cinq mots au plus. */
+  title: string;
+  /** Prix d'appel réel, déjà remisé. */
+  fromPrice: number;
+  /** Ce que le prix achète : « 8 jours, tout compris ». */
+  detail: string;
+  href: string;
+  cta: string;
+  image: string;
+  alt: string;
+};
+
+export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
+  const saison = upcomingSeason();
+  const { gte, lte } = seasonRange(saison);
+
+  const commun = { status: "published", category: { active: true } } as const;
+  const parPrix = [{ price: "asc" as const }];
+
+  const [saisonniere, derniereMinute, croisiere, circuit] = await Promise.all([
+    prisma.offer.findFirst({
+      where: { ...commun, departureDate: { gte, lte } },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+    prisma.offer.findFirst({
+      where: { ...commun, departureDate: lastMinuteWindow() },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+    prisma.offer.findFirst({
+      where: { ...commun, category: { slug: "croisieres", active: true } },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+    prisma.offer.findFirst({
+      where: { ...commun, category: { slug: "circuits", active: true } },
+      orderBy: parPrix,
+      select: OFFER_SELECT,
+    }),
+  ]);
+
+  // La plus forte remise du catalogue, calculée en mémoire : la comparaison de
+  // deux colonnes d'une même ligne échappe au filtre de Prisma.
+  const promo = (await getBestDeals(1))[0] ?? null;
+
+  const slides: (HeroSlide | null)[] = [
+    saisonniere &&
+      construireSlide(toOffer(saisonniere), {
+        id: `saison-${saison.id}`,
+        kicker: "Prochaine période à réserver",
+        title: saison.label,
+        href: `/bons-plans-promos?saison=${saison.id}`,
+        cta: "Voir les départs",
+      }),
+    promo &&
+      construireSlide(promo, {
+        id: "promo",
+        kicker: "Vente flash en cours",
+        title: `Jusqu'à ${discountOf(promo)} % de remise`,
+        href: "/bons-plans-promos",
+        cta: "Voir les bons plans",
+      }),
+    derniereMinute &&
+      construireSlide(toOffer(derniereMinute), {
+        id: "derniere-minute",
+        kicker: "Départ sous trois semaines",
+        title: "Dernière minute",
+        href: "/derniere-minute",
+        cta: "Partir maintenant",
+      }),
+    croisiere &&
+      construireSlide(toOffer(croisiere), {
+        id: "croisieres",
+        kicker: "Pension complète incluse",
+        title: "Croisières au départ d'Europe",
+        href: "/croisieres",
+        cta: "Découvrir les croisières",
+      }),
+    circuit &&
+      construireSlide(toOffer(circuit), {
+        id: "circuits",
+        kicker: "Guide francophone",
+        title: "Circuits accompagnés",
+        href: "/circuits",
+        cta: "Choisir un circuit",
+      }),
+  ];
+
+  // Cinq bandeaux au plus : au-delà, les derniers ne sont jamais vus.
+  return slides.filter((slide): slide is HeroSlide => slide !== null).slice(0, 5);
+}
+
+/** Remise d'une offre, arrondie, pour l'accroche d'un bandeau. */
+function discountOf(offer: Offer): number {
+  if (!offer.oldPrice || offer.oldPrice <= offer.price) return 0;
+  return Math.round(((offer.oldPrice - offer.price) / offer.oldPrice) * 100);
+}
+
+function construireSlide(
+  offer: Offer,
+  base: { id: string; kicker: string; title: string; href: string; cta: string },
+): HeroSlide {
+  const nuits = offer.nights > 0 ? `${offer.days ?? offer.nights + 1} jours` : "aller-retour";
+  return {
+    ...base,
+    fromPrice: offer.price,
+    detail: `${offer.destination}, ${nuits}`,
+    image: withMediaFallback(offer.image),
+    alt: `${offer.destination}, ${offer.country}`,
+  };
 }
 
 export async function getFeaturedOffers(take = 8): Promise<Offer[]> {
@@ -445,8 +578,34 @@ export async function getPosts(take = 4): Promise<Post[]> {
   }));
 }
 
+/**
+ * Bandeaux de l'accueil : le back-office d'abord, le catalogue à défaut.
+ *
+ * Un bandeau composé dans `/admin/hero` l'emporte toujours : quand l'équipe
+ * prend la main sur l'accroche, une génération automatique ne doit pas la
+ * recouvrir. Tant qu'aucun n'est actif, les bandeaux sont construits depuis le
+ * catalogue, avec la photo d'une offre réelle et son prix du jour — l'accueil
+ * n'est donc jamais vide, et n'annonce jamais un tarif qui n'existe plus.
+ */
 export async function getHeroSlides(): Promise<HeroSlide[]> {
-  return listHeroSlides();
+  const composes = await listHeroSlides();
+  if (composes.length > 0) {
+    return composes.map((slide) => ({
+      id: slide.id,
+      kicker: slide.kicker,
+      title: slide.title,
+      // Un bandeau rédigé à la main porte un texte libre, pas un prix d'appel :
+      // le carrousel n'affiche alors ni montant ni mention « par personne ».
+      fromPrice: 0,
+      detail: slide.text,
+      href: slide.href,
+      cta: slide.cta,
+      image: slide.image,
+      alt: slide.imageAlt,
+    }));
+  }
+
+  return getCatalogueHeroSlides();
 }
 
 export async function getSettings(): Promise<Record<string, string>> {
@@ -509,7 +668,64 @@ export type NavCategory = {
   icon: string;
   blurb: string;
   href: string;
+  /** Formules réellement proposées dans cette catégorie, avec leur volume. */
+  subcategories: NavSubcategory[];
 };
+
+export type NavSubcategory = {
+  id: string;
+  label: string;
+  blurb: string;
+  href: string;
+  count: number;
+};
+
+/**
+ * Sous-catégories du menu, déduites des offres publiées.
+ *
+ * Elles ne sont pas déclarées à la main : le menu liste ce que le catalogue
+ * contient vraiment, avec le nombre d'offres derrière. Une formule qui n'a plus
+ * d'offre disparaît d'elle-même, et personne ne clique sur une page vide.
+ *
+ * Une sous-catégorie n'a jamais d'URL propre : c'est un filtre sur la page de
+ * sa catégorie, `/sejours?formule=tout_compris`. Le cahier l'impose, pour que
+ * « Vol + Hôtel » ne se mette pas à concurrencer « Séjours » sur les moteurs.
+ */
+async function subcategoriesByCategory(): Promise<Map<string, NavSubcategory[]>> {
+  const lignes = await prisma.offer.groupBy({
+    by: ["categoryId", "subtype"],
+    where: { status: "published", category: { active: true }, subtype: { not: "" } },
+    _count: { _all: true },
+  });
+
+  const categories = await prisma.category.findMany({ select: { id: true, slug: true } });
+  const slugParId = new Map(categories.map((c) => [c.id, c.slug]));
+
+  const parCategorie = new Map<string, NavSubcategory[]>();
+  for (const ligne of lignes) {
+    const slug = slugParId.get(ligne.categoryId);
+    const label = subtypeLabel(ligne.subtype);
+    // Un sous-type inconnu des constantes n'est pas rendu : il viendrait d'une
+    // saisie libre, et afficherait un intitulé brut dans le menu.
+    if (!slug || !label) continue;
+    const liste = parCategorie.get(slug) ?? [];
+    liste.push({
+      id: ligne.subtype,
+      label,
+      blurb: subtypeBlurb(ligne.subtype),
+      href: `/${slug}?formule=${ligne.subtype}`,
+      count: ligne._count._all,
+    });
+    parCategorie.set(slug, liste);
+  }
+
+  for (const liste of parCategorie.values()) {
+    liste.sort(
+      (a, b) => SUBTYPE_ORDER.indexOf(a.id) - SUBTYPE_ORDER.indexOf(b.id),
+    );
+  }
+  return parCategorie;
+}
 
 /**
  * Navigation principale et débordement.
@@ -523,7 +739,10 @@ export async function getNavigation(): Promise<{
   main: NavCategory[];
   overflow: NavCategory[];
 }> {
-  const rows = await getCategories();
+  const [rows, sousCategories] = await Promise.all([
+    getCategories(),
+    subcategoriesByCategory(),
+  ]);
   const toNav = (row: (typeof rows)[number]): NavCategory => ({
     id: row.slug,
     label: row.label,
@@ -531,6 +750,7 @@ export async function getNavigation(): Promise<{
     icon: row.icon,
     blurb: row.blurb,
     href: `/${row.slug}`,
+    subcategories: sousCategories.get(row.slug) ?? [],
   });
   return {
     main: rows.filter((row) => !row.isOverflow).slice(0, 10).map(toNav),
@@ -556,6 +776,32 @@ export async function getSiteSettings() {
     // plus cher qu'un bouton absent. Vide, il ne s'affiche pas.
     whatsapp: settings["site.whatsapp"] ?? BRAND.whatsapp,
     email: settings["site.email"] || BRAND.email,
+  };
+}
+
+/**
+ * Coordonnées du virement bancaire.
+ *
+ * Aucune valeur de repli : sans IBAN renseigné au back-office, le virement
+ * n'est tout simplement pas proposé. Mieux vaut un moyen de paiement absent
+ * qu'un RIB erroné, qui envoie l'argent d'un client on ne sait où.
+ *
+ * Cette fonction est appelée sur la confirmation d'un dossier réglé par
+ * virement, jamais sur une page publique : un IBAN affiché en clair sur un
+ * site ouvert se retrouve dans les campagnes de faux virements.
+ */
+export async function getBankDetails(): Promise<{
+  holder: string;
+  iban: string;
+  bic: string;
+} | null> {
+  const settings = await getSettings();
+  const iban = (settings["payment.iban"] ?? "").trim();
+  if (!iban) return null;
+  return {
+    holder: (settings["payment.holder"] ?? "").trim(),
+    iban,
+    bic: (settings["payment.bic"] ?? "").trim(),
   };
 }
 

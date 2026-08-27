@@ -241,7 +241,9 @@ function NewsletterPopup({
 
   return (
     <Modal open={open} onClose={onDismiss} title="Alertes bons plans" hideTitle size="md">
-      <div className="-mx-5 -mt-5">
+      {/* La fenêtre sans titre ne pose plus de marge intérieure : le bandeau
+          coloré part donc bord à bord, sans marge négative à rattraper. */}
+      <div>
         <div className="bg-linear-to-br from-navy-800 to-navy-600 px-6 py-7 text-white">
           <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold-300">
             <Icon name="bolt" className="size-4" />

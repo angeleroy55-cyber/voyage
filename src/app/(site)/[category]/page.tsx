@@ -10,8 +10,10 @@ import {
   getRuleOffers,
   getSearchCategories,
 } from "@/server/catalogue";
+import { subtypeBlurb, subtypeLabel } from "@/lib/constants";
+import { SEASONS, inSeason, seasonById } from "@/lib/seasons";
 import type { InitialFilters, Sort } from "@/components/search/ResultsView";
-import type { CategoryId } from "@/lib/types";
+import type { CategoryId, Offer } from "@/lib/types";
 
 /**
  * Page de catégorie, à la racine : /sejours, /circuits, /bons-plans-promos…
@@ -103,7 +105,7 @@ export default async function CategoryPage({
 
   const heading = found.title || found.label;
 
-  const [offers, searchCategories, categories] = await Promise.all([
+  const [toutesLesOffres, searchCategories, categories] = await Promise.all([
     found.kind === "dynamique"
       ? getRuleOffers(found.rule)
       : found.kind === "catalogue"
@@ -132,6 +134,33 @@ export default async function CategoryPage({
     ? found.slug
     : (searchCategories[0]?.id ?? "sejours");
 
+  // Formule et saison affinent la liste sans changer d'adresse : ce sont des
+  // filtres, pas des pages. Le cahier l'impose pour ne pas créer deux URLs
+  // décrivant le même catalogue sous deux angles.
+  const formule = text(sp.formule);
+  const saison = seasonById(text(sp.saison));
+
+  const formules = compterFormules(toutesLesOffres);
+  const offers = toutesLesOffres.filter((offre) => {
+    if (formule && offre.subtype !== formule) return false;
+    if (saison) {
+      if (!offre.departureDate) return false;
+      if (!inSeason(new Date(`${offre.departureDate}T12:00:00`), saison)) return false;
+    }
+    return true;
+  });
+
+  // Les saisons proposées sont celles qui ont réellement des départs : une
+  // pastille « Noël » sans une seule offre derrière déçoit au premier clic.
+  const saisons = SEASONS.map((s) => ({
+    ...s,
+    count: toutesLesOffres.filter(
+      (offre) =>
+        offre.departureDate &&
+        inSeason(new Date(`${offre.departureDate}T12:00:00`), s),
+    ).length,
+  })).filter((s) => s.count > 0);
+
   return (
     <>
       <div className="border-b border-navy-100 bg-navy-50/60 py-5">
@@ -158,9 +187,41 @@ export default async function CategoryPage({
       <div className="mx-auto max-w-page px-4 py-8">
         <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">
           {heading}
+          {formule && <span className="text-navy-500"> · {subtypeLabel(formule)}</span>}
+          {saison && <span className="text-navy-500"> · {saison.label}</span>}
           {filters.q && <span className="text-navy-500"> · « {filters.q} »</span>}
         </h1>
-        <p className="mb-7 mt-1 text-sm text-navy-600">{found.blurb}</p>
+        <p className="mt-1 text-sm text-navy-600">
+          {formule ? subtypeBlurb(formule) || found.blurb : saison ? saison.blurb : found.blurb}
+        </p>
+
+        {formules.length > 1 && (
+          <FiltreRapide
+            titre="Formule"
+            base={`/${found.slug}`}
+            actif={formule}
+            parametre="formule"
+            autres={saison ? { saison: saison.id } : {}}
+            options={formules.map((f) => ({
+              id: f.id,
+              label: subtypeLabel(f.id),
+              count: f.count,
+            }))}
+          />
+        )}
+
+        {saisons.length > 1 && (
+          <FiltreRapide
+            titre="Période de départ"
+            base={`/${found.slug}`}
+            actif={saison?.id}
+            parametre="saison"
+            autres={formule ? { formule } : {}}
+            options={saisons.map((s) => ({ id: s.id, label: s.label, count: s.count }))}
+          />
+        )}
+
+        <div className="mb-7" />
 
         {found.kind === "editorial" ? (
           <EditorialBlock label={heading} blurb={found.blurb} />
@@ -196,6 +257,86 @@ export default async function CategoryPage({
         </div>
       </div>
     </>
+  );
+}
+
+/** Formules présentes dans une liste d'offres, dans l'ordre du menu. */
+function compterFormules(offers: Offer[]): { id: string; count: number }[] {
+  const compte = new Map<string, number>();
+  for (const offre of offers) {
+    if (!offre.subtype || !subtypeLabel(offre.subtype)) continue;
+    compte.set(offre.subtype, (compte.get(offre.subtype) ?? 0) + 1);
+  }
+  return [...compte.entries()]
+    .map(([id, count]) => ({ id, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Bandeau de filtres rapides, rendu en liens et non en boutons.
+ *
+ * Chaque filtre est une adresse : elle se partage, se met en favori, et remonte
+ * dans l'historique. Un filtre porté par du JavaScript seul perdrait ces trois
+ * propriétés, et ne serait pas suivi par les moteurs.
+ */
+function FiltreRapide({
+  titre,
+  base,
+  parametre,
+  actif,
+  autres,
+  options,
+}: {
+  titre: string;
+  base: string;
+  parametre: string;
+  actif?: string;
+  autres: Record<string, string>;
+  options: { id: string; label: string; count: number }[];
+}) {
+  const lien = (valeur?: string) => {
+    const params = new URLSearchParams(autres);
+    if (valeur) params.set(parametre, valeur);
+    const query = params.toString();
+    return query ? `${base}?${query}` : base;
+  };
+
+  return (
+    <div className="mt-4">
+      <p className="text-xs font-bold uppercase tracking-wide text-navy-500">{titre}</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Link
+          href={lien()}
+          className={`rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition ${
+            actif
+              ? "border-navy-200 bg-white text-navy-600 hover:border-gold-300"
+              : "border-navy-900 bg-navy-900 text-white"
+          }`}
+        >
+          Tout
+        </Link>
+        {options.map((option) => {
+          const on = option.id === actif;
+          return (
+            <Link
+              key={option.id}
+              href={lien(option.id)}
+              aria-current={on ? "true" : undefined}
+              className={`rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition ${
+                on
+                  ? "border-navy-900 bg-navy-900 text-white"
+                  : "border-navy-200 bg-white text-navy-600 hover:border-gold-300 hover:text-gold-700"
+              }`}
+            >
+              {option.label}
+              <span className={`ml-1.5 tabular-nums ${on ? "text-white/70" : "text-navy-400"}`}>
+                {option.count}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

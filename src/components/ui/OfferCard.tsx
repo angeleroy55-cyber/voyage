@@ -78,13 +78,6 @@ function urgency(offer: Offer): { label: string; className: string } | null {
   return null;
 }
 
-/** Référence, en petit et en gris, sous le titre. Se sélectionne et se dicte. */
-function Reference({ value }: { value: string }) {
-  return (
-    <p className="mt-1 font-mono text-[11px] tracking-tight text-navy-400">Réf. {value}</p>
-  );
-}
-
 /** Bloc de prix : référence barrée, prix GoSéjour, économie, mention par personne. */
 function Price({ offer, size }: { offer: Offer; size: "sm" | "lg" }) {
   const economie = savings(offer.price, offer.oldPrice);
@@ -112,6 +105,27 @@ function Price({ offer, size }: { offer: Offer; size: "sm" | "lg" }) {
       )}
       <p className="text-[11px] text-navy-500">par personne</p>
     </div>
+  );
+}
+
+/**
+ * Pastille d'économie, en coin d'image.
+ *
+ * Le montant en euros plutôt que le pourcentage : « 378 € de moins » se
+ * comprend sans calcul, là où « 29 % » suppose de connaître le prix de départ.
+ * Le taux ne s'ajoute que là où la remise est l'argument principal, réglé
+ * catégorie par catégorie au back-office.
+ */
+function SavingsBadge({ offer }: { offer: Offer }) {
+  const economie = savings(offer.price, offer.oldPrice);
+  if (economie === null) return null;
+  const taux = offer.showDiscountPercent ? discount(offer.price, offer.oldPrice) : null;
+
+  return (
+    <span className="absolute bottom-3 left-3 z-10 rounded-lg bg-rose-600 px-2.5 py-1.5 text-xs font-extrabold text-white shadow-card">
+      &minus;{price(economie)}
+      {taux !== null && <span className="ml-1 font-bold opacity-90">({taux}&nbsp;%)</span>}
+    </span>
   );
 }
 
@@ -161,6 +175,7 @@ export default function OfferCard({
               )}
             </div>
           </Link>
+          <SavingsBadge offer={offer} />
           <QuickView offer={offer} />
         </div>
 
@@ -175,7 +190,6 @@ export default function OfferCard({
                 {offer.title}
               </Link>
             </h3>
-            <Reference value={offer.reference} />
             <Stars count={offer.stars} className="mt-1.5" />
             <p className="mt-2 line-clamp-2 text-sm text-navy-600">{offer.description}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -238,6 +252,7 @@ export default function OfferCard({
             )}
           </div>
         </Link>
+        <SavingsBadge offer={offer} />
         <QuickView offer={offer} />
       </div>
 
@@ -251,7 +266,6 @@ export default function OfferCard({
             {offer.title}
           </Link>
         </h3>
-        <Reference value={offer.reference} />
 
         <div className="mt-1.5 flex items-center gap-2">
           <Stars count={offer.stars} />

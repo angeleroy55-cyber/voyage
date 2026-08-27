@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { DEPARTURE_CITIES } from "@/lib/data";
+import { useDepartureCity } from "@/components/site/DepartureCity";
+import { DEPARTURE_GROUPS } from "@/lib/places";
 import type { NavCategory, SiteSettings } from "@/server/catalogue";
 
 type Props = {
@@ -24,8 +25,10 @@ export default function Header({
   customer = null,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [city, setCity] = useState("Paris");
   const [moreOpen, setMoreOpen] = useState(false);
+  // La ville vient du contexte : elle est détectée, mémorisée, et partagée avec
+  // le moteur de recherche de la page.
+  const { city, setCity, detected, canLocate, locate, locating } = useDepartureCity();
 
   // La navigation suit les catégories actives en base : en désactiver une au
   // back-office la retire du menu, ici comme sur mobile. L'ordre est celui du
@@ -46,14 +49,11 @@ export default function Header({
           l'or de la marque, puisqu'un « blanc plus blanc » n'existe pas. */}
       <div className="hidden bg-navy-800 text-white lg:block">
         <div className="mx-auto flex h-9 max-w-page items-center justify-between px-4 text-[13px]">
+          {/* Le numéro n'est pas ici : il ne figure qu'au pied de page tant que
+              la ligne définitive n'est pas ouverte. Un numéro affiché en tête de
+              chaque page est le premier que le visiteur compose, et le premier
+              qui décevra s'il ne répond pas encore. */}
           <div className="flex items-center gap-5">
-            <a
-              href={`tel:${settings.phone.replace(/\s/g, "")}`}
-              className="flex items-center gap-1.5 transition hover:text-gold-300"
-            >
-              <Icon name="phone" className="size-3.5" />
-              {settings.phone}
-            </a>
             <Link href="/aide" className="transition hover:text-gold-300">
               Aide &amp; FAQ
             </Link>
@@ -65,17 +65,44 @@ export default function Header({
             <label className="flex items-center gap-1.5">
               <Icon name="pin" className="size-3.5" />
               <span className="sr-only">Ville de départ</span>
+              {/* Repérée automatiquement, et modifiable : la mention le dit,
+                  pour que personne ne se demande pourquoi sa ville est là. */}
+              {detected && (
+                <span className="text-gold-300" title="Détectée depuis votre position">
+                  Vous partez de
+                </span>
+              )}
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="cursor-pointer rounded bg-transparent py-0.5 pr-1 text-white outline-none transition hover:text-gold-300 focus:ring-2 focus:ring-gold-400"
+                aria-label="Ville de départ"
+                className="max-w-44 cursor-pointer truncate rounded bg-transparent py-0.5 pr-1 font-semibold text-white outline-none transition hover:text-gold-300 focus:ring-2 focus:ring-gold-400"
               >
-                {DEPARTURE_CITIES.map((c) => (
-                  <option key={c} value={c} className="text-navy-900">
-                    {c}
-                  </option>
+                {DEPARTURE_GROUPS.map((groupe) => (
+                  <optgroup key={groupe.label} label={groupe.label} className="text-navy-900">
+                    {groupe.cities.map((c) => (
+                      <option key={c} value={c} className="text-navy-900">
+                        {c}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
+              {/* Rattrapage manuel : celui qui a refusé la première fois, ou
+                  dont la position a changé, peut la redemander sans avoir à
+                  fouiller dans les réglages de son navigateur. */}
+              {canLocate && (
+                <button
+                  type="button"
+                  onClick={locate}
+                  disabled={locating}
+                  title="Utiliser ma position"
+                  className="rounded p-0.5 text-white/70 transition hover:text-gold-300 disabled:opacity-50"
+                >
+                  <Icon name="compass" className={`size-3.5 ${locating ? "animate-pulse" : ""}`} />
+                  <span className="sr-only">Utiliser ma position</span>
+                </button>
+              )}
             </label>
             <span className="flex items-center gap-1.5">
               <Icon name="globe" className="size-3.5" />
@@ -104,13 +131,7 @@ export default function Header({
 
           <nav className="hidden flex-1 items-center gap-0.5 xl:flex">
             {primaryNav.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                className="rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50 hover:text-navy-900"
-              >
-                {item.label}
-              </Link>
+              <NavEntry key={item.id} item={item} />
             ))}
             {overflow.length > 0 && (
               <div
@@ -194,16 +215,34 @@ export default function Header({
               </button>
             </div>
             <nav className="flex-1 overflow-y-auto p-3">
+              {/* Au doigt, pas de survol : les formules sont dépliées sous leur
+                  catégorie plutôt que cachées derrière un second niveau à
+                  ouvrir, qui coûte un geste de plus pour rien. */}
               {categories.map((c) => (
-                <Link
-                  key={c.id}
-                  href={c.href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-[15px] font-medium text-navy-800 hover:bg-navy-50"
-                >
-                  <Icon name={c.icon} className="size-5 text-gold-600" />
-                  {c.label}
-                </Link>
+                <div key={c.id}>
+                  <Link
+                    href={c.href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-[15px] font-medium text-navy-800 hover:bg-navy-50"
+                  >
+                    <Icon name={c.icon} className="size-5 text-gold-600" />
+                    {c.label}
+                  </Link>
+                  {c.subcategories.length > 0 && (
+                    <div className="mb-1 flex flex-wrap gap-1.5 pb-1 pl-11 pr-3">
+                      {c.subcategories.map((sub) => (
+                        <Link
+                          key={sub.id}
+                          href={sub.href}
+                          onClick={() => setOpen(false)}
+                          className="rounded-lg bg-navy-50 px-2.5 py-1.5 text-[13px] font-medium text-navy-600 hover:bg-navy-100 hover:text-navy-900"
+                        >
+                          {sub.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               {overflow.length > 0 && (
                 <>
@@ -245,6 +284,87 @@ export default function Header({
         </div>
       )}
     </header>
+  );
+}
+
+/**
+ * Entrée du menu principal, avec ses formules au survol.
+ *
+ * Une catégorie sans formule reste un simple lien : ouvrir un panneau vide
+ * ferait cliquer dans le vide. Les formules ne sont pas des pages mais des
+ * filtres sur la page de la catégorie, ce qui évite qu'un « Tout compris »
+ * autonome vienne concurrencer « Séjours » sur les moteurs de recherche.
+ *
+ * Le panneau s'ouvre au survol comme au clavier : le conteneur écoute le focus,
+ * sans quoi la navigation à la tabulation ne verrait jamais les formules.
+ */
+function NavEntry({ item }: { item: NavCategory }) {
+  const [open, setOpen] = useState(false);
+
+  if (item.subcategories.length === 0) {
+    return (
+      <Link
+        href={item.href}
+        className="rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50 hover:text-navy-900"
+      >
+        {item.label}
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node)) setOpen(false);
+      }}
+    >
+      <Link
+        href={item.href}
+        aria-expanded={open}
+        className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50 hover:text-navy-900"
+      >
+        {item.label}
+        <Icon name="chevronDown" className="size-3.5 text-navy-400" />
+      </Link>
+
+      {open && (
+        <div className="absolute left-0 top-full z-50 w-80 pt-1">
+          <div className="rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
+            <Link
+              href={item.href}
+              className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-bold text-navy-900 hover:bg-navy-50"
+            >
+              Tout voir
+              <Icon name="chevronRight" className="size-4 text-gold-600" />
+            </Link>
+            <div className="my-1 border-t border-navy-100" />
+            {item.subcategories.map((sub) => (
+              <Link
+                key={sub.id}
+                href={sub.href}
+                className="flex items-start gap-3 rounded-lg px-3 py-2 hover:bg-navy-50"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-navy-800">{sub.label}</p>
+                  {sub.blurb && (
+                    <p className="mt-0.5 text-xs leading-snug text-navy-500">{sub.blurb}</p>
+                  )}
+                </div>
+                {/* Le volume rassure autant qu'il informe : « 54 » dit que la
+                    rubrique est tenue, là où une liste muette laisse un doute. */}
+                <span className="mt-0.5 shrink-0 text-[11px] font-semibold tabular-nums text-navy-400">
+                  {sub.count}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
