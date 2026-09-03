@@ -1,11 +1,37 @@
+"use client";
+
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import { PaymentLogo, SOCIAL_NETWORKS, SocialLogo } from "@/components/ui/BrandLogos";
-import { PAYMENT_BADGES } from "@/lib/constants";
-import { FOOTER_LINKS, whatsappLink } from "@/lib/data";
+import { AccreditationBadge, PaymentLogo, SOCIAL_NETWORKS, SocialLogo } from "@/components/ui/BrandLogos";
+import { useLocale } from "@/components/site/Locale";
+import { ACCREDITATION_BADGES, PAYMENT_BADGES } from "@/lib/constants";
+import { FOOTER_INFO, FOOTER_LINKS, POPULAR_COUNTRIES, whatsappLink } from "@/lib/data";
+import type { I18nKey } from "@/lib/i18n";
 import type { NavCategory, SiteSettings } from "@/server/catalogue";
+
+/**
+ * Les groupes et libellés d'`FOOTER_INFO` sont écrits en français dans
+ * `src/lib/data.ts` (donnée éditoriale, pas une clé) ; cette table fait le
+ * lien avec le dictionnaire pour l'anglais et l'espagnol. Un libellé absent
+ * d'ici reste affiché en français plutôt que de faire planter la page.
+ */
+const FOOTER_LABEL_KEYS: Record<string, I18nKey> = {
+  "Mentions légales": "footer.legalGroup",
+  "À propos": "footer.aboutGroup",
+  "Conditions générales": "footer.legal.terms",
+  "Politique de confidentialité": "footer.legal.privacy",
+  "Gestion des cookies": "footer.legal.cookies",
+  Accessibilité: "footer.legal.accessibility",
+  Médiation: "footer.legal.mediation",
+  "Qui sommes-nous": "footer.about.who",
+  "Guides de voyage": "footer.about.guides",
+  "Aide et FAQ": "footer.about.help",
+  "Nous contacter": "footer.about.contact",
+  Recrutement: "footer.about.jobs",
+  Affiliation: "footer.about.affiliation",
+};
 
 export default function Footer({
   settings,
@@ -16,34 +42,32 @@ export default function Footer({
   categories: NavCategory[];
   overflow?: NavCategory[];
 }) {
+  const { t } = useLocale();
+  const label = (fr: string) => (FOOTER_LABEL_KEYS[fr] ? t(FOOTER_LABEL_KEYS[fr]) : fr);
+
   const whatsapp = whatsappLink(
     settings.whatsapp,
     "Bonjour, je vous contacte au sujet d'un voyage.",
   );
   // La colonne « Réserver » liste les catégories réellement actives et pointe
-  // vers leurs pages ; les autres colonnes restent éditoriales et renvoient
-  // vers l'aide. Le débordement y figure aussi : hors du menu principal pour
-  // ne pas le surcharger, mais lié depuis le pied de page, donc indexé.
-  const columns = FOOTER_LINKS.map((column) =>
-    column.title === "Réserver"
-      ? {
-          title: column.title,
-          links: [...categories, ...overflow].map((c) => ({
-            label: c.label,
-            href: c.href,
-          })),
-        }
-      : {
-          title: column.title,
-          links: column.links.map((label) => ({ label, href: "/aide" })),
-        },
-  );
+  // vers leurs pages ; le débordement y figure aussi : hors du menu principal
+  // pour ne pas le surcharger, mais lié depuis le pied de page, donc indexé.
+  const reserver = {
+    title: FOOTER_LINKS[0].title,
+    links: [...categories, ...overflow].map((c) => ({ label: c.label, href: c.href })),
+  };
+  // Chaque pays filtre réellement le catalogue Séjours : contrairement à
+  // l'ancienne colonne « Nos sites », ce lien mène quelque part.
+  const destinations = POPULAR_COUNTRIES.map((pays) => ({
+    label: pays,
+    href: `/sejours?q=${encodeURIComponent(pays)}`,
+  }));
 
   return (
     <footer className="mt-20 border-t border-navy-100 bg-navy-50/60">
       <div className="mx-auto max-w-page px-4 py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-1">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <div className="md:col-span-2 lg:col-span-1">
             <Image
               src="/brand/logo-lockup.png"
               alt={settings.name}
@@ -52,8 +76,8 @@ export default function Footer({
               className="h-10 w-auto"
             />
             <p className="mt-3 text-sm leading-relaxed text-navy-600">
-              {settings.tagline}. Agence de voyages en ligne : vols, hôtels, croisières, circuits et
-              séjours, réservables en quelques minutes.
+              {settings.tagline}. Agence de voyages en ligne affiliée à Govoyages : vols, hôtels,
+              croisières, circuits et séjours en discount, réservables en quelques minutes.
             </p>
             <a
               href={`tel:${settings.phone.replace(/\s/g, "")}`}
@@ -74,34 +98,71 @@ export default function Footer({
                 className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-3.5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400"
               >
                 <SocialLogo id="whatsapp" className="size-4.5" />
-                Écrire sur WhatsApp
-                <span className="sr-only"> (nouvelle fenêtre)</span>
+                {t("footer.whatsapp")}
+                <span className="sr-only">{t("header.newWindow")}</span>
               </a>
             )}
           </div>
 
-          {columns.map((col) => (
-            <div key={col.title}>
-              <h3 className="text-sm font-bold uppercase tracking-wide text-navy-800">{col.title}</h3>
-              <ul className="mt-4 space-y-2.5">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-navy-600 transition hover:text-gold-700"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-navy-800">
+              {label(reserver.title)}
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {reserver.links.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="text-sm text-navy-600 transition hover:text-gold-700">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-navy-800">
+              {t("footer.popularDestinations")}
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {destinations.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="text-sm text-navy-600 transition hover:text-gold-700">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Deux groupes sous un même titre : autant de liens qu'avant, mais
+              une colonne de moins à l'écran (retour client : pied de page trop
+              chargé). */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-navy-800">
+              {t("footer.information")}
+            </h3>
+            {FOOTER_INFO.map((section) => (
+              <div key={section.group} className="mt-4 first:mt-4">
+                <p className="text-xs font-semibold text-navy-500">{label(section.group)}</p>
+                <ul className="mt-2 space-y-1.5">
+                  {section.links.map((l) => (
+                    <li key={l}>
+                      <Link href="/aide" className="text-sm text-navy-600 transition hover:text-gold-700">
+                        {label(l)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-navy-200/70 pt-8">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">Suivez-nous</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">
+              {t("footer.followUs")}
+            </span>
             <div className="flex gap-2">
               {SOCIAL_NETWORKS.map((network) => (
                 <a
@@ -109,7 +170,7 @@ export default function Footer({
                   href={network.href}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label={`${network.label} (nouvelle fenêtre)`}
+                  aria-label={`${network.label}${t("header.newWindow")}`}
                   // Le glyphe porte la couleur officielle du réseau ; au survol
                   // la pastille s'inverse et se remplit de cette même identité.
                   style={
@@ -130,7 +191,9 @@ export default function Footer({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">Paiement</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">
+              {t("footer.payment")}
+            </span>
             <div className="flex flex-wrap gap-2">
               {/* Marques acceptées, pas moyens sélectionnables : le règlement
                   se fait par carte, ces logos disent simplement lesquelles
@@ -141,6 +204,18 @@ export default function Footer({
                   id={id}
                   className="transition duration-200 hover:-translate-y-0.5 hover:shadow-card"
                 />
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">
+              {t("footer.accreditations")}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {/* Statut réel de l'agence ; badge texte tant que les logos
+                  officiels ne sont pas déposés (voir AccreditationBadge). */}
+              {ACCREDITATION_BADGES.map((badge) => (
+                <AccreditationBadge key={badge.id} label={badge.label} />
               ))}
             </div>
           </div>

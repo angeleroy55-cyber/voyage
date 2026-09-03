@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 const FIELDS = [
   { key: "site.name", label: "Nom du site", hint: "Affiché dans les métadonnées" },
-  { key: "site.tagline", label: "Signature", hint: "Voyages • Séjours • Expériences" },
+  { key: "site.tagline", label: "Signature", hint: "Voyages • Séjours • Expériences moins chères" },
   { key: "site.phone", label: "Téléphone", hint: "Barre supérieure et pied de page" },
   {
     key: "site.whatsapp",

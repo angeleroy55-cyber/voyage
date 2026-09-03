@@ -161,6 +161,10 @@ export default async function CategoryPage({
     ).length,
   })).filter((s) => s.count > 0);
 
+  // Partagée par la case « vide » ci-dessous et par « Autres façons de
+  // voyager » en pied de page : les mêmes suggestions, à deux endroits.
+  const autresCategories = categories.filter((c) => c.slug !== found.slug && c.kind !== "editorial");
+
   return (
     <>
       <div className="border-b border-navy-100 bg-navy-50/60 py-5">
@@ -226,9 +230,34 @@ export default async function CategoryPage({
         {found.kind === "editorial" ? (
           <EditorialBlock label={heading} blurb={found.blurb} />
         ) : offers.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-navy-200 p-12 text-center text-sm text-navy-500">
-            Aucune offre publiée dans cette catégorie pour le moment.
-          </p>
+          // Une phrase seule laisse le visiteur sans suite : la case propose
+          // tout de suite deux ou trois catégories voisines, plutôt que de
+          // compter sur le bloc « Autres façons de voyager » plus bas.
+          <div className="rounded-2xl border border-dashed border-navy-200 p-10 text-center">
+            <p className="text-sm text-navy-500">
+              Aucune offre publiée dans cette catégorie pour le moment.
+            </p>
+            {autresCategories.length > 0 && (
+              <>
+                <p className="mt-1 text-sm text-navy-500">
+                  Le catalogue est mis à jour tous les jours : essayez plutôt l&apos;une de ces
+                  catégories.
+                </p>
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  {autresCategories.slice(0, 3).map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/${c.slug}`}
+                      className="flex items-center gap-2 rounded-xl border border-navy-200 bg-white px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
+                    >
+                      <Icon name={c.icon} className="size-4" />
+                      {c.label}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         ) : (
           <ResultsView
             offers={offers}
@@ -241,18 +270,16 @@ export default async function CategoryPage({
         <div className="mt-12 rounded-2xl border border-navy-100 bg-navy-50/60 p-6">
           <h2 className="text-base font-extrabold text-navy-900">Autres façons de voyager</h2>
           <div className="mt-3 flex flex-wrap gap-2">
-            {categories
-              .filter((c) => c.slug !== found.slug && c.kind !== "editorial")
-              .map((c) => (
-                <Link
-                  key={c.id}
-                  href={`/${c.slug}`}
-                  className="flex items-center gap-2 rounded-xl border border-navy-200 bg-white px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
-                >
-                  <Icon name={c.icon} className="size-4" />
-                  {c.label}
-                </Link>
-              ))}
+            {autresCategories.map((c) => (
+              <Link
+                key={c.id}
+                href={`/${c.slug}`}
+                className="flex items-center gap-2 rounded-xl border border-navy-200 bg-white px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
+              >
+                <Icon name={c.icon} className="size-4" />
+                {c.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

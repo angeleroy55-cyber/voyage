@@ -46,9 +46,9 @@ export default async function CategoriesAdminPage({
     <div className="mx-auto max-w-5xl">
       <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">Catégories</h1>
       <p className="mt-1 text-sm text-navy-600">
-        Chaque catégorie devient une page à la racine du site, et les dix premières forment le menu
-        principal. Au-delà, cocher « Sous Voir plus » pour la ranger dans le menu déroulant sans lui
-        faire perdre sa page.
+        Chaque catégorie devient une page à la racine du site, et les premières forment le menu
+        principal. Cocher « Sous Voir plus » range la catégorie dans le menu déroulant sans lui faire
+        perdre sa page.
       </p>
 
       {erreur && (
@@ -375,7 +375,7 @@ function CategoryFields({
           <span>
             Sous « Voir plus »
             <span className="block text-xs text-navy-500">
-              Hors du menu principal, limité à dix entrées.
+              Hors du menu principal, tenu à cinq entrées.
             </span>
           </span>
         </label>

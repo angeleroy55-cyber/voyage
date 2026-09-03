@@ -4,18 +4,18 @@
  * une redirection dans `next.config.ts`.
  */
 export type CategoryId =
-  // Les 10 entrées du menu principal, dans l'ordre d'affichage.
+  // Les quatre entrées du menu principal, dans l'ordre d'affichage.
   | "bons-plans-promos"
-  | "derniere-minute"
-  | "destinations"
   | "sejours"
   | "circuits"
   | "croisieres"
-  | "hotels"
+  // Regroupées sous « Voir plus de voyages ».
   | "vols"
+  | "derniere-minute"
+  | "destinations"
+  | "hotels"
   | "camping-escapades"
   | "location-voiture"
-  // Regroupées sous « Voir plus de voyages ».
   | "tout-compris-clubs"
   | "sejours-france"
   | "parcs-loisirs"
@@ -147,6 +147,8 @@ export interface Post {
   imageSeed: string;
   image?: string;
   imageAlt?: string;
+  /** Corps de l'article, en texte simple ; une ligne vide sépare un paragraphe. */
+  body?: string;
 }
 
 export interface HeroSlide {

@@ -6,6 +6,10 @@ import { price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 
 export default function DestinationGrid({ destinations }: { destinations: Destination[] }) {
+  // Sans destination, il n'y a ni vedette ni grille à composer : mieux vaut
+  // ne rien rendre qu'une tuile vide (voire une erreur sur `lead.name`).
+  if (destinations.length === 0) return null;
+
   const [lead, ...rest] = destinations;
 
   return (

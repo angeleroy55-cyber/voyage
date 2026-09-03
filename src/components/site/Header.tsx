@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { useDepartureCity } from "@/components/site/DepartureCity";
+import { useLocale } from "@/components/site/Locale";
 import { DEPARTURE_GROUPS } from "@/lib/places";
+import { LOCALES, type Locale } from "@/lib/i18n";
 import type { NavCategory, SiteSettings } from "@/server/catalogue";
 
 type Props = {
   settings: SiteSettings;
-  /** Les dix entrées du menu principal, dans l'ordre du back-office. */
+  /** Les entrées du menu principal, dans l'ordre du back-office. */
   categories: NavCategory[];
   /** Ce qui se range sous « Voir plus de voyages ». */
   overflow?: NavCategory[];
@@ -29,6 +31,7 @@ export default function Header({
   // La ville vient du contexte : elle est détectée, mémorisée, et partagée avec
   // le moteur de recherche de la page.
   const { city, setCity, detected, canLocate, locate, locating } = useDepartureCity();
+  const { locale, setLocale, t } = useLocale();
 
   // La navigation suit les catégories actives en base : en désactiver une au
   // back-office la retire du menu, ici comme sur mobile. L'ordre est celui du
@@ -55,27 +58,27 @@ export default function Header({
               qui décevra s'il ne répond pas encore. */}
           <div className="flex items-center gap-5">
             <Link href="/aide" className="transition hover:text-gold-300">
-              Aide &amp; FAQ
+              {t("utility.help")}
             </Link>
             <Link href="/aide#contact" className="transition hover:text-gold-300">
-              Contact
+              {t("utility.contact")}
             </Link>
           </div>
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-1.5">
               <Icon name="pin" className="size-3.5" />
-              <span className="sr-only">Ville de départ</span>
+              <span className="sr-only">{t("utility.departureCity")}</span>
               {/* Repérée automatiquement, et modifiable : la mention le dit,
                   pour que personne ne se demande pourquoi sa ville est là. */}
               {detected && (
                 <span className="text-gold-300" title="Détectée depuis votre position">
-                  Vous partez de
+                  {t("utility.departureFrom")}
                 </span>
               )}
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                aria-label="Ville de départ"
+                aria-label={t("utility.departureCity")}
                 className="max-w-44 cursor-pointer truncate rounded bg-transparent py-0.5 pr-1 font-semibold text-white outline-none transition hover:text-gold-300 focus:ring-2 focus:ring-gold-400"
               >
                 {DEPARTURE_GROUPS.map((groupe) => (
@@ -96,19 +99,34 @@ export default function Header({
                   type="button"
                   onClick={locate}
                   disabled={locating}
-                  title="Utiliser ma position"
+                  title={t("utility.locate")}
                   className="rounded p-0.5 text-white/70 transition hover:text-gold-300 disabled:opacity-50"
                 >
                   <Icon name="compass" className={`size-3.5 ${locating ? "animate-pulse" : ""}`} />
-                  <span className="sr-only">Utiliser ma position</span>
+                  <span className="sr-only">{t("utility.locate")}</span>
                 </button>
               )}
             </label>
-            <span className="flex items-center gap-1.5">
+            {/* Anglais et espagnol changent l'habillage du site (ce menu, le
+                pied de page…), pas les fiches du catalogue ni le carnet de
+                voyage, qui viennent du back-office et restent en français. */}
+            <label className="flex items-center gap-1.5">
               <Icon name="globe" className="size-3.5" />
-              Français
-            </span>
-            <span>EUR €</span>
+              <span className="sr-only">{t("utility.language")}</span>
+              <select
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as Locale)}
+                aria-label={t("utility.language")}
+                className="cursor-pointer rounded bg-transparent py-0.5 pr-1 font-semibold text-white outline-none transition hover:text-gold-300 focus:ring-2 focus:ring-gold-400"
+              >
+                {LOCALES.map((l) => (
+                  <option key={l.id} value={l.id} className="text-navy-900">
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <span>{t("utility.currency")}</span>
           </div>
         </div>
       </div>
@@ -121,7 +139,7 @@ export default function Header({
               type="button"
               onClick={() => setOpen(true)}
               className="rounded p-2 text-white transition hover:bg-white/10 xl:hidden"
-              aria-label="Ouvrir le menu"
+              aria-label={t("header.openMenu")}
             >
               <Icon name="menu" className="size-6" />
             </button>
@@ -145,11 +163,14 @@ export default function Header({
                   className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50"
                   aria-expanded={moreOpen}
                 >
-                  Voir plus
+                  {t("header.seeMore")}
                   <Icon name="chevronDown" className="size-4" />
                 </button>
                 {moreOpen && (
-                  <div className="absolute right-0 top-full w-72 rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
+                  // Douze entrées empilées feraient un panneau plus haut que
+                  // large, qu'on parcourt de haut en bas comme une liste. Sur
+                  // deux colonnes, l'œil embrasse l'ensemble d'un seul regard.
+                  <div className="absolute right-0 top-full grid w-[34rem] grid-cols-2 gap-x-1 rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
                     {overflow.map((c) => (
                       <Link
                         key={c.id}
@@ -171,7 +192,7 @@ export default function Header({
               href={customer ? "/compte/reservations" : "/aide"}
               className="hidden rounded-lg px-3 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50 md:block"
             >
-              Ma réservation
+              {t("header.myBooking")}
             </Link>
             {customer ? (
               <Link
@@ -184,14 +205,14 @@ export default function Header({
                 >
                   {customer.firstName.slice(0, 1).toUpperCase()}
                 </span>
-                <span className="hidden sm:inline">Mon espace</span>
+                <span className="hidden sm:inline">{t("header.myAccount")}</span>
               </Link>
             ) : (
               <Link
                 href="/compte"
                 className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-800 transition hover:border-navy-400 hover:bg-navy-50"
               >
-                Connexion
+                {t("header.login")}
               </Link>
             )}
           </div>
@@ -209,7 +230,7 @@ export default function Header({
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded p-2 text-navy-700"
-                aria-label="Fermer le menu"
+                aria-label={t("header.closeMenu")}
               >
                 <Icon name="close" className="size-6" />
               </button>
@@ -248,7 +269,7 @@ export default function Header({
                 <>
                   <div className="my-3 border-t border-navy-100" />
                   <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wide text-navy-500">
-                    Voir plus de voyages
+                    {t("header.seeMoreTrips")}
                   </p>
                   {overflow.map((c) => (
                     <Link
@@ -265,10 +286,10 @@ export default function Header({
               )}
               <div className="my-3 border-t border-navy-100" />
               {[
-                { label: "Aide & FAQ", href: "/aide" },
+                { label: t("utility.help"), href: "/aide" },
                 customer
-                  ? { label: "Mon espace client", href: "/compte/tableau-de-bord" }
-                  : { label: "Connexion", href: "/compte" },
+                  ? { label: t("header.myAccount"), href: "/compte/tableau-de-bord" }
+                  : { label: t("header.login"), href: "/compte" },
               ].map((l) => (
                 <Link
                   key={l.label}
@@ -300,6 +321,7 @@ export default function Header({
  */
 function NavEntry({ item }: { item: NavCategory }) {
   const [open, setOpen] = useState(false);
+  const { t } = useLocale();
 
   if (item.subcategories.length === 0) {
     return (
@@ -338,7 +360,7 @@ function NavEntry({ item }: { item: NavCategory }) {
               href={item.href}
               className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-bold text-navy-900 hover:bg-navy-50"
             >
-              Tout voir
+              {t("header.seeAll")}
               <Icon name="chevronRight" className="size-4 text-gold-600" />
             </Link>
             <div className="my-1 border-t border-navy-100" />
@@ -369,11 +391,12 @@ function NavEntry({ item }: { item: NavCategory }) {
 }
 
 function Logo({ name, inverse = false }: { name: string; inverse?: boolean }) {
+  const { t } = useLocale();
   return (
     <Link
       href="/"
       className="flex shrink-0 items-center gap-2.5"
-      aria-label={`${name}, accueil`}
+      aria-label={`${name}, ${t("header.home")}`}
     >
       {/* Le verrouillage porte déjà le nom : l'`alt` reste vide, le nom
           accessible du lien étant donné par son `aria-label`. */}

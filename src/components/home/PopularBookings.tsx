@@ -10,6 +10,10 @@ export default function PopularBookings({ offers }: { offers: Offer[] }) {
     .sort((a, b) => b.reviews - a.reviews)
     .slice(0, 9);
 
+  // Un titre de section sans rien dessous est pire qu'une section absente :
+  // ça se lit comme une panne, pas comme un choix éditorial.
+  if (rows.length === 0) return null;
+
   return (
     <Section
       title="Les plus réservés au départ de Paris"

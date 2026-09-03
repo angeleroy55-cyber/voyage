@@ -7,7 +7,7 @@ import {
   subtypeBlurb,
   subtypeLabel,
 } from "@/lib/constants";
-import { seasonRange, upcomingSeason } from "@/lib/seasons";
+import { seasonRange, upcomingSeasons } from "@/lib/seasons";
 import { withMediaFallback } from "@/lib/media";
 import type {
   CategoryAccent,
@@ -249,18 +249,28 @@ export type HeroSlide = {
 };
 
 export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
-  const saison = upcomingSeason();
-  const { gte, lte } = seasonRange(saison);
+  // Trois bandeaux « par période », comme les sites du même segment : la
+  // saison en cours n'y figure pas (qui part cette semaine a déjà réservé),
+  // mais les trois suivantes, si bien que la page annonce toujours ce qu'il
+  // est encore temps de préparer. Vente flash, dernière minute, croisières et
+  // circuits ne comblent que ce qu'une période sans offre correspondante
+  // laisserait vide.
+  const periodes = upcomingSeasons(3);
 
   const commun = { status: "published", category: { active: true } } as const;
   const parPrix = [{ price: "asc" as const }];
 
-  const [saisonniere, derniereMinute, croisiere, circuit] = await Promise.all([
-    prisma.offer.findFirst({
-      where: { ...commun, departureDate: { gte, lte } },
-      orderBy: parPrix,
-      select: OFFER_SELECT,
-    }),
+  const [parPeriode, derniereMinute, croisiere, circuit] = await Promise.all([
+    Promise.all(
+      periodes.map((saison) => {
+        const { gte, lte } = seasonRange(saison);
+        return prisma.offer.findFirst({
+          where: { ...commun, departureDate: { gte, lte } },
+          orderBy: parPrix,
+          select: OFFER_SELECT,
+        });
+      }),
+    ),
     prisma.offer.findFirst({
       where: { ...commun, departureDate: lastMinuteWindow() },
       orderBy: parPrix,
@@ -282,15 +292,20 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
   // deux colonnes d'une même ligne échappe au filtre de Prisma.
   const promo = (await getBestDeals(1))[0] ?? null;
 
+  const slidesSaison = parPeriode.map((ligne, i) => {
+    if (!ligne) return null;
+    const saison = periodes[i];
+    return construireSlide(toOffer(ligne), {
+      id: `saison-${saison.id}`,
+      kicker: i === 0 ? "Prochaine période à réserver" : "À venir",
+      title: saison.label,
+      href: `/bons-plans-promos?saison=${saison.id}`,
+      cta: "Voir les départs",
+    });
+  });
+
   const slides: (HeroSlide | null)[] = [
-    saisonniere &&
-      construireSlide(toOffer(saisonniere), {
-        id: `saison-${saison.id}`,
-        kicker: "Prochaine période à réserver",
-        title: saison.label,
-        href: `/bons-plans-promos?saison=${saison.id}`,
-        cta: "Voir les départs",
-      }),
+    ...slidesSaison,
     promo &&
       construireSlide(promo, {
         id: "promo",
@@ -640,8 +655,8 @@ export type SearchCategory = {
  *
  * Seules les catégories `catalogue` y figurent : on ne cherche pas dans « Bons
  * Plans », qui est une sélection de prix, ni dans « Destinations », qui est un
- * hub. Y mettre les dix entrées du menu donnerait des onglets qui cherchent
- * dans les mêmes offres sous deux angles différents.
+ * hub. Y mettre toutes les entrées du menu donnerait des onglets qui
+ * cherchent dans les mêmes offres sous deux angles différents.
  */
 export async function getSearchCategories(): Promise<SearchCategory[]> {
   const rows = await getCategories();
@@ -730,11 +745,17 @@ async function subcategoriesByCategory(): Promise<Map<string, NavSubcategory[]>>
 /**
  * Navigation principale et débordement.
  *
- * Le menu s'arrête à dix entrées : au-delà, le choix ralentit et la conversion
- * baisse. Les catégories marquées `isOverflow` passent donc sous « Voir plus de
- * voyages », sans rien perdre de leur visibilité pour les moteurs, qui suivent
- * les liens dans les deux cas.
+ * Ce sont les catégories marquées `isOverflow` qui décident, pas cette
+ * fonction : le back-office peut donc déplacer une entrée d'un côté ou de
+ * l'autre sans toucher au code. Le plafond ci-dessous n'est qu'un garde-fou,
+ * si quelqu'un dépublie l'indicateur sur toute la table.
+ *
+ * Rien n'est perdu en descendant sous « Voir plus de voyages » : le pied de
+ * page liste les deux groupes, et les moteurs suivent les liens dans les deux
+ * cas. Ce qui se joue en tête de page, c'est l'attention du visiteur, pas
+ * l'indexation.
  */
+const MENU_MAX = 6;
 export async function getNavigation(): Promise<{
   main: NavCategory[];
   overflow: NavCategory[];
@@ -753,7 +774,7 @@ export async function getNavigation(): Promise<{
     subcategories: sousCategories.get(row.slug) ?? [],
   });
   return {
-    main: rows.filter((row) => !row.isOverflow).slice(0, 10).map(toNav),
+    main: rows.filter((row) => !row.isOverflow).slice(0, MENU_MAX).map(toNav),
     overflow: rows.filter((row) => row.isOverflow).map(toNav),
   };
 }

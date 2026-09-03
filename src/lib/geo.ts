@@ -50,6 +50,18 @@ const ALIAS: Record<string, string> = {
   "saint etienne": "Saint-Étienne",
   "le havre": "Le Havre",
   "la rochelle": "La Rochelle",
+  // Grandes villes européennes : l'hébergeur rend en général le nom local ou
+  // anglais, distinct de l'intitulé français utilisé dans `places.ts`.
+  barcelona: "Barcelone",
+  lisbon: "Lisbonne",
+  milano: "Milan",
+  london: "Londres",
+  munchen: "Munich",
+  "münchen": "Munich",
+  frankfurt: "Francfort",
+  "frankfurt am main": "Francfort",
+  vienna: "Vienne",
+  copenhagen: "Copenhague",
 };
 
 /** Compare deux noms de ville sans tenir compte des accents ni de la casse. */

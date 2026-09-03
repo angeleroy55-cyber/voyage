@@ -96,6 +96,22 @@ export { PAYMENT_METHODS };
 export type { PaymentId };
 
 /**
+ * Badge d'accréditation professionnelle (IATA, Amadeus, Galileo…), au pied de
+ * page. Rendu en texte plutôt qu'en logo : redessiner à la main le sigle
+ * d'IATA ou d'un GDS afficherait une marque qu'on n'a pas le fichier officiel
+ * pour reproduire fidèlement. Déposer les fichiers de marque dans
+ * `public/accreditations/<id>.svg` et remplacer ce rendu par un `<img>`, sur
+ * le modèle de `PaymentLogo`, dès qu'ils sont disponibles.
+ */
+export function AccreditationBadge({ label }: { label: string }) {
+  return (
+    <span className="inline-flex h-[30px] items-center whitespace-nowrap rounded-[3px] border border-navy-200 bg-white px-2.5 text-[11px] font-bold uppercase tracking-wide text-navy-700">
+      {label}
+    </span>
+  );
+}
+
+/**
  * Moyen de paiement accepté, au gabarit 38 × 24 des bandeaux d'acceptation. Les
  * marques déposées sont reprises de leur fichier officiel ; le paiement en 4×,
  * qui est une offre GoSéjour et non une marque, est dessiné dans le même

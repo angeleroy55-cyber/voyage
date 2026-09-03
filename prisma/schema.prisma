@@ -42,9 +42,9 @@ model Category {
   /// (origin, destination, dates, travellers, driver).
   formFields String @default("destination,dates,travellers")
 
-  /// Hors des 10 entrées du menu principal : regroupée sous « Voir plus de
-  /// voyages ». La page reste publique et indexable, elle ne prend simplement
-  /// pas de place dans une barre limitée à 10 entrées (loi de Hick).
+  /// Hors du menu principal : regroupée sous « Voir plus de voyages ». La
+  /// page reste publique et indexable, elle ne prend simplement pas de place
+  /// dans une barre volontairement courte (loi de Hick).
   isOverflow Boolean @default(false)
 
   /// Affichage du taux de remise (−20 %) sur les cartes de cette catégorie. Le

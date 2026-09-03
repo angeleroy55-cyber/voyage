@@ -1,4 +1,5 @@
 import DepartureCityProvider from "@/components/site/DepartureCity";
+import LocaleProvider from "@/components/site/Locale";
 import Header from "@/components/site/Header";
 import Footer from "@/components/site/Footer";
 import SitePopups from "@/components/site/SitePopups";
@@ -26,23 +27,27 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
 
   return (
     // La ville de départ enveloppe toute la page : l'en-tête la règle, le
-    // moteur de recherche la lit, sur chaque page et sans la redemander.
-    <DepartureCityProvider detectedCity={detectedCity}>
-      <div className="flex min-h-screen flex-col">
-        <Header
-          settings={settings}
-          categories={navigation.main}
-          overflow={navigation.overflow}
-          customer={customer}
-        />
-        <main className="flex-1">{children}</main>
-        <Footer
-          settings={settings}
-          categories={navigation.main}
-          overflow={navigation.overflow}
-        />
-        <SitePopups />
-      </div>
-    </DepartureCityProvider>
+    // moteur de recherche la lit, sur chaque page et sans la redemander. La
+    // langue d'interface suit le même principe, dans un contexte séparé : les
+    // deux choix sont indépendants l'un de l'autre.
+    <LocaleProvider>
+      <DepartureCityProvider detectedCity={detectedCity}>
+        <div className="flex min-h-screen flex-col">
+          <Header
+            settings={settings}
+            categories={navigation.main}
+            overflow={navigation.overflow}
+            customer={customer}
+          />
+          <main className="flex-1">{children}</main>
+          <Footer
+            settings={settings}
+            categories={navigation.main}
+            overflow={navigation.overflow}
+          />
+          <SitePopups />
+        </div>
+      </DepartureCityProvider>
+    </LocaleProvider>
   );
 }

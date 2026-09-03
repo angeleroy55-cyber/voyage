@@ -102,7 +102,12 @@ export default function SearchWidget({
       } ring-1 ring-navy-100`}
     >
       {/* Tabs */}
-      <div className="rail flex gap-1 overflow-x-auto border-b border-navy-100 px-2 pt-2">
+      {/* `snap-x` cale chaque onglet à l'arrêt du défilement, comme les rails
+          d'offres de la page d'accueil ; l'espaceur final laisse le dernier
+          onglet respirer au lieu de le coller au bord du conteneur, qui le
+          faisait paraître coupé sur mobile (pas de scrollbar visible pour
+          deviner qu'il y a la suite). */}
+      <div className="rail flex snap-x gap-1 overflow-x-auto border-b border-navy-100 pl-2 pt-2">
         {categories.map((c) => {
           const on = c.id === active;
           return (
@@ -111,7 +116,7 @@ export default function SearchWidget({
               type="button"
               onClick={() => setActive(c.id)}
               aria-pressed={on}
-              className={`flex shrink-0 items-center gap-2 rounded-t-xl px-3.5 py-3 text-sm font-semibold transition ${
+              className={`flex shrink-0 snap-start items-center gap-2 rounded-t-xl px-3.5 py-3 text-sm font-semibold transition ${
                 on
                   ? "bg-white text-navy-900 shadow-[inset_0_-3px_0_var(--color-gold-500)]"
                   : "text-navy-500 hover:bg-navy-50 hover:text-navy-800"
@@ -122,6 +127,7 @@ export default function SearchWidget({
             </button>
           );
         })}
+        <div aria-hidden="true" className="w-3 shrink-0" />
       </div>
 
       {/* Une seule liste de suggestions pour tout le formulaire, partagée par

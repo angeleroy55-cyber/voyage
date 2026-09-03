@@ -239,6 +239,26 @@ export const PAYMENT_CHOICES = PAYMENT_METHODS.filter(
 /** Marques affichées en réassurance au pied de page, dans cet ordre. */
 export const PAYMENT_BADGES: PaymentId[] = ["cb", "visa", "mastercard"];
 
+/**
+ * Accréditations professionnelles affichées en réassurance, à côté des
+ * moyens de paiement (retour client, à l'image des sites du même segment).
+ *
+ * Le statut est réel, mais les logos officiels et le numéro d'accréditation
+ * ne sont pas dans ce dépôt : `AccreditationBadge`
+ * (`src/components/ui/BrandLogos.tsx`) affiche donc un badge texte tant que
+ * les fichiers de marque n'ont pas été déposés dans `public/accreditations/`.
+ * Un logo d'IATA, Amadeus ou Galileo ne se redessine pas à la main : c'est au
+ * client de fournir le fichier officiel, avec son numéro d'agent le cas
+ * échéant.
+ */
+export const ACCREDITATION_BADGES = [
+  { id: "iata", label: "Agent IATA accrédité" },
+  { id: "amadeus", label: "Amadeus" },
+  { id: "galileo", label: "Galileo" },
+] as const;
+
+export type AccreditationId = (typeof ACCREDITATION_BADGES)[number]["id"];
+
 export function paymentLabel(id: string): string {
   return PAYMENT_METHODS.find((m) => m.id === id)?.label ?? "Non précisé";
 }

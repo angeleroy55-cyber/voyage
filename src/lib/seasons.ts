@@ -127,6 +127,17 @@ export function upcomingSeason(date = new Date()): Season {
 }
 
 /**
+ * Les `count` prochaines saisons, dans l'ordre.
+ *
+ * Sert aux bandeaux d'accueil : plutôt qu'un unique bandeau saisonnier, la
+ * page en pousse plusieurs, chacun sur une période différente à venir.
+ */
+export function upcomingSeasons(count: number, date = new Date()): Season[] {
+  const index = SEASONS.findIndex((s) => inSeason(date, s));
+  return Array.from({ length: count }, (_, i) => SEASONS[(index + 1 + i) % SEASONS.length]);
+}
+
+/**
  * Bornes réelles de la saison, en dates, à partir d'aujourd'hui.
  *
  * La fenêtre est reportée sur l'année en cours, ou la suivante si elle est déjà
