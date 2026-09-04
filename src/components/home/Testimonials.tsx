@@ -15,7 +15,11 @@ export default function Testimonials({ reviews }: { reviews: Review[] }) {
       <div className="rail -mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2">
         {reviews.map((r) => (
           <figure
-            key={r.author}
+            // L'auteur seul ne suffit pas : deux avis peuvent partager le même
+            // nom abrégé (« Julien R. » d'un client à l'autre, ou un même
+            // client sur deux séjours). La date les distingue, comme dans
+            // ReviewSection.
+            key={`${r.author}-${r.date}`}
             className="flex w-[300px] shrink-0 snap-start flex-col rounded-2xl border border-navy-100 bg-white p-5 shadow-card sm:w-[340px]"
           >
             <div className="flex items-center justify-between">
