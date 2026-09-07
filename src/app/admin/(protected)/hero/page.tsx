@@ -79,6 +79,15 @@ export default async function HeroAdminPage({ searchParams }: PageProps<"/admin/
               </span>
               <input name="imageAlt" className={INPUT} />
             </label>
+            <label className="block sm:col-span-2">
+              <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+                Mots promo saisonniers
+              </span>
+              <input name="promoTags" placeholder="Été, Tout compris, Dernière minute" className={INPUT} />
+              <span className="mt-1 block text-xs text-navy-400">
+                Séparés par des virgules, cinq au plus : les suivants sont ignorés à l&apos;enregistrement.
+              </span>
+            </label>
             <label className="flex items-center gap-2 text-sm text-navy-700">
               <input type="checkbox" name="active" defaultChecked className="size-4 rounded accent-gold-500" />
               Slide actif
@@ -148,6 +157,20 @@ export default async function HeroAdminPage({ searchParams }: PageProps<"/admin/
                       Texte alternatif
                     </span>
                     <input name="imageAlt" defaultValue={slide.imageAlt} className={INPUT} />
+                  </label>
+                  <label className="block sm:col-span-2">
+                    <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
+                      Mots promo saisonniers
+                    </span>
+                    <input
+                      name="promoTags"
+                      defaultValue={slide.promoTags}
+                      placeholder="Été, Tout compris, Dernière minute"
+                      className={INPUT}
+                    />
+                    <span className="mt-1 block text-xs text-navy-400">
+                      Séparés par des virgules, cinq au plus.
+                    </span>
                   </label>
                   <label className="flex items-center gap-2 text-sm text-navy-700 sm:col-span-2">
                     <input

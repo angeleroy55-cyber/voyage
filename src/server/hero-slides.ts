@@ -12,6 +12,8 @@ type HeroSlideRow = {
   imageUrl: string;
   imageId: string;
   imageAlt: string;
+  imageCredit: string;
+  promoTags: string;
   position: number;
   active: boolean;
 };
@@ -86,6 +88,14 @@ export async function listHeroSlides(client: unknown = prisma): Promise<HeroSlid
       cta: row.cta,
       image: withMediaFallback(row.imageUrl),
       imageAlt: row.imageAlt || row.title,
+      imageCredit: row.imageCredit,
+      // Cinq mots-clés au plus, même si la valeur en base en portait davantage :
+      // la limite d'affichage ne doit jamais dépendre uniquement de la saisie.
+      promoTags: row.promoTags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .slice(0, 5),
       position: row.position,
     }));
 }

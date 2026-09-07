@@ -9,7 +9,7 @@ import { getMailerSummary } from "@/server/mail";
 export const metadata = { title: "Réglages" };
 export const dynamic = "force-dynamic";
 
-const FIELDS = [
+const FIELDS: { key: string; label: string; hint: string; textarea?: boolean }[] = [
   { key: "site.name", label: "Nom du site", hint: "Affiché dans les métadonnées" },
   { key: "site.tagline", label: "Signature", hint: "Voyages • Séjours • Expériences" },
   { key: "site.phone", label: "Téléphone", hint: "Barre supérieure et pied de page" },
@@ -19,6 +19,12 @@ const FIELDS = [
     hint: "Au format international, ex. +33 7 59 82 38 73. Vide, le bouton disparaît.",
   },
   { key: "site.email", label: "E-mail de contact", hint: "" },
+  {
+    key: "site.accreditations",
+    label: "Accréditations & garanties",
+    hint: "Ex. « Agent de voyages immatriculé Atout France IM0xxxxxxxx » ou « Garantie financière APST ». Une par ligne. Vide, rien ne s'affiche en pied de page : jamais de mention IATA/agrément tant qu'elle n'est pas exacte.",
+    textarea: true,
+  },
   // Coordonnées bancaires du virement.
   //
   // Elles vivent en base, jamais dans le code : le dépôt est versionné et
@@ -109,15 +115,24 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/p
       <form action={saveSettings} className="mt-5 rounded-2xl border border-navy-100 bg-white p-5">
         <div className="grid gap-4 sm:grid-cols-2">
           {FIELDS.map((field) => (
-            <label key={field.key} className="block">
+            <label key={field.key} className={`block ${field.textarea ? "sm:col-span-2" : ""}`}>
               <span className="text-xs font-medium uppercase tracking-wide text-navy-500">
                 {field.label}
               </span>
-              <input
-                name={field.key}
-                defaultValue={values.get(field.key) ?? ""}
-                className="mt-1 w-full rounded-xl border border-navy-200 px-3.5 py-2.5 text-sm outline-none focus:border-navy-400"
-              />
+              {field.textarea ? (
+                <textarea
+                  name={field.key}
+                  defaultValue={values.get(field.key) ?? ""}
+                  rows={3}
+                  className="mt-1 w-full rounded-xl border border-navy-200 px-3.5 py-2.5 text-sm outline-none focus:border-navy-400"
+                />
+              ) : (
+                <input
+                  name={field.key}
+                  defaultValue={values.get(field.key) ?? ""}
+                  className="mt-1 w-full rounded-xl border border-navy-200 px-3.5 py-2.5 text-sm outline-none focus:border-navy-400"
+                />
+              )}
               {field.hint && (
                 <span className="mt-1 block text-xs text-navy-400">{field.hint}</span>
               )}

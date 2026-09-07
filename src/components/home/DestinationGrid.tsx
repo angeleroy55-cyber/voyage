@@ -6,6 +6,11 @@ import { price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 
 export default function DestinationGrid({ destinations }: { destinations: Destination[] }) {
+  // Le parent garde déjà l'affichage sur `destinations.length > 0`, mais le
+  // composant reste défensif : sans ça, `lead` vaut `undefined` et la tuile
+  // plante en lisant ses propriétés.
+  if (destinations.length === 0) return null;
+
   const [lead, ...rest] = destinations;
 
   return (

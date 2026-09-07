@@ -152,9 +152,11 @@ export default async function HomePage() {
           <SeasonRail counts={saisonnier} />
         </Reveal>
 
-        <Reveal>
-          <DestinationGrid destinations={destinations} />
-        </Reveal>
+        {destinations.length > 0 && (
+          <Reveal>
+            <DestinationGrid destinations={destinations} />
+          </Reveal>
+        )}
 
         {/* Les rayons thématiques s'intercalent avant le bloc « populaires » ;
             l'inscription reste après, une fois quelques offres parcourues. */}
@@ -169,9 +171,11 @@ export default async function HomePage() {
           </Reveal>
         ))}
 
-        <Reveal>
-          <PopularBookings offers={topBooked} />
-        </Reveal>
+        {topBooked.length > 0 && (
+          <Reveal>
+            <PopularBookings offers={topBooked} />
+          </Reveal>
+        )}
 
         <Reveal variant="zoom">
           <Newsletter />

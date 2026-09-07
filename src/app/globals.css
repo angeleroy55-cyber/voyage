@@ -79,9 +79,38 @@ body {
 .rail {
   scrollbar-width: none;
   -ms-overflow-style: none;
+  scroll-snap-type: x proximity;
 }
 .rail::-webkit-scrollbar {
   display: none;
+}
+.rail > * {
+  scroll-snap-align: start;
+}
+
+/*
+ * Un rail sans scrollbar visible peut donner l'impression qu'une entrée est
+ * coupée plutôt que défilable (ex. onglets du moteur de recherche sur mobile).
+ * Ce voile en dégradé sur le bord droit du conteneur signale qu'il reste du
+ * contenu à faire défiler ; `.rail-fade--hidden` le retire une fois le rail
+ * scrollé jusqu'au bout.
+ */
+.rail-fade {
+  position: relative;
+}
+.rail-fade::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, #ffffff 85%);
+  transition: opacity 0.15s ease;
+}
+.rail-fade--hidden::after {
+  opacity: 0;
 }
 
 @keyframes fade-up {

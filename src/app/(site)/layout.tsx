@@ -2,7 +2,7 @@ import DepartureCityProvider from "@/components/site/DepartureCity";
 import Header from "@/components/site/Header";
 import Footer from "@/components/site/Footer";
 import SitePopups from "@/components/site/SitePopups";
-import { getNavigation, getSiteSettings } from "@/server/catalogue";
+import { getNavigation, getSiteSettings, getTopCountries } from "@/server/catalogue";
 import { getCustomerSession } from "@/server/customer-session";
 import { detectDepartureCity } from "@/server/geo";
 
@@ -11,11 +11,12 @@ import { detectDepartureCity } from "@/server/geo";
 export const dynamic = "force-dynamic";
 
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
-  const [settings, navigation, session, detectedCity] = await Promise.all([
+  const [settings, navigation, session, detectedCity, topCountries] = await Promise.all([
     getSiteSettings(),
     getNavigation(),
     getCustomerSession(),
     detectDepartureCity(),
+    getTopCountries(),
   ]);
 
   // Le nom porté par le cookie signé suffit à l'en-tête : inutile d'interroger
@@ -40,6 +41,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
           settings={settings}
           categories={navigation.main}
           overflow={navigation.overflow}
+          topCountries={topCountries}
         />
         <SitePopups />
       </div>

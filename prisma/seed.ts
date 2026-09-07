@@ -41,6 +41,13 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: url, max: 1 }),
 });
 
+/**
+ * Bandeaux d'accueil composés au seed, avec de vraies photos de destination
+ * (Wikimedia Commons, comme le reste du catalogue) plutôt qu'un service
+ * d'images génériques. `promoTags` porte jusqu'à cinq mots-clés saisonniers
+ * affichés sur la bannière ; au-delà de cinq, l'accroche devient un mur de
+ * texte, d'où la limite imposée à la saisie (voir /admin/hero).
+ */
 const HERO_SLIDES = [
   {
     kicker: "Ventes flash jusqu'à dimanche",
@@ -48,26 +55,49 @@ const HERO_SLIDES = [
     text: "Séjours tout compris en Méditerranée, vol et transferts inclus.",
     href: "/sejours",
     cta: "Voir les séjours",
-    imageSeed: "hero-mediterranee",
-    imageAlt: "Séjour en Méditerranée",
+    photoQuery: "Mallorca beach cove",
+    imageAlt: "Crique méditerranéenne à Majorque",
+    promoTags: ["Été", "Tout compris", "Dernière minute"],
   },
   {
     kicker: "Croisières",
     title: "Embarquez pour 8 jours en pension complète",
-    text: "Méditerranée, Canaries ou fjords : cabine extérieure sans supplément.",
+    text: "Îles grecques, Méditerranée ou fjords : cabine extérieure sans supplément.",
     href: "/croisieres",
     cta: "Découvrir les croisières",
-    imageSeed: "hero-croisiere",
-    imageAlt: "Croisière au large",
+    photoQuery: "Santorini caldera",
+    imageAlt: "Caldeira de Santorin, vue depuis un bateau de croisière",
+    promoTags: ["Îles grecques", "Pension complète"],
   },
   {
     kicker: "Circuits accompagnés",
-    title: "Le Japon, l'Islande ou le Pérou avec un guide francophone",
+    title: "Le Japon avec un guide francophone",
     text: "Itinéraires clés en main, groupes limités, entrées des sites incluses.",
     href: "/circuits",
     cta: "Choisir un circuit",
-    imageSeed: "hero-circuits",
-    imageAlt: "Circuit accompagné à l'étranger",
+    photoQuery: "Kyoto Fushimi Inari",
+    imageAlt: "Sanctuaire Fushimi Inari à Kyoto",
+    promoTags: ["Asie", "Guide francophone", "Petit groupe"],
+  },
+  {
+    kicker: "Sports d'hiver",
+    title: "Une semaine au ski dès 389 € par personne",
+    text: "Résidences pied des pistes dans les Alpes, forfait remontées en option.",
+    href: "/camping-escapades",
+    cta: "Voir les séjours au ski",
+    photoQuery: "French Alps ski resort",
+    imageAlt: "Station de ski dans les Alpes françaises",
+    promoTags: ["Hiver", "Ski", "Familles"],
+  },
+  {
+    kicker: "Fêtes de fin d'année",
+    title: "Un Noël à Paris ou un réveillon dans une capitale européenne",
+    text: "City-breaks courts séjours, marchés de Noël et illuminations inclus dans le prix.",
+    href: "/sejours-france",
+    cta: "Réserver un city-break",
+    photoQuery: "Paris Eiffel Tower",
+    imageAlt: "Tour Eiffel illuminée pour les fêtes de fin d'année",
+    promoTags: ["Noël", "City-break", "Sans avion"],
   },
 ];
 
@@ -487,58 +517,83 @@ async function main() {
   }
 
   console.log("Articles…");
+  // Deux articles illustrent une destination précise du catalogue : ils
+  // reprennent la même photo Wikimedia que la fiche destination plutôt qu'un
+  // visuel générique. Les autres (conseils pratiques, sans destination unique)
+  // gardent le repli `photo()`.
+  const POST_PHOTO_QUERY: Record<string, string> = {
+    "quand-partir-japon": "Kyoto Fushimi Inari",
+    "andalousie-itineraire": "Seville Plaza de Espana",
+  };
+
   for (const post of POSTS) {
     const existing = await prisma.post.findUnique({
       where: { slug: post.slug },
       select: { imageUrl: true, imageId: true, imageAlt: true },
     });
-    const seededImageUrl = existing?.imageUrl || photo(post.imageSeed, 800, 500);
+    const query = POST_PHOTO_QUERY[post.slug];
+    const visuel = query ? photoFor(query) : null;
+    const seededImageUrl = existing?.imageUrl || visuel?.url || photo(post.imageSeed, 800, 500);
     const seededImageId = existing?.imageId || "";
     const seededImageAlt = existing?.imageAlt || post.title;
+    const seededImageCredit = visuel ? creditFor(visuel) : "";
 
     await prisma.post.upsert({
       where: { slug: post.slug },
       update: {
         title: post.title,
         excerpt: post.excerpt,
+        body: post.body,
         category: post.category,
         readingTime: post.readingTime,
         imageUrl: seededImageUrl,
         imageId: seededImageId,
         imageAlt: seededImageAlt,
+        imageCredit: existing ? undefined : seededImageCredit,
         status: "published",
       },
       create: {
         slug: post.slug,
         title: post.title,
         excerpt: post.excerpt,
+        body: post.body,
         category: post.category,
         readingTime: post.readingTime,
         imageUrl: seededImageUrl,
         imageId: seededImageId,
         imageAlt: seededImageAlt,
+        imageCredit: seededImageCredit,
         status: "published",
       },
     });
   }
 
   console.log("Hero…");
-  const heroCount = await prisma.heroSlide.count();
-  if (heroCount === 0) {
-    await prisma.heroSlide.createMany({
-      data: HERO_SLIDES.map((slide, index) => ({
+  // Les bandeaux d'accueil sont recréés à chaque seed, contrairement au reste
+  // (offres, destinations…) qui n'est mis à jour qu'à l'identique : ce jeu de
+  // cinq bandeaux de démonstration est celui livré au client, jamais encore
+  // personnalisé depuis /admin/hero. Le jour où l'équipe compose ses propres
+  // bandeaux, il suffira de retirer ce bloc — `getHeroSlides()` leur donne de
+  // toute façon la priorité sur le catalogue dès qu'il y en a un seul actif.
+  await prisma.heroSlide.deleteMany({});
+  await prisma.heroSlide.createMany({
+    data: HERO_SLIDES.map((slide, index) => {
+      const visuel = photoFor(slide.photoQuery);
+      return {
         kicker: slide.kicker,
         title: slide.title,
         text: slide.text,
         href: slide.href,
         cta: slide.cta,
-        imageUrl: photo(slide.imageSeed, 1600, 700),
+        imageUrl: visuel?.url ?? photo(slide.photoQuery, 1600, 700),
         imageAlt: slide.imageAlt,
+        imageCredit: visuel ? creditFor(visuel) : "",
+        promoTags: slide.promoTags.slice(0, 5).join(","),
         position: index,
         active: true,
-      })),
-    });
-  }
+      };
+    }),
+  });
 
   console.log("Réglages…");
   const settings: Record<string, string> = {

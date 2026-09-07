@@ -26,6 +26,15 @@ export async function saveHeroSlide(id: string | null, formData: FormData) {
     href: String(formData.get("href") ?? "/").trim() || "/",
     cta: String(formData.get("cta") ?? "").trim(),
     imageAlt: String(formData.get("imageAlt") ?? "").trim(),
+    // Cinq mots-clés au plus : au-delà, la bannière devient un mur de texte.
+    // La limite est appliquée ici, pas seulement à l'affichage, pour qu'une
+    // saisie plus longue ne reste pas invisible en base sans qu'on le sache.
+    promoTags: String(formData.get("promoTags") ?? "")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+      .slice(0, 5)
+      .join(","),
     position: Math.max(0, Math.round(Number(formData.get("position")) || 0)),
     active: formData.get("active") === "on",
   };

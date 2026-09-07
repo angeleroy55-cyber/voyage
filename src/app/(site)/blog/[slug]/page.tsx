@@ -63,6 +63,11 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
           sizes="(max-width: 768px) 100vw, 768px"
           className="object-cover"
         />
+        {post.imageCredit && (
+          <p className="absolute bottom-1.5 right-2.5 text-[10px] text-white/80">
+            {post.imageCredit}
+          </p>
+        )}
       </div>
 
       {post.excerpt && (

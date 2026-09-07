@@ -18,8 +18,14 @@ export const BRAND = {
  * l'URL. Un numéro vide ne produit aucun lien, le bouton n'est pas rendu.
  */
 export function whatsappLink(number: string, message?: string): string | null {
-  const digits = number.replace(/[^0-9]/g, "");
-  if (digits.length < 8) return null;
+  let digits = number.replace(/[^0-9]/g, "");
+  // Un numéro français saisi au format local (« 07 59 82 38 73 », sans le
+  // « +33 ») passe le test de longueur mais produit un lien wa.me erroné :
+  // on le convertit ici en indicatif international avant de construire le lien.
+  if (/^0[1-9]\d{8}$/.test(digits)) {
+    digits = `33${digits.slice(1)}`;
+  }
+  if (digits.length < 10) return null;
   const query = message ? `?text=${encodeURIComponent(message)}` : "";
   return `https://wa.me/${digits}${query}`;
 }
@@ -27,10 +33,12 @@ export function whatsappLink(number: string, message?: string): string | null {
 /**
  * Navigation du site, dans l'ordre du cahier de catégorisation.
  *
- * Les dix premières entrées forment le menu principal, du plus fort taux de
- * conversion vers le plus large. Les suivantes portent `isOverflow` et se
- * regroupent sous « Voir plus de voyages » : elles restent publiques et
- * indexées, mais un menu au-delà de dix entrées fait chuter la conversion.
+ * Les entrées sans `isOverflow` forment le menu principal (huit aujourd'hui),
+ * du plus fort taux de conversion vers le plus large. Les autres portent
+ * `isOverflow` et se regroupent sous « Voir plus de voyages » : elles restent
+ * publiques et indexées, mais un menu trop long fait chuter la conversion.
+ * Vols et Location de voiture y sont volontairement passées : elles gardent
+ * leur onglet dans le moteur de recherche, seule leur entrée de menu recule.
  *
  * Trois de ces dix entrées ne possèdent aucune offre en propre. Bons Plans et
  * Dernière Minute traversent le catalogue par une règle, Destinations renvoie
@@ -115,16 +123,6 @@ export const CATEGORIES: Category[] = [
     blurb: "Des chambres négociées dans plus de 400 000 établissements.",
   },
   {
-    id: "vols",
-    label: "Vols",
-    title: "Vols",
-    icon: "plane",
-    kind: "catalogue",
-    accent: "navy",
-    form: ["origin", "destination", "dates", "travellers"],
-    blurb: "Comparez 600 compagnies aériennes en une recherche.",
-  },
-  {
     id: "camping-escapades",
     label: "Camping & Escapades",
     title: "Camping & Escapades",
@@ -134,6 +132,24 @@ export const CATEGORIES: Category[] = [
     form: ["destination", "dates", "travellers"],
     blurb: "Mobil-homes, clubs nature et courts séjours, sans poser de congés.",
   },
+
+  // ---- « Voir plus de voyages » ----
+  // Vols et Location de voiture restent des recherches à part entière (elles
+  // gardent leur onglet dans le moteur de recherche), mais sortent du menu
+  // principal : demande client, pour ne garder en avant que les formats les
+  // plus réservés.
+
+  {
+    id: "vols",
+    label: "Vols",
+    title: "Vols",
+    icon: "plane",
+    kind: "catalogue",
+    accent: "navy",
+    isOverflow: true,
+    form: ["origin", "destination", "dates", "travellers"],
+    blurb: "Comparez 600 compagnies aériennes en une recherche.",
+  },
   {
     id: "location-voiture",
     label: "Location de voiture",
@@ -141,11 +157,10 @@ export const CATEGORIES: Category[] = [
     icon: "car",
     kind: "catalogue",
     accent: "gold",
+    isOverflow: true,
     form: ["destination", "dates", "driver"],
     blurb: "Location sans frais cachés, annulation gratuite jusqu'à 48 h.",
   },
-
-  // ---- « Voir plus de voyages » ----
 
   {
     id: "tout-compris-clubs",
@@ -387,6 +402,17 @@ export const POSTS: Post[] = [
     category: "Destinations",
     readingTime: 7,
     imageSeed: "post-japon",
+    body: `Le Japon change de visage à chaque saison, et le choix de la période pèse autant que l'itinéraire lui-même. Il n'y a pas de "meilleur moment" dans l'absolu : il y a le moment qui correspond à ce que vous êtes venu voir.
+
+Fin mars à début avril, c'est la saison des cerisiers (sakura). Tokyo et Kyoto sont alors les villes les plus demandées de l'année : les hébergements se réservent tôt, et les parcs les plus connus sont pris d'assaut dès le week-end de floraison. La floraison remonte du sud vers le nord sur environ un mois, ce qui laisse une certaine souplesse si les dates exactes ne sont pas figées.
+
+L'automne, entre mi-novembre et début décembre, offre l'équivalent en érables (momiji) : les temples de Kyoto entourés de rouge et d'orange, avec une affluence un peu moins tendue qu'au printemps et des températures plus confortables pour marcher toute la journée.
+
+L'été (juillet-août) est chaud et humide, avec une saison des pluies qui se termine généralement mi-juillet selon les régions. C'est en revanche la période des grands festivals traditionnels (matsuri) et des feux d'artifice, un angle différent du voyage.
+
+L'hiver, de décembre à février, convient à un circuit orienté nature et sports d'hiver dans le nord (Hokkaido), avec un air sec et des ciels souvent dégagés dans le centre du pays.
+
+Pour un premier circuit combinant Tokyo, Kyoto et Osaka, le printemps ou l'automne restent les choix les plus équilibrés entre météo, lumière et affluence.`,
   },
   {
     slug: "bagage-cabine-regles",
@@ -395,6 +421,15 @@ export const POSTS: Post[] = [
     category: "Conseils",
     readingTime: 5,
     imageSeed: "post-bagage",
+    body: `Les règles de bagage cabine varient d'une compagnie à l'autre, y compris sur un même vol combiné vol + hôtel : la dimension et le poids autorisés dépendent du billet, pas de la destination. Le point à vérifier en priorité est toujours la fiche de la compagnie indiquée sur votre confirmation de réservation, avant de faire les valises.
+
+Les liquides restent encadrés par une règle commune à la majorité des aéroports européens : des contenants de 100 ml maximum, regroupés dans un sac transparent refermable d'un litre. Au-delà, direction la soute.
+
+Les batteries au lithium (appareils photo, batteries externes, cigarettes électroniques) doivent voyager en cabine, jamais en soute : c'est une consigne de sécurité, pas une option laissée à l'appréciation du passager. Les batteries externes de grande capacité (au-delà de 100 Wh environ) demandent en général l'accord préalable de la compagnie.
+
+Pour un vol sec ou un aller-retour sur compagnie à bas coût, le bagage cabine "gratuit" se limite souvent à un unique sac sous le siège devant vous ; la valise cabine à roulettes classique est alors payante en supplément. Vérifier ce point avant le départ évite une mauvaise surprise au comptoir d'enregistrement.
+
+En cas de doute sur une compagnie précise, le service client reste joignable par WhatsApp ou téléphone avant le départ pour confirmer les règles applicables à votre billet.`,
   },
   {
     slug: "croisiere-premiere-fois",
@@ -403,6 +438,17 @@ export const POSTS: Post[] = [
     category: "Croisières",
     readingTime: 9,
     imageSeed: "post-croisiere",
+    body: `Le mal de mer est la première crainte, et la plus souvent surestimée. Sur les grands navires de croisière modernes, les stabilisateurs limitent fortement le roulis en Méditerranée ou aux Canaries ; une cabine au centre du bateau et à un niveau intermédiaire reste le choix le plus stable pour qui craint particulièrement le mouvement.
+
+Les pourboires à l'équipage sont, sur la plupart des compagnies, soit inclus dans le prix affiché soit prélevés automatiquement en fin de séjour sous forme de forfait par jour et par passager : le détail figure toujours sur la fiche de l'offre et sur la facture finale, sans surprise à bord.
+
+Côté tenue, une croisière en Méditerranée ou aux Caraïbes ne demande pas de garde-robe particulière au quotidien (tenue décontractée au restaurant principal le jour), mais prévoit en général une ou deux soirées plus habillées pendant le séjour : rien d'obligatoire, mais agréable à anticiper.
+
+Les excursions à chaque escale ne sont pas incluses dans le prix de la croisière elle-même, sauf mention contraire sur la fiche de l'offre : elles se réservent en complément, à bord ou en amont. Il est tout à fait possible de descendre à quai et de visiter par ses propres moyens, sans passer par une excursion organisée.
+
+La cabine extérieure (avec hublot ou balcon) coûte plus cher qu'une cabine intérieure, mais pour un premier embarquement, voir la mer depuis sa chambre change beaucoup l'expérience du voyage, en particulier sur une croisière de plusieurs jours en mer sans escale quotidienne.
+
+Le mieux, pour une première fois, reste une formule courte (7 à 8 jours) en pension complète, sur un itinéraire à escales rapprochées comme la Méditerranée occidentale ou les îles grecques.`,
   },
   {
     slug: "andalousie-itineraire",
@@ -411,6 +457,34 @@ export const POSTS: Post[] = [
     category: "Itinéraires",
     readingTime: 8,
     imageSeed: "post-andalousie",
+    body: `Sur sept jours, l'erreur la plus fréquente est de vouloir tout voir et de perdre le voyage sur la route. L'Andalousie se prête bien à un itinéraire en boucle resserré autour de trois villes : Séville, Cordoue et Grenade sont reliées entre elles en moins de deux heures de route ou de train.
+
+Deux nuits à Séville pour commencer : la cathédrale et la Giralda, le quartier de Santa Cruz, et l'Alcazar, qui se réserve à l'avance en haute saison tant l'affluence y est importante. Séville se visite très bien à pied, en particulier tôt le matin avant la chaleur de l'après-midi si le voyage a lieu en été.
+
+Une nuit à Cordoue suffit pour l'essentiel : la Mezquita-Catedral, unique en Europe par son architecture, et le quartier historique de la Judería tout autour. C'est l'étape la plus courte de l'itinéraire, à ne pas négliger pour autant.
+
+Deux à trois nuits à Grenade pour finir, avec l'Alhambra en point d'orgue : les billets se réservent plusieurs semaines à l'avance, la jauge journalière étant limitée. Le quartier de l'Albaicín, en face de l'Alhambra, offre la meilleure vue au coucher du soleil.
+
+Pour qui dispose d'un jour supplémentaire, un détour par Cadix ou par les villages blancs de la Sierra de Grazalema apporte un contraste maritime ou rural bienvenu par rapport aux trois grandes villes.
+
+Le printemps (avril-mai) et le début de l'automne restent les périodes les plus confortables pour marcher toute la journée : l'été andalou dépasse fréquemment les 35 °C à l'intérieur des terres.`,
+  },
+  {
+    slug: "accompagnement-avant-pendant-apres-voyage",
+    title: "Avant, pendant, après : comment se passe le suivi de votre voyage",
+    excerpt: "Réserver en ligne ne veut pas dire partir seul : ce qui se passe une fois la réservation confirmée.",
+    category: "Conseils",
+    readingTime: 4,
+    imageSeed: "post-accompagnement",
+    body: `Réserver un voyage en ligne ne signifie pas être livré à soi-même une fois le paiement passé. Trois moments structurent le suivi d'une réservation, du premier clic jusqu'au retour.
+
+Avant le départ, la confirmation de réservation arrive par e-mail avec l'ensemble des documents utiles (référence, détail du séjour, conditions), et reste consultable à tout moment depuis l'espace client, dans la rubrique "Mes réservations". Toute question sur un bagage, une formalité ou un horaire peut être posée directement par WhatsApp, sans passer par un formulaire ou une file d'attente téléphonique.
+
+Pendant le séjour, la référence de réservation (au format GO-XXXXX) sert de repère unique pour toute démarche : elle est demandée par l'hébergeur, la compagnie aérienne ou le service client en cas de besoin, et évite d'avoir à ressaisir l'ensemble du dossier.
+
+Après le retour, l'espace client conserve l'historique complet des voyages réservés, utile pour retrouver une facture ou laisser un avis sur l'expérience vécue. C'est aussi le canal par lequel une question tardive (facture, justificatif) trouve une réponse la plus rapide.
+
+Ce fonctionnement ne remplace pas un accompagnement sur place assuré par un professionnel local (c'est le cas des circuits accompagnés, avec guide francophone du premier au dernier jour), mais garantit qu'aucune réservation n'est laissée sans interlocuteur joignable.`,
   },
 ];
 
@@ -449,18 +523,28 @@ export const BENEFITS = [
   },
 ];
 
+/**
+ * Colonnes du pied de page.
+ *
+ * Deux colonnes seulement, contre quatre avant : « Mentions légales » et
+ * « À propos » fusionnent sous « L'agence », qui pèse moins à l'œil et se lit
+ * en un balayage. La colonne « Nos sites » (Espagne, Italie, Portugal…) a été
+ * retirée : elle laissait croire à des sites GoSéjour dédiés par pays, ce qui
+ * n'existe pas — remplacée par les pays les plus demandés, calculés depuis le
+ * vrai catalogue (voir `getTopCountries`).
+ */
 export const FOOTER_LINKS = [
   {
-    title: "Mentions légales",
-    links: ["Conditions générales", "Politique de confidentialité", "Gestion des cookies", "Accessibilité", "Médiation"],
-  },
-  {
-    title: "À propos",
-    links: ["Qui sommes-nous", "Guides de voyage", "Aide et FAQ", "Nous contacter", "Recrutement", "Affiliation"],
-  },
-  {
-    title: "Nos sites",
-    links: ["Espagne", "Italie", "Portugal", "Allemagne", "Royaume-Uni", "Brésil", "Mexique"],
+    title: "L'agence",
+    links: [
+      "Qui sommes-nous",
+      "Guides de voyage",
+      "Aide et FAQ",
+      "Nous contacter",
+      "Conditions générales",
+      "Politique de confidentialité",
+      "Gestion des cookies",
+    ],
   },
   {
     title: "Réserver",

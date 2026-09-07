@@ -246,6 +246,10 @@ export type HeroSlide = {
   cta: string;
   image: string;
   alt: string;
+  /** Mention d'auteur/licence du visuel ; vide si aucune n'est requise. */
+  imageCredit?: string;
+  /** Mots-clés promo saisonniers affichés sur la bannière, cinq au plus. */
+  promoTags: string[];
 };
 
 export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
@@ -290,6 +294,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         title: saison.label,
         href: `/bons-plans-promos?saison=${saison.id}`,
         cta: "Voir les départs",
+        promoTags: [saison.label],
       }),
     promo &&
       construireSlide(promo, {
@@ -298,6 +303,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         title: `Jusqu'à ${discountOf(promo)} % de remise`,
         href: "/bons-plans-promos",
         cta: "Voir les bons plans",
+        promoTags: ["Vente flash", "Bon plan"],
       }),
     derniereMinute &&
       construireSlide(toOffer(derniereMinute), {
@@ -306,6 +312,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         title: "Dernière minute",
         href: "/derniere-minute",
         cta: "Partir maintenant",
+        promoTags: ["Dernière minute"],
       }),
     croisiere &&
       construireSlide(toOffer(croisiere), {
@@ -314,6 +321,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         title: "Croisières au départ d'Europe",
         href: "/croisieres",
         cta: "Découvrir les croisières",
+        promoTags: ["Pension complète"],
       }),
     circuit &&
       construireSlide(toOffer(circuit), {
@@ -322,6 +330,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         title: "Circuits accompagnés",
         href: "/circuits",
         cta: "Choisir un circuit",
+        promoTags: ["Guide francophone"],
       }),
   ];
 
@@ -337,7 +346,7 @@ function discountOf(offer: Offer): number {
 
 function construireSlide(
   offer: Offer,
-  base: { id: string; kicker: string; title: string; href: string; cta: string },
+  base: { id: string; kicker: string; title: string; href: string; cta: string; promoTags: string[] },
 ): HeroSlide {
   const nuits = offer.nights > 0 ? `${offer.days ?? offer.nights + 1} jours` : "aller-retour";
   return {
@@ -346,6 +355,7 @@ function construireSlide(
     detail: `${offer.destination}, ${nuits}`,
     image: withMediaFallback(offer.image),
     alt: `${offer.destination}, ${offer.country}`,
+    imageCredit: offer.imageCredits?.[0]?.text,
   };
 }
 
@@ -480,6 +490,30 @@ function toDestination(row: {
 }
 
 /**
+ * Pays les plus demandés, pour le pied de page.
+ *
+ * Remplace l'ancienne colonne « Nos sites » (Espagne, Italie, Portugal…) qui
+ * laissait croire à des sites GoSéjour dédiés par pays, comme chez un
+ * distributeur multi-national — ce que nous ne sommes pas. Ici, le classement
+ * vient du nombre réel d'offres publiées par pays, pas d'une liste éditoriale
+ * inventée.
+ */
+export async function getTopCountries(take = 8): Promise<{ country: string; href: string }[]> {
+  const rows = await prisma.destination.groupBy({
+    by: ["country"],
+    _sum: { offersCount: true },
+    orderBy: { _sum: { offersCount: "desc" } },
+    take,
+  });
+  // Même lien de recherche libre que les cartes du hub Destinations
+  // (`/sejours?q=<pays>`) : il n'existe pas de page dédiée par pays, la
+  // recherche texte fait déjà ce travail sur le catalogue réel.
+  return rows
+    .filter((r) => (r._sum.offersCount ?? 0) > 0)
+    .map((r) => ({ country: r.country, href: `/sejours?q=${encodeURIComponent(r.country)}` }));
+}
+
+/**
  * Hub Destinations : continent, puis destinations, dans l'ordre du cahier.
  *
  * Les continents vides ne sont pas rendus : une rubrique « Océanie » sans une
@@ -570,6 +604,7 @@ export async function getPosts(take = 4): Promise<Post[]> {
     slug: row.slug,
     title: row.title,
     excerpt: row.excerpt,
+    body: row.body,
     category: row.category,
     readingTime: row.readingTime,
     imageSeed: row.slug,
@@ -602,6 +637,8 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
       cta: slide.cta,
       image: slide.image,
       alt: slide.imageAlt,
+      imageCredit: slide.imageCredit,
+      promoTags: slide.promoTags,
     }));
   }
 
@@ -776,6 +813,14 @@ export async function getSiteSettings() {
     // plus cher qu'un bouton absent. Vide, il ne s'affiche pas.
     whatsapp: settings["site.whatsapp"] ?? BRAND.whatsapp,
     email: settings["site.email"] || BRAND.email,
+    // Une accréditation par ligne (Atout France, APST…). Aucun repli de
+    // marque ici : tant que rien n'est saisi au back-office, le pied de page
+    // n'affiche aucune mention de ce type — jamais une valeur par défaut qui
+    // laisserait croire à une garantie non vérifiée.
+    accreditations: (settings["site.accreditations"] ?? "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean),
   };
 }
 

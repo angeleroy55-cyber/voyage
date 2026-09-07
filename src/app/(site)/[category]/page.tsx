@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import ResultsView from "@/components/search/ResultsView";
 import SearchWidget from "@/components/search/SearchWidget";
 import Icon from "@/components/ui/Icon";
+import OfferCard from "@/components/ui/OfferCard";
 import {
   getCategories,
   getCategoryBySlug,
@@ -115,6 +116,14 @@ export default async function CategoryPage({
     getCategories(),
   ]);
 
+  // Filet de secours quand la catégorie est vide : plutôt qu'une page morte,
+  // on propose tout de suite des offres réelles d'ailleurs sur le site. Les
+  // bons plans sont le repli le plus large, donc le plus rarement vide.
+  const secours =
+    toutesLesOffres.length === 0 && found.kind !== "editorial"
+      ? await getRuleOffers("promos", 4)
+      : [];
+
   // L'URL porte l'intégralité des critères : elle est donc décodée ici, côté
   // serveur, pour que le premier rendu soit déjà filtré. Toute valeur douteuse
   // est écartée plutôt que corrigée : un paramètre bricolé à la main ne doit
@@ -226,9 +235,39 @@ export default async function CategoryPage({
         {found.kind === "editorial" ? (
           <EditorialBlock label={heading} blurb={found.blurb} />
         ) : offers.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-navy-200 p-12 text-center text-sm text-navy-500">
-            Aucune offre publiée dans cette catégorie pour le moment.
-          </p>
+          <div className="rounded-2xl border border-dashed border-navy-200 p-8 text-center sm:p-12">
+            <p className="text-base font-bold text-navy-900">
+              Aucune offre publiée dans cette catégorie pour le moment.
+            </p>
+            <p className="mt-1 text-sm text-navy-500">
+              {formule || saison
+                ? "Essayez sans ce filtre, ou piochez parmi nos bons plans du moment."
+                : "Nos équipes complètent le catalogue chaque semaine. En attendant, voici nos meilleures offres du moment."}
+            </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              <Link
+                href="/bons-plans-promos"
+                className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-navy-900 transition hover:bg-gold-400"
+              >
+                Voir tous les bons plans
+              </Link>
+              {(formule || saison) && (
+                <Link
+                  href={`/${found.slug}`}
+                  className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-700 transition hover:border-navy-400"
+                >
+                  Réinitialiser le filtre
+                </Link>
+              )}
+            </div>
+            {secours.length > 0 && (
+              <div className="mt-8 grid gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
+                {secours.map((offer) => (
+                  <OfferCard key={offer.slug} offer={offer} />
+                ))}
+              </div>
+            )}
+          </div>
         ) : (
           <ResultsView
             offers={offers}

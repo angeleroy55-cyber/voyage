@@ -142,6 +142,8 @@ export interface Post {
   slug: string;
   title: string;
   excerpt: string;
+  /** Corps de l'article : un paragraphe par ligne vide, comme au back-office. */
+  body: string;
   category: string;
   readingTime: number;
   imageSeed: string;
@@ -158,5 +160,7 @@ export interface HeroSlide {
   cta: string;
   image: string;
   imageAlt: string;
+  imageCredit: string;
+  promoTags: string[];
   position: number;
 }

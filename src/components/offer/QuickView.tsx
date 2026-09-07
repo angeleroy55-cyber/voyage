@@ -71,7 +71,7 @@ export default function QuickView({ offer }: { offer: Offer }) {
             son contenu et pousse la fenêtre au-delà de l'écran. */}
         <div className="grid gap-0 sm:grid-cols-2 sm:gap-6 sm:p-5">
           <div className="min-w-0">
-            <div className="relative aspect-4/3 overflow-hidden sm:rounded-xl">
+            <div className="relative aspect-4/3 overflow-hidden bg-navy-100 sm:rounded-xl">
               <Image
                 src={gallery[index]}
                 alt={`${offer.title}, visuel ${index + 1} sur ${gallery.length}`}
@@ -80,7 +80,10 @@ export default function QuickView({ offer }: { offer: Offer }) {
                 // Pas d'animation d'entrée ni de remontage à chaque visuel :
                 // le décalage vertical de `fade-up` faisait sauter l'image à
                 // chaque flèche, dans un cadre pourtant fixe.
-                className="object-cover"
+                // `object-contain` : le cadre reste fixe en 4:3, mais la photo
+                // garde son cadrage d'origine au lieu d'être rognée/écrasée
+                // pour remplir le rectangle (fond neutre sur les bandes vides).
+                className="object-contain"
               />
               {off && (
                 <span className="absolute left-3 top-3 rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">

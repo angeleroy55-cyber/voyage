@@ -346,6 +346,8 @@ model Post {
   imageUrl    String @default("")
   imageId     String @default("")
   imageAlt    String @default("")
+  /// Mention d'auteur/licence, sur le même principe que Destination.imageCredit.
+  imageCredit String @default("")
 
   status    String   @default("draft") // draft | published
   createdAt DateTime @default(now())
@@ -364,6 +366,14 @@ model HeroSlide {
   imageUrl String @default("")
   imageId  String @default("")
   imageAlt String @default("")
+  /// Mention d'auteur/licence du visuel, sur le même principe que
+  /// Destination.imageCredit : vide pour le domaine public ou CC0, sinon
+  /// obligatoire pour les licences à attribution (Wikimedia Commons).
+  imageCredit String @default("")
+  /// Mots-clés promo saisonniers affichés sur la bannière, séparés par des
+  /// virgules ("Été,Familles,Dernière minute"). Cinq au plus : au-delà, la
+  /// bannière devient illisible et l'accroche perd son effet.
+  promoTags String @default("")
   position Int    @default(0)
   active   Boolean @default(true)
 

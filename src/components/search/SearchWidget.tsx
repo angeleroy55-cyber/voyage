@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { useDepartureCity } from "@/components/site/DepartureCity";
 import {
@@ -51,6 +51,19 @@ export default function SearchWidget({
 }: Props) {
   const router = useRouter();
   const [active, setActive] = useState<string>(initial);
+  const railRef = useRef<HTMLDivElement>(null);
+  // Sur desktop, tous les onglets tiennent déjà dans la largeur : le voile ne
+  // doit donc pas apparaître au premier rendu s'il n'y a rien à faire défiler.
+  const [railAtEnd, setRailAtEnd] = useState(true);
+
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return;
+    const check = () => setRailAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [categories.length]);
   // La ville de départ est celle de l'en-tête, détectée puis mémorisée. Un lien
   // partagé qui porte déjà un départ l'emporte : il décrit une recherche
   // précise, que la préférence du visiteur n'a pas à écraser.
@@ -101,27 +114,40 @@ export default function SearchWidget({
         compact ? "shadow-card" : "shadow-pop"
       } ring-1 ring-navy-100`}
     >
-      {/* Tabs */}
-      <div className="rail flex gap-1 overflow-x-auto border-b border-navy-100 px-2 pt-2">
-        {categories.map((c) => {
-          const on = c.id === active;
-          return (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => setActive(c.id)}
-              aria-pressed={on}
-              className={`flex shrink-0 items-center gap-2 rounded-t-xl px-3.5 py-3 text-sm font-semibold transition ${
-                on
-                  ? "bg-white text-navy-900 shadow-[inset_0_-3px_0_var(--color-gold-500)]"
-                  : "text-navy-500 hover:bg-navy-50 hover:text-navy-800"
-              }`}
-            >
-              <Icon name={c.icon} className={`size-4.5 ${on ? "text-gold-600" : "text-navy-400"}`} />
-              {c.label}
-            </button>
-          );
-        })}
+      {/* Tabs. Sur mobile, les huit catégories dépassent la largeur de l'écran :
+          le voile en dégradé sur la droite (`.rail-fade`) signale qu'il reste
+          des onglets à faire défiler, plutôt que de laisser croire que le
+          dernier est simplement coupé. Il s'efface une fois le rail scrollé
+          jusqu'au bout. */}
+      <div className={`rail-fade ${railAtEnd ? "rail-fade--hidden" : ""}`}>
+        <div
+          ref={railRef}
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            setRailAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+          }}
+          className="rail flex gap-1 overflow-x-auto border-b border-navy-100 px-2 pt-2"
+        >
+          {categories.map((c) => {
+            const on = c.id === active;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setActive(c.id)}
+                aria-pressed={on}
+                className={`flex shrink-0 items-center gap-2 rounded-t-xl px-3.5 py-3 text-sm font-semibold transition ${
+                  on
+                    ? "bg-white text-navy-900 shadow-[inset_0_-3px_0_var(--color-gold-500)]"
+                    : "text-navy-500 hover:bg-navy-50 hover:text-navy-800"
+                }`}
+              >
+                <Icon name={c.icon} className={`size-4.5 ${on ? "text-gold-600" : "text-navy-400"}`} />
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Une seule liste de suggestions pour tout le formulaire, partagée par

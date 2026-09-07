@@ -64,6 +64,21 @@ export const DEPARTURE_GROUPS: PlaceGroup[] = [
     label: "Belgique, Suisse et Luxembourg",
     cities: ["Bruxelles", "Charleroi", "Liège", "Genève", "Bâle", "Zurich", "Luxembourg"],
   },
+  // Clientèle visée : moitié France, moitié Europe. Les capitales et grands
+  // hubs aériens du continent complètent donc les départs francophones plutôt
+  // que de les remplacer.
+  {
+    label: "Grandes villes d'Europe",
+    cities: [
+      "Londres", "Dublin", "Madrid", "Barcelone", "Lisbonne", "Porto",
+      "Rome", "Milan", "Venise", "Naples",
+      "Berlin", "Munich", "Francfort", "Hambourg", "Cologne",
+      "Amsterdam", "Rotterdam",
+      "Vienne", "Varsovie", "Cracovie", "Prague", "Budapest",
+      "Copenhague", "Stockholm", "Oslo", "Helsinki",
+      "Athènes",
+    ],
+  },
 ];
 
 /** Liste plate, pour la validation et les listes déroulantes simples. */

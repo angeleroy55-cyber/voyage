@@ -11,10 +11,12 @@ export default function Footer({
   settings,
   categories,
   overflow = [],
+  topCountries = [],
 }: {
   settings: SiteSettings;
   categories: NavCategory[];
   overflow?: NavCategory[];
+  topCountries?: { country: string; href: string }[];
 }) {
   const whatsapp = whatsappLink(
     settings.whatsapp,
@@ -42,7 +44,7 @@ export default function Footer({
   return (
     <footer className="mt-20 border-t border-navy-100 bg-navy-50/60">
       <div className="mx-auto max-w-page px-4 py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <Image
               src="/brand/logo-lockup.png"
@@ -97,6 +99,28 @@ export default function Footer({
               </ul>
             </div>
           ))}
+
+          {topCountries.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wide text-navy-800">
+                Pays les plus demandés
+              </h3>
+              {/* Classement réel, par nombre d'offres publiées — pas une liste
+                  éditoriale : voir `getTopCountries`. */}
+              <ul className="mt-4 flex flex-wrap gap-2 sm:block sm:space-y-2.5">
+                {topCountries.map((c) => (
+                  <li key={c.country}>
+                    <Link
+                      href={c.href}
+                      className="inline-block rounded-full border border-navy-200 px-3 py-1 text-xs font-medium text-navy-600 transition hover:border-gold-300 hover:text-gold-700 sm:border-0 sm:px-0 sm:py-0 sm:text-sm sm:font-normal sm:hover:border-0"
+                    >
+                      {c.country}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-navy-200/70 pt-8">
@@ -145,6 +169,17 @@ export default function Footer({
             </div>
           </div>
         </div>
+
+        {/* N'apparaît qu'une fois de vraies accréditations saisies au
+            back-office (Réglages) : jamais de mention IATA/Atout
+            France/APST par défaut. */}
+        {settings.accreditations.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-1.5 border-t border-navy-200/70 pt-6 text-xs text-navy-500">
+            {settings.accreditations.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </div>
+        )}
 
         {/* La mention suit l'état réel du site, elle n'est pas décorative :
             les prix de référence viennent d'un relevé concurrentiel et non de

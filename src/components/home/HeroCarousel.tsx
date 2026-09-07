@@ -70,6 +70,12 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 soit la photo, sans la voiler entièrement. */}
             <div className="absolute inset-0 bg-linear-to-r from-navy-900/85 via-navy-900/55 to-navy-900/10" />
 
+            {slide.imageCredit && (
+              <p className="absolute bottom-2 right-3 text-[10px] text-white/70">
+                {slide.imageCredit}
+              </p>
+            )}
+
             <div className="absolute inset-0 flex items-center">
               <div className="max-w-xl px-6 py-6 sm:px-10">
                 <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold-300">
@@ -79,6 +85,21 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 <p className="mt-2 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
                   {slide.title}
                 </p>
+                {/* Mots-clés promo saisonniers : cinq au plus, tronqués côté
+                    serveur (`promoTags`) pour que la bannière ne devienne
+                    jamais un mur de texte, quelle que soit la saisie admin. */}
+                {slide.promoTags.length > 0 && (
+                  <ul className="mt-3 flex flex-wrap gap-1.5">
+                    {slide.promoTags.map((tag) => (
+                      <li
+                        key={tag}
+                        className="rounded-full border border-white/30 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm"
+                      >
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {/* Un bandeau rédigé au back-office ne porte pas de prix : on
                     n'annonce alors rien plutôt qu'un « dès 0 € ». */}
                 {slide.fromPrice > 0 && (
