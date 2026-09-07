@@ -2,6 +2,8 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import { useI18n } from "@/i18n/I18nProvider";
+import { localizedPath } from "@/i18n/config";
 import { PaymentLogo, SOCIAL_NETWORKS, SocialLogo } from "@/components/ui/BrandLogos";
 import { PAYMENT_BADGES } from "@/lib/constants";
 import { FOOTER_LINKS, whatsappLink } from "@/lib/data";
@@ -18,10 +20,10 @@ export default function Footer({
   overflow?: NavCategory[];
   topCountries?: { country: string; href: string }[];
 }) {
-  const whatsapp = whatsappLink(
-    settings.whatsapp,
-    "Bonjour, je vous contacte au sujet d'un voyage.",
-  );
+  const { locale, dict } = useI18n();
+  const t = dict.footer;
+  const l = (href: string) => localizedPath(href, locale);
+  const whatsapp = whatsappLink(settings.whatsapp, t.whatsappMessage);
   // La colonne « Réserver » liste les catégories réellement actives et pointe
   // vers leurs pages ; les autres colonnes restent éditoriales et renvoient
   // vers l'aide. Le débordement y figure aussi : hors du menu principal pour
@@ -32,12 +34,12 @@ export default function Footer({
           title: column.title,
           links: [...categories, ...overflow].map((c) => ({
             label: c.label,
-            href: c.href,
+            href: l(c.href),
           })),
         }
       : {
           title: column.title,
-          links: column.links.map((label) => ({ label, href: "/aide" })),
+          links: column.links.map((label) => ({ label, href: l("/aide") })),
         },
   );
 
@@ -54,8 +56,7 @@ export default function Footer({
               className="h-10 w-auto"
             />
             <p className="mt-3 text-sm leading-relaxed text-navy-600">
-              {settings.tagline}. Agence de voyages en ligne : vols, hôtels, croisières, circuits et
-              séjours, réservables en quelques minutes.
+              {settings.tagline}. {t.taglineSuffix}
             </p>
             <a
               href={`tel:${settings.phone.replace(/\s/g, "")}`}
@@ -76,8 +77,8 @@ export default function Footer({
                 className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-3.5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400"
               >
                 <SocialLogo id="whatsapp" className="size-4.5" />
-                Écrire sur WhatsApp
-                <span className="sr-only"> (nouvelle fenêtre)</span>
+                {t.writeOnWhatsapp}
+                <span className="sr-only">{t.newWindow}</span>
               </a>
             )}
           </div>
@@ -103,7 +104,7 @@ export default function Footer({
           {topCountries.length > 0 && (
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wide text-navy-800">
-                Pays les plus demandés
+                {t.topCountries}
               </h3>
               {/* Classement réel, par nombre d'offres publiées — pas une liste
                   éditoriale : voir `getTopCountries`. */}
@@ -111,7 +112,7 @@ export default function Footer({
                 {topCountries.map((c) => (
                   <li key={c.country}>
                     <Link
-                      href={c.href}
+                      href={l(c.href)}
                       className="inline-block rounded-full border border-navy-200 px-3 py-1 text-xs font-medium text-navy-600 transition hover:border-gold-300 hover:text-gold-700 sm:border-0 sm:px-0 sm:py-0 sm:text-sm sm:font-normal sm:hover:border-0"
                     >
                       {c.country}
@@ -125,7 +126,7 @@ export default function Footer({
 
         <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-navy-200/70 pt-8">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">Suivez-nous</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">{t.followUs}</span>
             <div className="flex gap-2">
               {SOCIAL_NETWORKS.map((network) => (
                 <a
@@ -133,7 +134,7 @@ export default function Footer({
                   href={network.href}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label={`${network.label} (nouvelle fenêtre)`}
+                  aria-label={`${network.label}${t.newWindow}`}
                   // Le glyphe porte la couleur officielle du réseau ; au survol
                   // la pastille s'inverse et se remplit de cette même identité.
                   style={
@@ -154,7 +155,7 @@ export default function Footer({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">Paiement</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-navy-500">{t.payment}</span>
             <div className="flex flex-wrap gap-2">
               {/* Marques acceptées, pas moyens sélectionnables : le règlement
                   se fait par carte, ces logos disent simplement lesquelles
@@ -186,11 +187,7 @@ export default function Footer({
             nos propres tarifs passés, et les visuels illustrent la destination
             et non l'établissement. L'écrire évite d'avoir à s'en expliquer. */}
         <p className="mt-8 max-w-4xl text-xs leading-relaxed text-navy-500">
-          © {new Date().getFullYear()} {settings.name}. Les prix barrés correspondent à un relevé de
-          tarifs constatés chez d&apos;autres distributeurs, à la date indiquée sur la fiche, et non à
-          un prix précédemment pratiqué par {settings.name}. Les photographies illustrent la
-          destination et proviennent de Wikimedia Commons, sous licences libres ; le crédit de
-          chacune figure sur la fiche de l&apos;offre concernée.
+          © {new Date().getFullYear()} {settings.name}. {t.legalNotice.replace("{name}", settings.name)}
         </p>
       </div>
     </footer>

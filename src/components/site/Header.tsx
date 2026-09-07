@@ -5,7 +5,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { useDepartureCity } from "@/components/site/DepartureCity";
+import LanguageSwitcher from "@/components/site/LanguageSwitcher";
 import { DEPARTURE_GROUPS } from "@/lib/places";
+import { useI18n } from "@/i18n/I18nProvider";
+import { localizedPath } from "@/i18n/config";
 import type { NavCategory, SiteSettings } from "@/server/catalogue";
 
 type Props = {
@@ -29,6 +32,9 @@ export default function Header({
   // La ville vient du contexte : elle est détectée, mémorisée, et partagée avec
   // le moteur de recherche de la page.
   const { city, setCity, detected, canLocate, locate, locating } = useDepartureCity();
+  const { locale, dict } = useI18n();
+  const t = dict.header;
+  const l = (href: string) => localizedPath(href, locale);
 
   // La navigation suit les catégories actives en base : en désactiver une au
   // back-office la retire du menu, ici comme sur mobile. L'ordre est celui du
@@ -54,28 +60,28 @@ export default function Header({
               chaque page est le premier que le visiteur compose, et le premier
               qui décevra s'il ne répond pas encore. */}
           <div className="flex items-center gap-5">
-            <Link href="/aide" className="transition hover:text-gold-300">
-              Aide &amp; FAQ
+            <Link href={l("/aide")} className="transition hover:text-gold-300">
+              {t.help}
             </Link>
-            <Link href="/aide#contact" className="transition hover:text-gold-300">
-              Contact
+            <Link href={l("/aide") + "#contact"} className="transition hover:text-gold-300">
+              {t.contact}
             </Link>
           </div>
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-1.5">
               <Icon name="pin" className="size-3.5" />
-              <span className="sr-only">Ville de départ</span>
+              <span className="sr-only">{t.departureCity}</span>
               {/* Repérée automatiquement, et modifiable : la mention le dit,
                   pour que personne ne se demande pourquoi sa ville est là. */}
               {detected && (
                 <span className="text-gold-300" title="Détectée depuis votre position">
-                  Vous partez de
+                  {t.departingFrom}
                 </span>
               )}
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                aria-label="Ville de départ"
+                aria-label={t.departureCity}
                 className="max-w-44 cursor-pointer truncate rounded bg-transparent py-0.5 pr-1 font-semibold text-white outline-none transition hover:text-gold-300 focus:ring-2 focus:ring-gold-400"
               >
                 {DEPARTURE_GROUPS.map((groupe) => (
@@ -96,19 +102,16 @@ export default function Header({
                   type="button"
                   onClick={locate}
                   disabled={locating}
-                  title="Utiliser ma position"
+                  title={t.useMyLocation}
                   className="rounded p-0.5 text-white/70 transition hover:text-gold-300 disabled:opacity-50"
                 >
                   <Icon name="compass" className={`size-3.5 ${locating ? "animate-pulse" : ""}`} />
-                  <span className="sr-only">Utiliser ma position</span>
+                  <span className="sr-only">{t.useMyLocation}</span>
                 </button>
               )}
             </label>
-            <span className="flex items-center gap-1.5">
-              <Icon name="globe" className="size-3.5" />
-              Français
-            </span>
-            <span>EUR €</span>
+            <LanguageSwitcher />
+            <span>{t.currency}</span>
           </div>
         </div>
       </div>
@@ -121,7 +124,7 @@ export default function Header({
               type="button"
               onClick={() => setOpen(true)}
               className="rounded p-2 text-white transition hover:bg-white/10 xl:hidden"
-              aria-label="Ouvrir le menu"
+              aria-label={t.openMenu}
             >
               <Icon name="menu" className="size-6" />
             </button>
@@ -145,7 +148,7 @@ export default function Header({
                   className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50"
                   aria-expanded={moreOpen}
                 >
-                  Voir plus
+                  {t.seeMore}
                   <Icon name="chevronDown" className="size-4" />
                 </button>
                 {moreOpen && (
@@ -153,7 +156,7 @@ export default function Header({
                     {overflow.map((c) => (
                       <Link
                         key={c.id}
-                        href={c.href}
+                        href={l(c.href)}
                         className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-navy-700 hover:bg-navy-50"
                       >
                         <Icon name={c.icon} className="size-4.5 text-gold-600" />
@@ -168,14 +171,14 @@ export default function Header({
 
           <div className="ml-auto flex items-center gap-2">
             <Link
-              href={customer ? "/compte/reservations" : "/aide"}
+              href={l(customer ? "/compte/reservations" : "/aide")}
               className="hidden rounded-lg px-3 py-2 text-sm font-medium text-navy-700 transition hover:bg-navy-50 md:block"
             >
-              Ma réservation
+              {t.myBooking}
             </Link>
             {customer ? (
               <Link
-                href="/compte/tableau-de-bord"
+                href={l("/compte/tableau-de-bord")}
                 className="flex items-center gap-2 rounded-lg border border-navy-200 py-1.5 pl-1.5 pr-3.5 text-sm font-semibold text-navy-800 transition hover:border-navy-400 hover:bg-navy-50"
               >
                 <span
@@ -184,14 +187,14 @@ export default function Header({
                 >
                   {customer.firstName.slice(0, 1).toUpperCase()}
                 </span>
-                <span className="hidden sm:inline">Mon espace</span>
+                <span className="hidden sm:inline">{t.myAccount}</span>
               </Link>
             ) : (
               <Link
-                href="/compte"
+                href={l("/compte")}
                 className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-800 transition hover:border-navy-400 hover:bg-navy-50"
               >
-                Connexion
+                {t.login}
               </Link>
             )}
           </div>
@@ -209,7 +212,7 @@ export default function Header({
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded p-2 text-navy-700"
-                aria-label="Fermer le menu"
+                aria-label={t.closeMenu}
               >
                 <Icon name="close" className="size-6" />
               </button>
@@ -221,7 +224,7 @@ export default function Header({
               {categories.map((c) => (
                 <div key={c.id}>
                   <Link
-                    href={c.href}
+                    href={l(c.href)}
                     onClick={() => setOpen(false)}
                     className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-[15px] font-medium text-navy-800 hover:bg-navy-50"
                   >
@@ -233,7 +236,7 @@ export default function Header({
                       {c.subcategories.map((sub) => (
                         <Link
                           key={sub.id}
-                          href={sub.href}
+                          href={l(sub.href)}
                           onClick={() => setOpen(false)}
                           className="rounded-lg bg-navy-50 px-2.5 py-1.5 text-[13px] font-medium text-navy-600 hover:bg-navy-100 hover:text-navy-900"
                         >
@@ -248,12 +251,12 @@ export default function Header({
                 <>
                   <div className="my-3 border-t border-navy-100" />
                   <p className="px-3 pb-1 text-xs font-bold uppercase tracking-wide text-navy-500">
-                    Voir plus de voyages
+                    {t.seeMoreTrips}
                   </p>
                   {overflow.map((c) => (
                     <Link
                       key={c.id}
-                      href={c.href}
+                      href={l(c.href)}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] text-navy-700 hover:bg-navy-50"
                     >
@@ -265,18 +268,18 @@ export default function Header({
               )}
               <div className="my-3 border-t border-navy-100" />
               {[
-                { label: "Aide & FAQ", href: "/aide" },
+                { label: t.help, href: l("/aide") },
                 customer
-                  ? { label: "Mon espace client", href: "/compte/tableau-de-bord" }
-                  : { label: "Connexion", href: "/compte" },
-              ].map((l) => (
+                  ? { label: t.myClientArea, href: l("/compte/tableau-de-bord") }
+                  : { label: t.login, href: l("/compte") },
+              ].map((entry) => (
                 <Link
-                  key={l.label}
-                  href={l.href}
+                  key={entry.label}
+                  href={entry.href}
                   onClick={() => setOpen(false)}
                   className="block rounded-xl px-3 py-3 text-[15px] text-navy-700 hover:bg-navy-50"
                 >
-                  {l.label}
+                  {entry.label}
                 </Link>
               ))}
             </nav>
@@ -300,11 +303,13 @@ export default function Header({
  */
 function NavEntry({ item }: { item: NavCategory }) {
   const [open, setOpen] = useState(false);
+  const { locale, dict } = useI18n();
+  const l = (href: string) => localizedPath(href, locale);
 
   if (item.subcategories.length === 0) {
     return (
       <Link
-        href={item.href}
+        href={l(item.href)}
         className="rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50 hover:text-navy-900"
       >
         {item.label}
@@ -323,7 +328,7 @@ function NavEntry({ item }: { item: NavCategory }) {
       }}
     >
       <Link
-        href={item.href}
+        href={l(item.href)}
         aria-expanded={open}
         className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-[14px] font-medium text-navy-700 transition hover:bg-navy-50 hover:text-navy-900"
       >
@@ -335,17 +340,17 @@ function NavEntry({ item }: { item: NavCategory }) {
         <div className="absolute left-0 top-full z-50 w-80 pt-1">
           <div className="rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
             <Link
-              href={item.href}
+              href={l(item.href)}
               className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-bold text-navy-900 hover:bg-navy-50"
             >
-              Tout voir
+              {dict.header.seeAll}
               <Icon name="chevronRight" className="size-4 text-gold-600" />
             </Link>
             <div className="my-1 border-t border-navy-100" />
             {item.subcategories.map((sub) => (
               <Link
                 key={sub.id}
-                href={sub.href}
+                href={l(sub.href)}
                 className="flex items-start gap-3 rounded-lg px-3 py-2 hover:bg-navy-50"
               >
                 <div className="min-w-0 flex-1">
@@ -369,9 +374,10 @@ function NavEntry({ item }: { item: NavCategory }) {
 }
 
 function Logo({ name, inverse = false }: { name: string; inverse?: boolean }) {
+  const { locale } = useI18n();
   return (
     <Link
-      href="/"
+      href={localizedPath("/", locale)}
       className="flex shrink-0 items-center gap-2.5"
       aria-label={`${name}, accueil`}
     >

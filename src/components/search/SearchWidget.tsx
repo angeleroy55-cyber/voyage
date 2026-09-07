@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { useDepartureCity } from "@/components/site/DepartureCity";
+import { useI18n } from "@/i18n/I18nProvider";
+import { localizedPath } from "@/i18n/config";
 import {
   DEPARTURE_GROUPS,
   WORLD_DESTINATIONS,
@@ -50,6 +52,8 @@ export default function SearchWidget({
   compact = false,
 }: Props) {
   const router = useRouter();
+  const { locale, dict } = useI18n();
+  const t = dict.search;
   const [active, setActive] = useState<string>(initial);
   const railRef = useRef<HTMLDivElement>(null);
   // Sur desktop, tous les onglets tiennent déjà dans la largeur : le voile ne
@@ -92,9 +96,9 @@ export default function SearchWidget({
   // sur la première disponible plutôt que de casser le rendu.
   const fields = category?.form ?? [];
 
-  const travellersLabel = `${adults} adulte${adults > 1 ? "s" : ""}${
-    children > 0 ? `, ${children} enfant${children > 1 ? "s" : ""}` : ""
-  }${fields.includes("travellers") && active !== "vols" ? `, ${rooms} ch.` : ""}`;
+  const travellersLabel = `${adults} ${adults > 1 ? t.adultsPlural : t.adult}${
+    children > 0 ? `, ${children} ${children > 1 ? t.childrenPlural : t.child}` : ""
+  }${fields.includes("travellers") && active !== "vols" ? `, ${rooms} ${t.roomsShort}` : ""}`;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -105,7 +109,7 @@ export default function SearchWidget({
     params.set("au", end);
     params.set("voyageurs", String(adults + children));
     if (flexible) params.set("flex", "1");
-    router.push(`/${active}?${params.toString()}`);
+    router.push(`${localizedPath(`/${active}`, locale)}?${params.toString()}`);
   }
 
   return (
@@ -164,7 +168,7 @@ export default function SearchWidget({
             <Field
               className="lg:col-span-3"
               icon="plane"
-              label={active === "croisieres" ? "Port d'embarquement" : "Départ de"}
+              label={active === "croisieres" ? t.embarkationPort : t.departureFrom}
             >
               <select
                 value={origin}
@@ -186,7 +190,7 @@ export default function SearchWidget({
             <Field
               className={fields.includes("origin") ? "lg:col-span-3" : "lg:col-span-4"}
               icon="pin"
-              label={active === "location-voiture" ? "Lieu de prise en charge" : "Destination"}
+              label={active === "location-voiture" ? t.pickupLocation : t.destination}
             >
               {/* Champ libre avec suggestions : le visiteur peut taper une
                   ville absente de la liste, la recherche fonctionne quand même.
@@ -198,10 +202,10 @@ export default function SearchWidget({
                 autoComplete="off"
                 placeholder={
                   active === "croisieres"
-                    ? "Méditerranée, Caraïbes…"
+                    ? t.destinationPlaceholderCruise
                     : active === "location-voiture"
-                      ? "Aéroport, ville…"
-                      : "Ville, région ou hôtel"
+                      ? t.destinationPlaceholderCar
+                      : t.destinationPlaceholderDefault
                 }
                 className="w-full bg-transparent text-[15px] font-semibold text-navy-900 placeholder:font-normal placeholder:text-navy-400 outline-none"
               />
@@ -210,7 +214,7 @@ export default function SearchWidget({
 
           {fields.includes("dates") && (
             <>
-              <Field className="lg:col-span-2" icon="calendar" label="Aller">
+              <Field className="lg:col-span-2" icon="calendar" label={t.outbound}>
                 <input
                   type="date"
                   value={start}
@@ -218,7 +222,7 @@ export default function SearchWidget({
                   className="w-full bg-transparent text-[15px] font-semibold text-navy-900 outline-none"
                 />
               </Field>
-              <Field className="lg:col-span-2" icon="calendar" label="Retour">
+              <Field className="lg:col-span-2" icon="calendar" label={t.return}>
                 <input
                   type="date"
                   value={end}
@@ -241,7 +245,7 @@ export default function SearchWidget({
                 <Icon name="users" className="size-5 shrink-0 text-navy-400" />
                 <span className="min-w-0">
                   <span className="block text-[11px] font-medium uppercase tracking-wide text-navy-500">
-                    Voyageurs
+                    {t.travellers}
                   </span>
                   <span className="block truncate text-[15px] font-semibold text-navy-900">
                     {travellersLabel}
@@ -250,17 +254,17 @@ export default function SearchWidget({
               </button>
               {travellersOpen && (
                 <div className="absolute right-0 top-full z-30 mt-2 w-72 rounded-xl border border-navy-100 bg-white p-4 shadow-pop">
-                  <Counter label="Adultes" hint="18 ans et plus" value={adults} min={1} max={9} onChange={setAdults} />
-                  <Counter label="Enfants" hint="0 à 17 ans" value={children} min={0} max={8} onChange={setChildren} />
+                  <Counter label={t.adults} hint={t.adultsHint} value={adults} min={1} max={9} onChange={setAdults} />
+                  <Counter label={t.children} hint={t.childrenHint} value={children} min={0} max={8} onChange={setChildren} />
                   {active !== "vols" && (
-                    <Counter label="Chambres" hint="" value={rooms} min={1} max={5} onChange={setRooms} />
+                    <Counter label={t.rooms} hint="" value={rooms} min={1} max={5} onChange={setRooms} />
                   )}
                   <button
                     type="button"
                     onClick={() => setTravellersOpen(false)}
                     className="mt-3 w-full rounded-lg bg-navy-700 py-2 text-sm font-semibold text-white hover:bg-navy-800"
                   >
-                    Valider
+                    {t.confirm}
                   </button>
                 </div>
               )}
@@ -268,11 +272,11 @@ export default function SearchWidget({
           )}
 
           {fields.includes("driver") && (
-            <Field className="lg:col-span-4" icon="users" label="Âge du conducteur">
+            <Field className="lg:col-span-4" icon="users" label={t.driverAge}>
               <select className="w-full bg-transparent text-[15px] font-semibold text-navy-900 outline-none">
-                <option>25 à 65 ans</option>
-                <option>21 à 24 ans</option>
-                <option>Plus de 65 ans</option>
+                <option>{t.driverAge1}</option>
+                <option>{t.driverAge2}</option>
+                <option>{t.driverAge3}</option>
               </select>
             </Field>
           )}
@@ -282,7 +286,7 @@ export default function SearchWidget({
             className="flex items-center justify-center gap-2 rounded-xl bg-gold-400 px-6 py-3.5 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2 lg:col-span-2"
           >
             <Icon name="search" className="size-5" />
-            Rechercher
+            {t.submit}
           </button>
         </div>
 
@@ -294,7 +298,7 @@ export default function SearchWidget({
               onChange={(e) => setFlexible(e.target.checked)}
               className="size-4 rounded border-navy-300 accent-gold-500"
             />
-            Mes dates sont flexibles (± 3 jours)
+            {t.flexibleDates}
           </label>
           <p className="text-sm text-navy-500">{category?.blurb}</p>
         </div>
