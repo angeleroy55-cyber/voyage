@@ -117,5 +117,26 @@
     "notFound": "Article introuvable",
     "otherArticles": "À lire aussi",
     "publishedOn": "publié le"
+  },
+  "destinations": {
+    "breadcrumb": "Destinations",
+    "title": "Où voulez-vous partir ?",
+    "intro": "{total} destinations réparties sur {continents} continents. Chaque page rassemble toutes les offres disponibles sur place, séjours, circuits, croisières et vols confondus.",
+    "continentsNav": "Continents",
+    "franceKicker": "Sans avion ni formalités",
+    "franceTitle": "Séjours en France",
+    "franceText": "Littoral atlantique, Méditerranée, montagne et villes d'art. Des campings familiaux aux week-ends thalasso, avec départ en train ou en voiture.",
+    "franceCtaWithPrice": "Voir la France dès {price}",
+    "franceCta": "Voir les séjours France",
+    "destinationSingular": "destination",
+    "destinationPlural": "destinations",
+    "offerSingular": "offre",
+    "offerPlural": "offres",
+    "comingSoon": "Bientôt disponible",
+    "fromPrice": "dès {price}",
+    "topCities": "Villes les plus recherchées",
+    "byTripType": "Par type de voyage",
+    "byTripTypeText": "Vous savez déjà comment vous voulez partir ? Entrez par la formule.",
+    "photoCredit": "Photographies des destinations : Wikimedia Commons, sous licences libres. Le détail de chaque crédit figure sur la fiche de l'offre concernée."
   }
 }

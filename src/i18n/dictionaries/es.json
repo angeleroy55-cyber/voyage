@@ -117,5 +117,26 @@
     "notFound": "Artículo no encontrado",
     "otherArticles": "También puede interesarle",
     "publishedOn": "publicado el"
+  },
+  "destinations": {
+    "breadcrumb": "Destinos",
+    "title": "¿Adónde quiere ir?",
+    "intro": "{total} destinos repartidos en {continents} continentes. Cada página reúne todas las ofertas disponibles allí: estancias, circuitos, cruceros y vuelos.",
+    "continentsNav": "Continentes",
+    "franceKicker": "Sin avión ni trámites",
+    "franceTitle": "Estancias en Francia",
+    "franceText": "Litoral atlántico, Mediterráneo, montaña y ciudades de arte. De campings familiares a fines de semana de talasoterapia, viajando en tren o en coche.",
+    "franceCtaWithPrice": "Ver Francia desde {price}",
+    "franceCta": "Ver las estancias en Francia",
+    "destinationSingular": "destino",
+    "destinationPlural": "destinos",
+    "offerSingular": "oferta",
+    "offerPlural": "ofertas",
+    "comingSoon": "Próximamente",
+    "fromPrice": "desde {price}",
+    "topCities": "Ciudades más buscadas",
+    "byTripType": "Por tipo de viaje",
+    "byTripTypeText": "¿Ya sabe cómo quiere viajar? Empiece por la fórmula.",
+    "photoCredit": "Fotografías de los destinos: Wikimedia Commons, bajo licencias libres. El crédito de cada una figura en la ficha de la oferta correspondiente."
   }
 }

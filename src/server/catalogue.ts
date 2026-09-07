@@ -19,6 +19,7 @@ import type {
 } from "@/lib/types";
 import { listHeroSlides } from "@/server/hero-slides";
 import { getRequestLocale } from "@/i18n/server";
+import { translateContinentLabel } from "@/lib/catalogue-i18n";
 import { pickLocalized, pickLocalizedList, type Locale } from "@/i18n/config";
 
 /**
@@ -559,7 +560,7 @@ export async function getDestinationTree(): Promise<
 
   return CONTINENTS.map((continent) => ({
     id: continent.id,
-    label: continent.label,
+    label: translateContinentLabel(continent.id, continent.label, locale),
     destinations: destinations.filter((d) => d.continent === continent.label),
   })).filter((continent) => continent.destinations.length > 0);
 }

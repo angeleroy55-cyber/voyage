@@ -117,5 +117,26 @@
     "notFound": "Article not found",
     "otherArticles": "Also worth reading",
     "publishedOn": "published on"
+  },
+  "destinations": {
+    "breadcrumb": "Destinations",
+    "title": "Where do you want to go?",
+    "intro": "{total} destinations across {continents} continents. Each page brings together every offer available there — package holidays, tours, cruises and flights alike.",
+    "continentsNav": "Continents",
+    "franceKicker": "No flight, no formalities",
+    "franceTitle": "Trips in France",
+    "franceText": "Atlantic coast, Mediterranean, mountains and art cities. From family campsites to spa weekends, travelling by train or by car.",
+    "franceCtaWithPrice": "See France from {price}",
+    "franceCta": "See trips in France",
+    "destinationSingular": "destination",
+    "destinationPlural": "destinations",
+    "offerSingular": "offer",
+    "offerPlural": "offers",
+    "comingSoon": "Coming soon",
+    "fromPrice": "from {price}",
+    "topCities": "Most searched cities",
+    "byTripType": "By type of trip",
+    "byTripTypeText": "Already know how you want to travel? Start from the format.",
+    "photoCredit": "Destination photographs: Wikimedia Commons, under free licences. The credit for each appears on the relevant offer page."
   }
 }

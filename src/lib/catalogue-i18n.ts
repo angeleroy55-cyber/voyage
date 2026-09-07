@@ -718,3 +718,25 @@ export function translateOffer(o: SourceOffer): {
     includedEs: includedForEs(o.category, o.subtype ?? "", o.board),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Continents du hub Destinations (8) : liste statique de src/lib/data.ts.
+// ---------------------------------------------------------------------------
+
+export const CONTINENT_TRANSLATIONS: Record<string, { en: string; es: string }> = {
+  europe: { en: "Europe", es: "Europa" },
+  "afrique-du-nord": { en: "North Africa", es: "Norte de África" },
+  "afrique-ocean-indien": { en: "Sub-Saharan Africa & Indian Ocean", es: "África subsahariana y Océano Índico" },
+  "amerique-du-nord-caraibes": { en: "North America & Caribbean", es: "Norteamérica y Caribe" },
+  "amerique-du-sud": { en: "South America", es: "Sudamérica" },
+  asie: { en: "Asia", es: "Asia" },
+  "moyen-orient": { en: "Middle East", es: "Oriente Medio" },
+  oceanie: { en: "Oceania", es: "Oceanía" },
+};
+
+/** Libellé de continent selon la locale, avec repli sur le français. */
+export function translateContinentLabel(id: string, label: string, locale: "fr" | "en" | "es"): string {
+  const t9n = CONTINENT_TRANSLATIONS[id];
+  if (!t9n || locale === "fr") return label;
+  return locale === "en" ? t9n.en : t9n.es;
+}

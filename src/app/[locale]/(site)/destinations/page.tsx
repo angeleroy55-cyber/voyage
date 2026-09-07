@@ -55,20 +55,20 @@ export default async function DestinationsPage() {
           {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
-        <span className="font-semibold text-navy-800">Destinations</span>
+        <span className="font-semibold text-navy-800">{dict.destinations.breadcrumb}</span>
       </nav>
 
       <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl">
-        Où voulez-vous partir&nbsp;?
+        {dict.destinations.title}
       </h1>
       <p className="mt-1.5 max-w-2xl text-sm text-navy-600">
-        {total} destinations réparties sur {arbre.length} continents. Chaque page
-        rassemble toutes les offres disponibles sur place, séjours, circuits,
-        croisières et vols confondus.
+        {dict.destinations.intro
+          .replace("{total}", String(total))
+          .replace("{continents}", String(arbre.length))}
       </p>
 
       {/* Sommaire : sur une page longue, il évite de faire défiler à l'aveugle. */}
-      <nav aria-label="Continents" className="mt-5 flex flex-wrap gap-2">
+      <nav aria-label={dict.destinations.continentsNav} className="mt-5 flex flex-wrap gap-2">
         {arbre.map((continent) => (
           <a
             key={continent.id}
@@ -86,20 +86,16 @@ export default async function DestinationsPage() {
         <div className="flex flex-wrap items-center justify-between gap-4 p-6">
           <div className="max-w-xl">
             <p className="text-xs font-bold uppercase tracking-wide text-gold-700">
-              Sans avion ni formalités
+              {dict.destinations.franceKicker}
             </p>
-            <h2 className="mt-1 text-lg font-extrabold text-navy-900">Séjours en France</h2>
-            <p className="mt-1.5 text-sm text-navy-600">
-              Littoral atlantique, Méditerranée, montagne et villes d&apos;art. Des
-              campings familiaux aux week-ends thalasso, avec départ en train ou en
-              voiture.
-            </p>
+            <h2 className="mt-1 text-lg font-extrabold text-navy-900">{dict.destinations.franceTitle}</h2>
+            <p className="mt-1.5 text-sm text-navy-600">{dict.destinations.franceText}</p>
           </div>
           <Link
             href={localizedPath("/sejours-france", locale)}
             className="inline-flex items-center gap-2 rounded-xl bg-gold-400 px-5 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
           >
-            {prixFrance ? `Voir la France dès ${price(prixFrance)}` : "Voir les séjours France"}
+            {prixFrance ? dict.destinations.franceCtaWithPrice.replace("{price}", price(prixFrance)) : dict.destinations.franceCta}
             <Icon name="chevronRight" className="size-4" />
           </Link>
         </div>
@@ -110,8 +106,10 @@ export default async function DestinationsPage() {
           <div className="flex items-baseline justify-between gap-4 border-b border-navy-100 pb-2.5">
             <h2 className="text-lg font-extrabold text-navy-900">{continent.label}</h2>
             <span className="text-xs text-navy-500">
-              {continent.destinations.length} destination
-              {continent.destinations.length > 1 ? "s" : ""}
+              {continent.destinations.length}{" "}
+              {continent.destinations.length > 1
+                ? dict.destinations.destinationPlural
+                : dict.destinations.destinationSingular}
             </span>
           </div>
 
@@ -135,9 +133,14 @@ export default async function DestinationsPage() {
                     <p className="text-base font-extrabold text-white">{destination.name}</p>
                     <p className="text-[11px] text-white/90">
                       {destination.offersCount > 0
-                        ? `${destination.offersCount} offre${destination.offersCount > 1 ? "s" : ""}`
-                        : "Bientôt disponible"}
-                      {destination.fromPrice > 0 && ` · dès ${price(destination.fromPrice)}`}
+                        ? `${destination.offersCount} ${
+                            destination.offersCount > 1
+                              ? dict.destinations.offerPlural
+                              : dict.destinations.offerSingular
+                          }`
+                        : dict.destinations.comingSoon}
+                      {destination.fromPrice > 0 &&
+                        ` · ${dict.destinations.fromPrice.replace("{price}", price(destination.fromPrice))}`}
                     </p>
                   </div>
                 </div>
@@ -153,7 +156,7 @@ export default async function DestinationsPage() {
       ))}
 
       <section className="mt-12 rounded-2xl border border-navy-100 bg-white p-6">
-        <h2 className="text-base font-extrabold text-navy-900">Villes les plus recherchées</h2>
+        <h2 className="text-base font-extrabold text-navy-900">{dict.destinations.topCities}</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {SEO_CITIES.map((ville) => (
             <Link
@@ -168,10 +171,8 @@ export default async function DestinationsPage() {
       </section>
 
       <section className="mt-6 rounded-2xl border border-navy-100 bg-navy-50/60 p-6">
-        <h2 className="text-base font-extrabold text-navy-900">Par type de voyage</h2>
-        <p className="mt-1 text-sm text-navy-600">
-          Vous savez déjà comment vous voulez partir&nbsp;? Entrez par la formule.
-        </p>
+        <h2 className="text-base font-extrabold text-navy-900">{dict.destinations.byTripType}</h2>
+        <p className="mt-1 text-sm text-navy-600">{dict.destinations.byTripTypeText}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {categories.map((category) => (
             <Link
@@ -189,10 +190,7 @@ export default async function DestinationsPage() {
       {/* Les visuels viennent de Wikimedia Commons : les licences à attribution
           imposent une mention, portée ici globalement plutôt que sous chaque
           vignette, où elle rendrait la grille illisible. */}
-      <p className="mt-8 text-[11px] text-navy-400">
-        Photographies des destinations : Wikimedia Commons, sous licences libres.
-        Le détail de chaque crédit figure sur la fiche de l&apos;offre concernée.
-      </p>
+      <p className="mt-8 text-[11px] text-navy-400">{dict.destinations.photoCredit}</p>
     </div>
   );
 }
