@@ -72,5 +72,40 @@
     "seeFullOffer": "Ver la oferta completa",
     "preview": "Vista rápida",
     "home": "Inicio"
+  },
+  "aide": {
+    "breadcrumb": "Ayuda",
+    "title": "¿Cómo podemos ayudarle?",
+    "byPhone": "Por teléfono",
+    "byEmail": "Por correo electrónico",
+    "emergency": "Emergencia durante el viaje",
+    "phoneHint": "7 días a la semana, de 8 a 22 h",
+    "emailHint": "Respuesta en 24 h",
+    "emergencyValue": "24 h/24",
+    "emergencyHint": "Número en su bono",
+    "faqTitle": "Preguntas frecuentes",
+    "demoNotice": "Este sitio es una maqueta de demostración: los datos de contacto, ofertas, precios y opiniones mostrados son ficticios y no es posible realizar ninguna reserva real.",
+    "faq": [
+      {
+        "q": "¿Cuándo recibiré mis documentos de viaje?",
+        "a": "El bono y los billetes se envían por correo electrónico en cuanto se realiza el pago, y como máximo siete días antes de la salida para las reservas anticipadas."
+      },
+      {
+        "q": "¿Puedo modificar los nombres de los viajeros después de reservar?",
+        "a": "Sí, para la mayoría de las estancias, hasta 21 días antes de la salida. En los vuelos solo ida o ida y vuelta, depende de las condiciones tarifarias de la aerolínea."
+      },
+      {
+        "q": "¿Cómo funciona el pago en cuatro plazos?",
+        "a": "Se cobra una cuarta parte del importe al reservar, seguida de tres mensualidades sin recargo. La opción aparece al pagar en reservas superiores a 200 €."
+      },
+      {
+        "q": "¿Qué cubre el seguro de cancelación?",
+        "a": "Enfermedad, accidente, despido y un conjunto de motivos detallados en las condiciones. Solo puede contratarse en el momento de la reserva."
+      },
+      {
+        "q": "Mi vuelo está cancelado, ¿qué hago?",
+        "a": "Contacte con asistencia en el número que figura en su bono, disponible 24 horas. Un asesor buscará una solución de reprogramación con la aerolínea."
+      }
+    ]
   }
 }

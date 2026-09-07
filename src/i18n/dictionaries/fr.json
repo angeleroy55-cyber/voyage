@@ -72,5 +72,40 @@
     "seeFullOffer": "Voir l'offre complète",
     "preview": "Aperçu",
     "home": "Accueil"
+  },
+  "aide": {
+    "breadcrumb": "Aide",
+    "title": "Comment pouvons-nous vous aider ?",
+    "byPhone": "Par téléphone",
+    "byEmail": "Par e-mail",
+    "emergency": "Urgence en voyage",
+    "phoneHint": "7j/7, de 8 h à 22 h",
+    "emailHint": "Réponse sous 24 h",
+    "emergencyValue": "24 h/24",
+    "emergencyHint": "Numéro sur votre bon",
+    "faqTitle": "Questions fréquentes",
+    "demoNotice": "Ce site est une maquette de démonstration : les coordonnées, offres, prix et avis affichés sont fictifs et aucune réservation réelle n'est possible.",
+    "faq": [
+      {
+        "q": "Quand vais-je recevoir mes documents de voyage ?",
+        "a": "Le bon d'échange et les billets sont envoyés par e-mail dès l'encaissement, et au plus tard sept jours avant le départ pour les réservations anticipées."
+      },
+      {
+        "q": "Puis-je modifier les noms des voyageurs après réservation ?",
+        "a": "Oui pour la plupart des séjours, jusqu'à 21 jours avant le départ. Sur les vols secs, cela dépend des conditions tarifaires de la compagnie."
+      },
+      {
+        "q": "Comment fonctionne le paiement en quatre fois ?",
+        "a": "Un quart du montant est prélevé à la réservation, puis trois mensualités sans frais. L'option apparaît au moment du paiement pour les dossiers de plus de 200 €."
+      },
+      {
+        "q": "Que couvre l'assurance annulation ?",
+        "a": "Maladie, accident, licenciement et un ensemble de motifs listés dans les conditions. Elle se souscrit uniquement au moment de la réservation."
+      },
+      {
+        "q": "Mon vol est annulé, que faire ?",
+        "a": "Contactez l'assistance au numéro figurant sur votre bon d'échange, joignable 24 h/24. Un conseiller cherche une solution de report avec la compagnie."
+      }
+    ]
   }
 }

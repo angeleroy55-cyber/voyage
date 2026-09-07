@@ -72,5 +72,40 @@
     "seeFullOffer": "View full offer",
     "preview": "Preview",
     "home": "Home"
+  },
+  "aide": {
+    "breadcrumb": "Help",
+    "title": "How can we help you?",
+    "byPhone": "By phone",
+    "byEmail": "By email",
+    "emergency": "Emergency while travelling",
+    "phoneHint": "7 days a week, 8am to 10pm",
+    "emailHint": "Reply within 24 hours",
+    "emergencyValue": "24/7",
+    "emergencyHint": "Number on your voucher",
+    "faqTitle": "Frequently asked questions",
+    "demoNotice": "This site is a demonstration mock-up: the contact details, offers, prices and reviews shown are fictitious and no real booking is possible.",
+    "faq": [
+      {
+        "q": "When will I receive my travel documents?",
+        "a": "The voucher and tickets are sent by email as soon as payment is received, and no later than seven days before departure for early bookings."
+      },
+      {
+        "q": "Can I change travellers' names after booking?",
+        "a": "Yes, for most package holidays, up to 21 days before departure. For flight-only tickets, it depends on the airline's fare conditions."
+      },
+      {
+        "q": "How does the four-instalment payment work?",
+        "a": "A quarter of the amount is charged at booking, then three fee-free monthly instalments. The option appears at checkout for bookings over €200."
+      },
+      {
+        "q": "What does cancellation insurance cover?",
+        "a": "Illness, accident, redundancy and a set of reasons listed in the terms. It can only be taken out at the time of booking."
+      },
+      {
+        "q": "My flight is cancelled, what should I do?",
+        "a": "Contact assistance at the number shown on your voucher, available 24/7. An advisor will look for a rebooking solution with the airline."
+      }
+    ]
   }
 }
