@@ -76,14 +76,14 @@ export default async function ReservationPage({
           {offer.title}
         </Link>
         <Icon name="chevronRight" className="size-3" />
-        <span className="font-semibold text-navy-800">Réservation</span>
+        <span className="font-semibold text-navy-800">{dict.reservation.breadcrumb}</span>
       </nav>
 
       <ol className="mt-5 flex flex-wrap items-center gap-2 text-xs font-semibold">
         {[
-          { step: 1, label: "Votre séjour", done: true },
-          { step: 2, label: "Coordonnées et paiement", done: false },
-          { step: 3, label: "Confirmation", done: false },
+          { step: 1, label: dict.reservation.step1, done: true },
+          { step: 2, label: dict.reservation.step2, done: false },
+          { step: 3, label: dict.reservation.step3, done: false },
         ].map((s, i) => (
           <li key={s.step} className="flex items-center gap-2">
             {i > 0 && <Icon name="chevronRight" className="size-3 text-navy-300" />}
@@ -104,12 +104,9 @@ export default async function ReservationPage({
       </ol>
 
       <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl">
-        Finalisez votre demande
+        {dict.reservation.title}
       </h1>
-      <p className="mt-1.5 text-sm text-navy-600">
-        Il reste vos coordonnées et le moyen de paiement souhaité. Aucun montant n&apos;est débité
-        maintenant : le règlement n&apos;intervient qu&apos;après confirmation des disponibilités.
-      </p>
+      <p className="mt-1.5 text-sm text-navy-600">{dict.reservation.intro}</p>
 
       <div className="mt-7 grid gap-8 lg:grid-cols-[1fr_360px]">
         <CheckoutForm
@@ -132,7 +129,7 @@ export default async function ReservationPage({
         <aside className="lg:sticky lg:top-28 lg:self-start">
           <div className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card">
             <h2 className="text-sm font-extrabold uppercase tracking-wide text-navy-900">
-              Votre séjour
+              {dict.reservation.yourTrip}
             </h2>
 
             <div className="mt-3 flex gap-3">
@@ -150,7 +147,7 @@ export default async function ReservationPage({
                 {/* Troisième des quatre endroits imposés par le cahier : le
                     numéro suit le client du listing jusqu'au règlement. */}
                 <p className="mt-0.5 font-mono text-[11px] text-navy-400">
-                  Réf. {offer.reference}
+                  {dict.reservation.reference} {offer.reference}
                 </p>
                 <p className="mt-0.5 text-xs text-navy-500">
                   {offer.destination}, {offer.country}
@@ -163,31 +160,30 @@ export default async function ReservationPage({
 
             <dl className="mt-4 space-y-1.5 border-t border-navy-100 pt-4 text-sm">
               <div className="flex justify-between text-navy-600">
-                <dt>Voyageurs</dt>
+                <dt>{dict.reservation.travellers}</dt>
                 <dd className="font-semibold text-navy-800">{travellers}</dd>
               </div>
               <div className="flex justify-between text-navy-600">
-                <dt>Dates souhaitées</dt>
+                <dt>{dict.reservation.desiredDates}</dt>
                 <dd className="font-semibold text-navy-800">
-                  {departureDate ? departureDate.split("-").reverse().join("/") : "À définir"}
+                  {departureDate ? departureDate.split("-").reverse().join("/") : dict.reservation.toBeDefined}
                 </dd>
               </div>
               <div className="flex justify-between text-navy-600">
-                <dt>Départ de</dt>
+                <dt>{dict.reservation.departureFrom}</dt>
                 <dd className="font-semibold text-navy-800">{offer.departureCity}</dd>
               </div>
             </dl>
 
             <p className="mt-4 border-t border-navy-100 pt-3 text-xs text-navy-500">
-              Prix unitaire {price(offer.price)} par personne, taxes incluses. Le total tenant compte
-              de l&apos;assurance est repris dans le formulaire.
+              {dict.reservation.unitPrice.replace("{price}", price(offer.price))}
             </p>
 
             <Link
               href={localizedPath(`/offre/${offer.slug}`, locale)}
               className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-gold-700 hover:underline"
             >
-              Modifier le séjour
+              {dict.reservation.editTrip}
             </Link>
           </div>
         </aside>
