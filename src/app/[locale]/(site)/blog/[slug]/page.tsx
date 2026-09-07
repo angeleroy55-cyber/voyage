@@ -11,14 +11,14 @@ export async function generateStaticParams() {
   return (await getPublishedPostSlugs()).map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/blog/[slug]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[slug]">) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return { title: "Article introuvable" };
   return { title: post.title, description: post.excerpt };
 }
 
-export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
+export default async function PostPage({ params }: PageProps<"/[locale]/blog/[slug]">) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();

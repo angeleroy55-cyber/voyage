@@ -27,6 +27,17 @@ model Category {
   icon     String  @default("pin")
   blurb    String  @default("")
 
+  /// Présentation EN/ES : colonnes simples plutôt qu'une table `Translation`
+  /// générique — trois langues fixes, pas de langues additionnelles prévues,
+  /// une jointure de plus par page n'aurait aucun bénéfice ici. Vides tant que
+  /// non traduit ; le serveur retombe alors sur le texte français.
+  labelEn String @default("")
+  labelEs String @default("")
+  titleEn String @default("")
+  titleEs String @default("")
+  blurbEn String @default("")
+  blurbEs String @default("")
+
   /// Ce que la catégorie sait faire :
   /// `catalogue`  : elle possède ses offres, rattachées par `Offer.categoryId` ;
   /// `dynamique`  : listing calculé à la lecture (Bons Plans, Dernière Minute),
@@ -74,6 +85,11 @@ model Destination {
   region      String  @default("")
   /// Texte éditorial affiché en tête de page : ce qu'on vient y chercher.
   blurb       String  @default("")
+  /// Présentation EN/ES, mêmes règles que Category (voir plus haut).
+  nameEn      String  @default("")
+  nameEs      String  @default("")
+  blurbEn     String  @default("")
+  blurbEs     String  @default("")
   imageUrl    String  @default("")
   /// Identifiant Cloudinary, pour pouvoir supprimer le média à la source.
   imageId     String  @default("")
@@ -151,6 +167,17 @@ model Offer {
   /// affichée quand aucune date ferme n'est arrêtée.
   dates       String @default("")
   description String @default("")
+  /// Présentation EN/ES, mêmes règles que Category. `country`/`region`/
+  /// `destination` restent en français : ce sont des clés de filtre (URLs
+  /// `?q=`, regroupement par pays), pas du texte éditorial.
+  titleEn       String @default("")
+  titleEs       String @default("")
+  descriptionEn String @default("")
+  descriptionEs String @default("")
+  highlightsEn  String[] @default([])
+  highlightsEs  String[] @default([])
+  includedEn    String[] @default([])
+  includedEs    String[] @default([])
 
   /// Listes courtes propres à l'offre : le tableau Postgres évite trois tables
   /// de jointure qui ne serviraient qu'à de l'affichage.
@@ -341,6 +368,13 @@ model Post {
   title       String
   excerpt     String @default("")
   body        String @default("")
+  /// Présentation EN/ES, mêmes règles que Category.
+  titleEn     String @default("")
+  titleEs     String @default("")
+  excerptEn   String @default("")
+  excerptEs   String @default("")
+  bodyEn      String @default("")
+  bodyEs      String @default("")
   category    String @default("Conseils")
   readingTime Int    @default(5)
   imageUrl    String @default("")

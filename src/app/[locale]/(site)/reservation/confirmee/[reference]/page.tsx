@@ -22,7 +22,7 @@ export async function generateMetadata() {
 
 export default async function ConfirmationPage({
   params,
-}: PageProps<"/reservation/confirmee/[reference]">) {
+}: PageProps<"/[locale]/reservation/confirmee/[reference]">) {
   const { reference } = await params;
   const booking = await getBookingConfirmation(reference);
   if (!booking) notFound();

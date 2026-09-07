@@ -10,7 +10,7 @@ import { detectDepartureCity } from "@/server/geo";
 // ils sont donc rendus à la demande, pas figés à la construction.
 export const dynamic = "force-dynamic";
 
-export default async function SiteLayout({ children }: LayoutProps<"/">) {
+export default async function SiteLayout({ children }: LayoutProps<"/[locale]">) {
   const [settings, navigation, session, detectedCity, topCountries] = await Promise.all([
     getSiteSettings(),
     getNavigation(),

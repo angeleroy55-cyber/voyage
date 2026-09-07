@@ -17,7 +17,7 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-export default async function BookingsPage({ searchParams }: PageProps<"/compte/reservations">) {
+export default async function BookingsPage({ searchParams }: PageProps<"/[locale]/compte/reservations">) {
   const session = await requireCustomer();
   const sp = await searchParams;
   const raw = typeof sp.etat === "string" ? sp.etat : "toutes";

@@ -84,7 +84,7 @@ function readFilters(sp: Params): InitialFilters {
   };
 }
 
-export async function generateMetadata({ params }: PageProps<"/[category]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/[category]">) {
   const { category } = await params;
   const found = await getCategoryBySlug(category);
   if (!found) return { title: "Page introuvable" };
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: PageProps<"/[category]">) {
 export default async function CategoryPage({
   params,
   searchParams,
-}: PageProps<"/[category]">) {
+}: PageProps<"/[locale]/[category]">) {
   const { category } = await params;
   const sp = await searchParams;
 

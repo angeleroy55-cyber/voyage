@@ -13,14 +13,14 @@ import { requireCustomer } from "@/server/customer-session";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: PageProps<"/compte/reservations/[reference]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/compte/reservations/[reference]">) {
   const { reference } = await params;
   return { title: `Dossier ${reference}` };
 }
 
 export default async function BookingDetailPage({
   params,
-}: PageProps<"/compte/reservations/[reference]">) {
+}: PageProps<"/[locale]/compte/reservations/[reference]">) {
   const session = await requireCustomer();
   const { reference } = await params;
 

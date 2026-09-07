@@ -11,7 +11,7 @@ import { logoutCustomer } from "@/server/actions/account";
 // de connexion vit hors de ce groupe pour ne pas hériter de la barre latérale.
 export const dynamic = "force-dynamic";
 
-export default async function AccountLayout({ children }: LayoutProps<"/compte">) {
+export default async function AccountLayout({ children }: LayoutProps<"/[locale]/compte">) {
   const session = await requireCustomer();
 
   const [customer, bookings, favourites] = await Promise.all([

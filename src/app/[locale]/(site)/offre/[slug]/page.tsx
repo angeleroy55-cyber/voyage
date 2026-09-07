@@ -18,7 +18,7 @@ export async function generateStaticParams() {
   return (await getPublishedOfferSlugs()).map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/offre/[slug]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/offre/[slug]">) {
   const { slug } = await params;
   const offer = await getOfferBySlug(slug);
   if (!offer) return { title: "Offre introuvable" };
@@ -31,7 +31,7 @@ function readDate(value: string | string[] | undefined): string {
   return /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : "";
 }
 
-export default async function OfferPage({ params, searchParams }: PageProps<"/offre/[slug]">) {
+export default async function OfferPage({ params, searchParams }: PageProps<"/[locale]/offre/[slug]">) {
   const { slug } = await params;
   const sp = await searchParams;
   const offer = await getOfferBySlug(slug);

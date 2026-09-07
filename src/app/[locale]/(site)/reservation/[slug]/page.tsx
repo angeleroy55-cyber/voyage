@@ -19,7 +19,7 @@ import { withMediaFallback } from "@/lib/media";
  */
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: PageProps<"/reservation/[slug]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/reservation/[slug]">) {
   const { slug } = await params;
   const offer = await getOfferBySlug(slug);
   return {
@@ -43,7 +43,7 @@ function readDate(value: string | string[] | undefined): string {
 export default async function ReservationPage({
   params,
   searchParams,
-}: PageProps<"/reservation/[slug]">) {
+}: PageProps<"/[locale]/reservation/[slug]">) {
   const { slug } = await params;
   const sp = await searchParams;
 

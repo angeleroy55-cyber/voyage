@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import { BRAND } from "@/lib/data";
+import { DEFAULT_LOCALE, isLocale } from "@/i18n/config";
 
 const DESCRIPTION =
   "Réservez vol + hôtel, croisières, circuits, campings et locations de voiture au meilleur prix. Assistance 24 h/24 et paiement en plusieurs fois.";
@@ -53,9 +55,15 @@ export const metadata: Metadata = {
 
 // Racine volontairement nue : l'en-tête et le pied de page du site public sont
 // portés par (site)/layout.tsx, pour que le back-office n'en hérite pas.
-export default function RootLayout({ children }: { children: ReactNode }) {
+//
+// La langue de `<html>` est lue depuis l'en-tête `x-locale` posé par le
+// middleware : la racine est hors du segment `[locale]` (l'admin y échappe),
+// c'est donc le seul endroit où varier cet attribut sans dupliquer `<html>`.
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const locale = (await headers()).get("x-locale");
+
   return (
-    <html lang="fr" className="h-full antialiased">
+    <html lang={isLocale(locale) ? locale : DEFAULT_LOCALE} className="h-full antialiased">
       <body className="min-h-full font-sans">{children}</body>
     </html>
   );
