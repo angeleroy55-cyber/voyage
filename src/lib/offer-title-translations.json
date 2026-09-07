@@ -1,0 +1,2347 @@
+{
+  "agadir-baie-tout-compris": {
+    "fr": "Club tout compris face à la baie d'Agadir",
+    "en": "All-inclusive club facing the bay of Agadir",
+    "es": "Club todo incluido frente a la bahía de Agadir"
+  },
+  "marrakech-palmeraie-riad": {
+    "fr": "Riad avec spa dans la Palmeraie",
+    "en": "Riad with spa in the Palmeraie",
+    "es": "Riad con spa en la Palmeraie"
+  },
+  "essaouira-front-de-mer": {
+    "fr": "Hôtel front de mer à Essaouira",
+    "en": "Beachfront hotel in Essaouira",
+    "es": "Hotel frente al mar en Essaouira"
+  },
+  "agadir-taghazout-surf": {
+    "fr": "Résidence surf à Taghazout",
+    "en": "Surf residence in Taghazout",
+    "es": "Residencia de surf en Taghazout"
+  },
+  "djerba-grande-plage": {
+    "fr": "Resort tout compris sur la grande plage de Djerba",
+    "en": "All-inclusive resort on the main beach of Djerba",
+    "es": "Resort todo incluido en la playa principal de Djerba"
+  },
+  "hammamet-yasmine-club": {
+    "fr": "Club familial à Yasmine Hammamet",
+    "en": "Family club in Yasmine Hammamet",
+    "es": "Club familiar en Yasmine Hammamet"
+  },
+  "sousse-corniche": {
+    "fr": "Hôtel 4★ sur la corniche de Sousse",
+    "en": "4-star hotel on the seafront of Sousse",
+    "es": "Hotel 4★ en el paseo marítimo de Sousse"
+  },
+  "hurghada-recifs": {
+    "fr": "Club plongée face aux récifs de Hurghada",
+    "en": "Diving club facing the reefs of Hurghada",
+    "es": "Club de buceo frente a los arrecifes de Hurghada"
+  },
+  "charm-el-cheikh-naama": {
+    "fr": "Resort 5★ à Naama Bay",
+    "en": "5-star resort in Naama Bay",
+    "es": "Resort 5★ en Naama Bay"
+  },
+  "marsa-alam-jardin-corail": {
+    "fr": "Lagon et jardin de corail à Marsa Alam",
+    "en": "Lagoon and coral garden in Marsa Alam",
+    "es": "Laguna y jardín de coral en Marsa Alam"
+  },
+  "majorque-playa-de-palma": {
+    "fr": "Hôtel bord de mer à Playa de Palma",
+    "en": "Seafront hotel in Playa de Palma",
+    "es": "Hotel junto al mar en Playa de Palma"
+  },
+  "majorque-alcudia-famille": {
+    "fr": "Club familial dans la baie d'Alcúdia",
+    "en": "Family club in the bay of Alcúdia",
+    "es": "Club familiar en la bahía de Alcúdia"
+  },
+  "ibiza-san-antonio": {
+    "fr": "Vue couchant à San Antonio",
+    "en": "Sunset views in San Antonio",
+    "es": "Vistas al atardecer en San Antonio"
+  },
+  "tenerife-costa-adeje": {
+    "fr": "Resort tout compris à Costa Adeje",
+    "en": "All-inclusive resort in Costa Adeje",
+    "es": "Resort todo incluido en Costa Adeje"
+  },
+  "fuerteventura-corralejo": {
+    "fr": "Hôtel sur les dunes de Corralejo",
+    "en": "Hotel on the dunes of Corralejo",
+    "es": "Hotel en las dunas de Corralejo"
+  },
+  "lanzarote-puerto-del-carmen": {
+    "fr": "Club face à Puerto del Carmen",
+    "en": "Club facing Puerto del Carmen",
+    "es": "Club frente a Puerto del Carmen"
+  },
+  "grande-canarie-maspalomas": {
+    "fr": "Tout compris aux dunes de Maspalomas",
+    "en": "All-inclusive at the dunes of Maspalomas",
+    "es": "Todo incluido en las dunas de Maspalomas"
+  },
+  "costa-brava-lloret": {
+    "fr": "Séjour plage à Lloret de Mar",
+    "en": "Beach stay in Lloret de Mar",
+    "es": "Estancia de playa en Lloret de Mar"
+  },
+  "costa-del-sol-torremolinos": {
+    "fr": "Front de mer à Torremolinos",
+    "en": "Beachfront in Torremolinos",
+    "es": "Primera línea de mar en Torremolinos"
+  },
+  "crete-heraklion-village": {
+    "fr": "Village-club au sud d'Héraklion",
+    "en": "Village club south of Heraklion",
+    "es": "Club-aldea al sur de Heraklion"
+  },
+  "rhodes-faliraki": {
+    "fr": "Club plage à Faliraki",
+    "en": "Beach club in Faliraki",
+    "es": "Club de playa en Faliraki"
+  },
+  "kos-tigaki": {
+    "fr": "Resort familial à Tigaki",
+    "en": "Family resort in Tigaki",
+    "es": "Resort familiar en Tigaki"
+  },
+  "corfou-sidari": {
+    "fr": "Baie de Sidari, au nord de Corfou",
+    "en": "Sidari bay, north of Corfu",
+    "es": "Bahía de Sidari, al norte de Corfú"
+  },
+  "santorin-caldeira": {
+    "fr": "Chambre avec vue sur la caldeira",
+    "en": "Room with caldera views",
+    "es": "Habitación con vistas a la caldera"
+  },
+  "algarve-albufeira": {
+    "fr": "Entre falaises et plage à Albufeira",
+    "en": "Between cliffs and beach in Albufeira",
+    "es": "Entre acantilados y playa en Albufeira"
+  },
+  "madere-funchal-atlantique": {
+    "fr": "Balcon sur l'Atlantique à Funchal",
+    "en": "Balcony over the Atlantic in Funchal",
+    "es": "Balcón sobre el Atlántico en Funchal"
+  },
+  "sicile-taormine": {
+    "fr": "Entre Etna et mer Ionienne à Taormine",
+    "en": "Between Etna and the Ionian Sea in Taormine",
+    "es": "Entre el Etna y el mar Jónico en Taormine"
+  },
+  "sardaigne-costa-smeralda": {
+    "fr": "Crique de Costa Smeralda",
+    "en": "Cove of Costa Smeralda",
+    "es": "Cala de Costa Esmeralda"
+  },
+  "antalya-lara-beach": {
+    "fr": "Resort ultra tout compris à Lara Beach",
+    "en": "Ultra all-inclusive resort at Lara Beach",
+    "es": "Resort todo incluido premium en Lara Beach"
+  },
+  "chypre-larnaca": {
+    "fr": "Front de mer à Larnaca",
+    "en": "Beachfront in Larnaca",
+    "es": "Primera línea de mar en Larnaca"
+  },
+  "malte-sliema": {
+    "fr": "Sur le front de mer de Sliema",
+    "en": "On the seafront of Sliema",
+    "es": "En el frente marítimo de Sliema"
+  },
+  "dubrovnik-lapad": {
+    "fr": "Baie de Lapad, à Dubrovnik",
+    "en": "Lapad bay, in Dubrovnik",
+    "es": "Bahía de Lapad, en Dubrovnik"
+  },
+  "cap-vert-sal-santa-maria": {
+    "fr": "Tout compris à Santa Maria, île de Sal",
+    "en": "All-inclusive in Santa Maria, Sal island",
+    "es": "Todo incluido en Santa Maria, isla de Sal"
+  },
+  "cap-vert-boa-vista-chaves": {
+    "fr": "Plage de Chaves, à Boa Vista",
+    "en": "Chaves beach, in Boa Vista",
+    "es": "Playa de Chaves, en Boa Vista"
+  },
+  "maurice-flic-en-flac": {
+    "fr": "Lagon de Flic en Flac",
+    "en": "Lagoon of Flic en Flac",
+    "es": "Laguna de Flic en Flac"
+  },
+  "maurice-belle-mare": {
+    "fr": "Côte est, sur la plage de Belle Mare",
+    "en": "East coast, on Belle Mare beach",
+    "es": "Costa este, en la playa de Belle Mare"
+  },
+  "seychelles-mahe": {
+    "fr": "Anse à la Mouche, à Mahé",
+    "en": "Anse à la Mouche, in Mahé",
+    "es": "Anse à la Mouche, en Mahé"
+  },
+  "zanzibar-nungwi": {
+    "fr": "Plage de Nungwi, au nord de Zanzibar",
+    "en": "Nungwi beach, north of Zanzibar",
+    "es": "Playa de Nungwi, al norte de Zanzíbar"
+  },
+  "maldives-male-sud": {
+    "fr": "Bungalow sur pilotis, atoll de Malé Sud",
+    "en": "Overwater bungalow, South Malé atoll",
+    "es": "Bungalow sobre pilotes, atolón de Malé Sur"
+  },
+  "reunion-saint-gilles": {
+    "fr": "Lagon de Saint-Gilles, à La Réunion",
+    "en": "Saint-Gilles lagoon, in Réunion",
+    "es": "Laguna de Saint-Gilles, en La Reunión"
+  },
+  "senegal-saly-petite-cote": {
+    "fr": "Petite Côte, à Saly",
+    "en": "Petite Côte, in Saly",
+    "es": "Petite Côte, en Saly"
+  },
+  "kenya-diani-beach": {
+    "fr": "Diani Beach, au sud de Mombasa",
+    "en": "Diani Beach, south of Mombasa",
+    "es": "Diani Beach, al sur de Mombasa"
+  },
+  "punta-cana-bavaro": {
+    "fr": "Pieds dans le sable à Bávaro",
+    "en": "Beachfront stay in Bávaro",
+    "es": "A pie de playa en Bávaro"
+  },
+  "riviera-maya-tout-compris": {
+    "fr": "Resort tout compris en Riviera Maya",
+    "en": "All-inclusive resort in the Riviera Maya",
+    "es": "Resort todo incluido en la Riviera Maya"
+  },
+  "cancun-zona-hotelera": {
+    "fr": "Zona Hotelera, à Cancún",
+    "en": "Zona Hotelera, in Cancún",
+    "es": "Zona Hotelera, en Cancún"
+  },
+  "varadero-presqu-ile": {
+    "fr": "Presqu'île de Varadero",
+    "en": "Varadero peninsula",
+    "es": "Península de Varadero"
+  },
+  "jamaique-montego-bay": {
+    "fr": "Baie de Montego, côte nord",
+    "en": "Montego Bay, north coast",
+    "es": "Bahía de Montego, costa norte"
+  },
+  "guadeloupe-sainte-anne": {
+    "fr": "Plage de Sainte-Anne, en Grande-Terre",
+    "en": "Sainte-Anne beach, in Grande-Terre",
+    "es": "Playa de Sainte-Anne, en Grande-Terre"
+  },
+  "martinique-trois-ilets": {
+    "fr": "Anse Mitan, aux Trois-Îlets",
+    "en": "Anse Mitan, at Les Trois-Îlets",
+    "es": "Anse Mitan, en Les Trois-Îlets"
+  },
+  "phuket-karon-beach": {
+    "fr": "Karon Beach, à Phuket",
+    "en": "Karon Beach, in Phuket",
+    "es": "Karon Beach, en Phuket"
+  },
+  "krabi-ao-nang": {
+    "fr": "Falaises d'Ao Nang, à Krabi",
+    "en": "Ao Nang cliffs, in Krabi",
+    "es": "Acantilados de Ao Nang, en Krabi"
+  },
+  "bali-seminyak-villa": {
+    "fr": "Villa avec piscine à Seminyak",
+    "en": "Villa with pool in Seminyak",
+    "es": "Villa con piscina en Seminyak"
+  },
+  "sri-lanka-bentota": {
+    "fr": "Plage de Bentota, côte sud-ouest",
+    "en": "Bentota beach, south-west coast",
+    "es": "Playa de Bentota, costa suroeste"
+  },
+  "dubai-jumeirah-beach": {
+    "fr": "Jumeirah Beach, à Dubaï",
+    "en": "Jumeirah Beach, in Dubai",
+    "es": "Jumeirah Beach, en Dubái"
+  },
+  "maroc-villes-imperiales": {
+    "fr": "Les villes impériales du Maroc",
+    "en": "Morocco's imperial cities",
+    "es": "Las ciudades imperiales de Marruecos"
+  },
+  "maroc-desert-merzouga": {
+    "fr": "Du Haut Atlas aux dunes de Merzouga",
+    "en": "From the High Atlas to the dunes of Merzouga",
+    "es": "Del Alto Atlas a las dunas de Merzouga"
+  },
+  "egypte-caire-croisiere-nil": {
+    "fr": "Le Caire et croisière sur le Nil",
+    "en": "Cairo and a Nile cruise",
+    "es": "El Cairo y crucero por el Nilo"
+  },
+  "jordanie-petra-wadi-rum": {
+    "fr": "Petra, Wadi Rum et mer Morte",
+    "en": "Petra, Wadi Rum and the Dead Sea",
+    "es": "Petra, Wadi Rum y el mar Muerto"
+  },
+  "turquie-istanbul-cappadoce": {
+    "fr": "Istanbul et la Cappadoce",
+    "en": "Istanbul and Cappadocia",
+    "es": "Estambul y Capadocia"
+  },
+  "grece-athenes-peloponnese": {
+    "fr": "Athènes et le Péloponnèse",
+    "en": "Athens and the Peloponnese",
+    "es": "Atenas y el Peloponeso"
+  },
+  "italie-rome-florence-toscane": {
+    "fr": "Rome, Florence et la Toscane",
+    "en": "Rome, Florence and Tuscany",
+    "es": "Roma, Florencia y la Toscana"
+  },
+  "espagne-andalousie-circuit": {
+    "fr": "Andalousie, de Séville à Grenade",
+    "en": "Andalusia, from Seville to Granada",
+    "es": "Andalucía, de Sevilla a Granada"
+  },
+  "portugal-lisbonne-porto-circuit": {
+    "fr": "Le Portugal de Lisbonne à Porto",
+    "en": "Portugal, from Lisbon to Porto",
+    "es": "Portugal, de Lisboa a Oporto"
+  },
+  "islande-cercle-or": {
+    "fr": "Islande, cercle d'or et côte sud",
+    "en": "Iceland, Golden Circle and south coast",
+    "es": "Islandia, Círculo Dorado y costa sur"
+  },
+  "ecosse-highlands": {
+    "fr": "Édimbourg et les Highlands",
+    "en": "Edinburgh and the Highlands",
+    "es": "Edimburgo y las Highlands"
+  },
+  "irlande-anneau-du-kerry": {
+    "fr": "L'Irlande et l'anneau du Kerry",
+    "en": "Ireland and the Ring of Kerry",
+    "es": "Irlanda y el Anillo de Kerry"
+  },
+  "croatie-dalmatie": {
+    "fr": "La Dalmatie, de Split à Dubrovnik",
+    "en": "Dalmatia, from Split to Dubrovnik",
+    "es": "Dalmacia, de Split a Dubrovnik"
+  },
+  "albanie-autotour": {
+    "fr": "L'Albanie en autotour, de Tirana à Sarandë",
+    "en": "Albania self-drive tour, from Tirana to Sarandë",
+    "es": "Albania en autotour, de Tirana a Sarandë"
+  },
+  "sicile-autotour": {
+    "fr": "La Sicile en autotour",
+    "en": "Sicily self-drive tour",
+    "es": "Sicilia en autotour"
+  },
+  "japon-tokyo-kyoto-osaka": {
+    "fr": "Japon essentiel : Tokyo, Kyoto, Osaka",
+    "en": "Essential Japan: Tokyo, Kyoto, Osaka",
+    "es": "Japón esencial: Tokio, Kioto, Osaka"
+  },
+  "vietnam-nord-au-sud": {
+    "fr": "Le Vietnam du nord au sud",
+    "en": "Vietnam, from north to south",
+    "es": "Vietnam, de norte a sur"
+  },
+  "thailande-bangkok-nord": {
+    "fr": "Bangkok et le nord de la Thaïlande",
+    "en": "Bangkok and northern Thailand",
+    "es": "Bangkok y el norte de Tailandia"
+  },
+  "cambodge-angkor": {
+    "fr": "Angkor et le lac Tonlé Sap",
+    "en": "Angkor and Tonlé Sap Lake",
+    "es": "Angkor y el lago Tonlé Sap"
+  },
+  "inde-rajasthan": {
+    "fr": "Le Rajasthan, du désert aux palais",
+    "en": "Rajasthan, from desert to palaces",
+    "es": "Rajastán, del desierto a los palacios"
+  },
+  "sri-lanka-triangle-culturel": {
+    "fr": "Sri Lanka, triangle culturel et plantations de thé",
+    "en": "Sri Lanka, cultural triangle and tea plantations",
+    "es": "Sri Lanka, triángulo cultural y plantaciones de té"
+  },
+  "chine-pekin-xian-shanghai": {
+    "fr": "Chine impériale : Pékin, Xi'an, Shanghai",
+    "en": "Imperial China: Beijing, Xi'an, Shanghai",
+    "es": "China imperial: Pekín, Xi'an, Shanghái"
+  },
+  "ouzbekistan-route-de-la-soie": {
+    "fr": "L'Ouzbékistan, sur la route de la Soie",
+    "en": "Uzbekistan, on the Silk Road",
+    "es": "Uzbekistán, en la Ruta de la Seda"
+  },
+  "perou-machu-picchu": {
+    "fr": "Pérou, du Machu Picchu au lac Titicaca",
+    "en": "Peru, from Machu Picchu to Lake Titicaca",
+    "es": "Perú, del Machu Picchu al lago Titicaca"
+  },
+  "bresil-rio-iguacu-bahia": {
+    "fr": "Brésil : Rio, Iguaçu et Salvador de Bahia",
+    "en": "Brazil: Rio, Iguaçu and Salvador de Bahia",
+    "es": "Brasil: Río, Iguazú y Salvador de Bahía"
+  },
+  "costa-rica-deux-oceans": {
+    "fr": "Costa Rica, volcans et deux océans",
+    "en": "Costa Rica, volcanoes and two oceans",
+    "es": "Costa Rica, volcanes y dos océanos"
+  },
+  "argentine-patagonie": {
+    "fr": "Argentine, de Buenos Aires à la Patagonie",
+    "en": "Argentina, from Buenos Aires to Patagonia",
+    "es": "Argentina, de Buenos Aires a la Patagonia"
+  },
+  "canada-est-ete-indien": {
+    "fr": "L'est canadien à l'été indien",
+    "en": "Eastern Canada in Indian summer",
+    "es": "Canadá del este en el veranillo indio"
+  },
+  "usa-ouest-americain": {
+    "fr": "L'Ouest américain, de Las Vegas à San Francisco",
+    "en": "The American West, from Las Vegas to San Francisco",
+    "es": "El Oeste americano, de Las Vegas a San Francisco"
+  },
+  "afrique-du-sud-cap-safari": {
+    "fr": "Afrique du Sud : Le Cap, route des jardins et safari",
+    "en": "South Africa: Cape Town, Garden Route and safari",
+    "es": "Sudáfrica: Ciudad del Cabo, Garden Route y safari"
+  },
+  "kenya-safari-masai-mara": {
+    "fr": "Safari au Masai Mara et au lac Nakuru",
+    "en": "Safari at Masai Mara and Lake Nakuru",
+    "es": "Safari en el Masai Mara y el lago Nakuru"
+  },
+  "tanzanie-serengeti-zanzibar": {
+    "fr": "Serengeti, Ngorongoro et Zanzibar",
+    "en": "Serengeti, Ngorongoro and Zanzibar",
+    "es": "Serengueti, Ngorongoro y Zanzíbar"
+  },
+  "mediterranee-occidentale-marseille": {
+    "fr": "Méditerranée occidentale au départ de Marseille",
+    "en": "Western Mediterranean departing from Marseille",
+    "es": "Mediterráneo occidental con salida desde Marsella"
+  },
+  "mediterranee-orientale-athenes": {
+    "fr": "Méditerranée orientale au départ d'Athènes",
+    "en": "Eastern Mediterranean departing from Athens",
+    "es": "Mediterráneo oriental con salida desde Atenas"
+  },
+  "iles-grecques-cyclades": {
+    "fr": "Cyclades et côtes turques",
+    "en": "Cyclades and the Turkish coast",
+    "es": "Cícladas y costa turca"
+  },
+  "caraibes-orientales-miami": {
+    "fr": "Îles des Caraïbes orientales",
+    "en": "Eastern Caribbean islands",
+    "es": "Islas del Caribe oriental"
+  },
+  "fjords-norvege-cap-nord": {
+    "fr": "Fjords de Norvège et cap Nord",
+    "en": "Norwegian fjords and the North Cape",
+    "es": "Fiordos de Noruega y Cabo Norte"
+  },
+  "canaries-madere-croisiere": {
+    "fr": "Canaries et Madère en hiver",
+    "en": "Canary Islands and Madeira in winter",
+    "es": "Canarias y Madeira en invierno"
+  },
+  "baltique-capitales": {
+    "fr": "Les capitales de la Baltique",
+    "en": "The Baltic capitals",
+    "es": "Las capitales del Báltico"
+  },
+  "emirats-oman-dubai": {
+    "fr": "Émirats et Oman au départ de Dubaï",
+    "en": "The Emirates and Oman departing from Dubai",
+    "es": "Emiratos y Omán con salida desde Dubái"
+  },
+  "alaska-glaciers-vancouver": {
+    "fr": "Alaska et glaciers au départ de Vancouver",
+    "en": "Alaska and glaciers departing from Vancouver",
+    "es": "Alaska y glaciares con salida desde Vancouver"
+  },
+  "transatlantique-barcelone": {
+    "fr": "Transatlantique, de Barcelone aux Caraïbes",
+    "en": "Transatlantic, from Barcelona to the Caribbean",
+    "es": "Transatlántico, de Barcelona al Caribe"
+  },
+  "danube-passau-budapest": {
+    "fr": "Le Danube, de Passau à Budapest",
+    "en": "The Danube, from Passau to Budapest",
+    "es": "El Danubio, de Passau a Budapest"
+  },
+  "rhin-amsterdam-bale": {
+    "fr": "Le Rhin romantique, d'Amsterdam à Bâle",
+    "en": "The Romantic Rhine, from Amsterdam to Basel",
+    "es": "El Rin romántico, de Ámsterdam a Basilea"
+  },
+  "seine-paris-honfleur": {
+    "fr": "La Seine, de Paris à Honfleur",
+    "en": "The Seine, from Paris to Honfleur",
+    "es": "El Sena, de París a Honfleur"
+  },
+  "rhone-lyon-avignon": {
+    "fr": "Le Rhône, de Lyon à Avignon",
+    "en": "The Rhône, from Lyon to Avignon",
+    "es": "El Ródano, de Lyon a Avignon"
+  },
+  "douro-porto-vignobles": {
+    "fr": "Le Douro et ses vignobles en terrasses",
+    "en": "The Douro and its terraced vineyards",
+    "es": "El Duero y sus viñedos en terrazas"
+  },
+  "nil-louxor-assouan": {
+    "fr": "Le Nil, de Louxor à Assouan",
+    "en": "The Nile, from Luxor to Aswan",
+    "es": "El Nilo, de Luxor a Asuán"
+  },
+  "paris-marais-boutique": {
+    "fr": "Boutique-hôtel au cœur du Marais",
+    "en": "Boutique hotel in the heart of the Marais",
+    "es": "Hotel boutique en el corazón del Marais"
+  },
+  "paris-montmartre-charme": {
+    "fr": "Hôtel de charme à Montmartre",
+    "en": "Charming hotel in Montmartre",
+    "es": "Hotel con encanto en Montmartre"
+  },
+  "nice-promenade-des-anglais": {
+    "fr": "Face à la Promenade des Anglais",
+    "en": "Facing the Promenade des Anglais",
+    "es": "Frente al Paseo de los Ingleses"
+  },
+  "lyon-presqu-ile": {
+    "fr": "Presqu'île, entre Rhône et Saône",
+    "en": "Peninsula, between the Rhône and the Saône",
+    "es": "Península, entre el Ródano y el Saona"
+  },
+  "marseille-vieux-port": {
+    "fr": "Vue sur le Vieux-Port",
+    "en": "Views of the Old Port",
+    "es": "Vistas al puerto viejo"
+  },
+  "bordeaux-chartrons": {
+    "fr": "Dans le quartier des Chartrons",
+    "en": "In the Chartrons district",
+    "es": "En el barrio de Chartrons"
+  },
+  "barcelone-eixample": {
+    "fr": "Boutique-hôtel dans l'Eixample",
+    "en": "Boutique hotel in the Eixample",
+    "es": "Hotel boutique en el Eixample"
+  },
+  "madrid-gran-via": {
+    "fr": "Sur la Gran Vía",
+    "en": "On the Gran Vía",
+    "es": "En la Gran Vía"
+  },
+  "seville-santa-cruz": {
+    "fr": "Patio andalou dans le quartier Santa Cruz",
+    "en": "Andalusian patio in the Santa Cruz district",
+    "es": "Patio andaluz en el barrio de Santa Cruz"
+  },
+  "rome-trastevere": {
+    "fr": "Maison d'hôtes au Trastevere",
+    "en": "Guesthouse in Trastevere",
+    "es": "Casa de huéspedes en el Trastevere"
+  },
+  "venise-cannaregio": {
+    "fr": "Palais vénitien à Cannaregio",
+    "en": "Venetian palace in Cannaregio",
+    "es": "Palacio veneciano en Cannaregio"
+  },
+  "florence-duomo": {
+    "fr": "À deux pas du Duomo",
+    "en": "Steps from the Duomo",
+    "es": "A pasos del Duomo"
+  },
+  "milan-brera": {
+    "fr": "Dans le quartier de Brera",
+    "en": "In the Brera district",
+    "es": "En el barrio de Brera"
+  },
+  "lisbonne-alfama": {
+    "fr": "Vue sur le Tage depuis l'Alfama",
+    "en": "Views of the Tagus from the Alfama",
+    "es": "Vistas al Tajo desde el Alfama"
+  },
+  "porto-ribeira": {
+    "fr": "Sur les quais de la Ribeira",
+    "en": "On the quays of the Ribeira",
+    "es": "En los muelles de la Ribeira"
+  },
+  "amsterdam-canaux": {
+    "fr": "Hôtel design le long des canaux",
+    "en": "Design hotel along the canals",
+    "es": "Hotel de diseño junto a los canales"
+  },
+  "bruxelles-sablon": {
+    "fr": "Dans le quartier du Sablon",
+    "en": "In the Sablon district",
+    "es": "En el barrio del Sablon"
+  },
+  "londres-south-bank": {
+    "fr": "South Bank, face à la Tamise",
+    "en": "South Bank, facing the Thames",
+    "es": "South Bank, frente al Támesis"
+  },
+  "berlin-mitte": {
+    "fr": "Mitte, à côté de l'île aux Musées",
+    "en": "Mitte, next to Museum Island",
+    "es": "Mitte, junto a la Isla de los Museos"
+  },
+  "prague-vieille-ville": {
+    "fr": "Vieille ville, près du pont Charles",
+    "en": "Old town, near Charles Bridge",
+    "es": "Casco antiguo, cerca del puente de Carlos"
+  },
+  "budapest-danube": {
+    "fr": "Face au Danube, côté Pest",
+    "en": "Facing the Danube, Pest side",
+    "es": "Frente al Danubio, lado Pest"
+  },
+  "vienne-ring": {
+    "fr": "Sur le Ring, à Vienne",
+    "en": "On the Ring, in Vienna",
+    "es": "En el Ring, en Viena"
+  },
+  "dublin-temple-bar": {
+    "fr": "À côté de Temple Bar",
+    "en": "Next to Temple Bar",
+    "es": "Junto a Temple Bar"
+  },
+  "istanbul-sultanahmet": {
+    "fr": "Terrasse sur Sultanahmet",
+    "en": "Terrace overlooking Sultanahmet",
+    "es": "Terraza sobre Sultanahmet"
+  },
+  "marrakech-medina-riad": {
+    "fr": "Riad traditionnel dans la médina",
+    "en": "Traditional riad in the medina",
+    "es": "Riad tradicional en la medina"
+  },
+  "dubai-marina-tour": {
+    "fr": "Tour vitrée sur la Marina",
+    "en": "Glass tower on the Marina",
+    "es": "Torre acristalada en la Marina"
+  },
+  "new-york-midtown": {
+    "fr": "Midtown, à dix minutes de Times Square",
+    "en": "Midtown, ten minutes from Times Square",
+    "es": "Midtown, a diez minutos de Times Square"
+  },
+  "vol-paris-marrakech": {
+    "fr": "Vol Paris-Marrakech aller-retour",
+    "en": "Round-trip flight Paris–Marrakech",
+    "es": "Vuelo ida y vuelta Paris–Marrakech"
+  },
+  "vol-paris-agadir": {
+    "fr": "Vol Paris-Agadir aller-retour",
+    "en": "Round-trip flight Paris–Agadir",
+    "es": "Vuelo ida y vuelta Paris–Agadir"
+  },
+  "vol-paris-tunis": {
+    "fr": "Vol Paris-Tunis aller-retour",
+    "en": "Round-trip flight Paris–Tunis",
+    "es": "Vuelo ida y vuelta Paris–Tunis"
+  },
+  "vol-paris-djerba": {
+    "fr": "Vol Paris-Djerba aller-retour",
+    "en": "Round-trip flight Paris–Djerba",
+    "es": "Vuelo ida y vuelta Paris–Djerba"
+  },
+  "vol-paris-le-caire": {
+    "fr": "Vol Paris-Le Caire aller-retour",
+    "en": "Round-trip flight Paris–Le Caire",
+    "es": "Vuelo ida y vuelta Paris–Le Caire"
+  },
+  "vol-paris-lisbonne": {
+    "fr": "Vol Paris-Lisbonne aller-retour",
+    "en": "Round-trip flight Paris–Lisbonne",
+    "es": "Vuelo ida y vuelta Paris–Lisbonne"
+  },
+  "vol-paris-porto": {
+    "fr": "Vol Paris-Porto aller-retour",
+    "en": "Round-trip flight Paris–Porto",
+    "es": "Vuelo ida y vuelta Paris–Porto"
+  },
+  "vol-paris-barcelone": {
+    "fr": "Vol Paris-Barcelone aller-retour",
+    "en": "Round-trip flight Paris–Barcelone",
+    "es": "Vuelo ida y vuelta Paris–Barcelone"
+  },
+  "vol-paris-madrid": {
+    "fr": "Vol Paris-Madrid aller-retour",
+    "en": "Round-trip flight Paris–Madrid",
+    "es": "Vuelo ida y vuelta Paris–Madrid"
+  },
+  "vol-paris-rome": {
+    "fr": "Vol Paris-Rome aller-retour",
+    "en": "Round-trip flight Paris–Rome",
+    "es": "Vuelo ida y vuelta Paris–Rome"
+  },
+  "vol-paris-venise": {
+    "fr": "Vol Paris-Venise aller-retour",
+    "en": "Round-trip flight Paris–Venise",
+    "es": "Vuelo ida y vuelta Paris–Venise"
+  },
+  "vol-paris-athenes": {
+    "fr": "Vol Paris-Athènes aller-retour",
+    "en": "Round-trip flight Paris–Athènes",
+    "es": "Vuelo ida y vuelta Paris–Athènes"
+  },
+  "vol-paris-istanbul": {
+    "fr": "Vol Paris-Istanbul aller-retour",
+    "en": "Round-trip flight Paris–Istanbul",
+    "es": "Vuelo ida y vuelta Paris–Istanbul"
+  },
+  "vol-paris-londres": {
+    "fr": "Vol Paris-Londres aller-retour",
+    "en": "Round-trip flight Paris–Londres",
+    "es": "Vuelo ida y vuelta Paris–Londres"
+  },
+  "vol-paris-amsterdam": {
+    "fr": "Vol Paris-Amsterdam aller-retour",
+    "en": "Round-trip flight Paris–Amsterdam",
+    "es": "Vuelo ida y vuelta Paris–Amsterdam"
+  },
+  "vol-paris-dublin": {
+    "fr": "Vol Paris-Dublin aller-retour",
+    "en": "Round-trip flight Paris–Dublin",
+    "es": "Vuelo ida y vuelta Paris–Dublin"
+  },
+  "vol-paris-reykjavik": {
+    "fr": "Vol Paris-Reykjavik aller-retour",
+    "en": "Round-trip flight Paris–Reykjavik",
+    "es": "Vuelo ida y vuelta Paris–Reykjavik"
+  },
+  "vol-paris-dubai": {
+    "fr": "Vol Paris-Dubaï aller-retour",
+    "en": "Round-trip flight Paris–Dubaï",
+    "es": "Vuelo ida y vuelta Paris–Dubaï"
+  },
+  "vol-paris-new-york": {
+    "fr": "Vol Paris-New York aller-retour",
+    "en": "Round-trip flight Paris–New York",
+    "es": "Vuelo ida y vuelta Paris–New York"
+  },
+  "vol-paris-montreal": {
+    "fr": "Vol Paris-Montréal aller-retour",
+    "en": "Round-trip flight Paris–Montréal",
+    "es": "Vuelo ida y vuelta Paris–Montréal"
+  },
+  "vol-paris-bangkok": {
+    "fr": "Vol Paris-Bangkok aller-retour",
+    "en": "Round-trip flight Paris–Bangkok",
+    "es": "Vuelo ida y vuelta Paris–Bangkok"
+  },
+  "vol-paris-tokyo": {
+    "fr": "Vol Paris-Tokyo aller-retour",
+    "en": "Round-trip flight Paris–Tokyo",
+    "es": "Vuelo ida y vuelta Paris–Tokyo"
+  },
+  "vol-paris-bali": {
+    "fr": "Vol Paris-Bali aller-retour",
+    "en": "Round-trip flight Paris–Bali",
+    "es": "Vuelo ida y vuelta Paris–Bali"
+  },
+  "vol-paris-cancun": {
+    "fr": "Vol Paris-Cancún aller-retour",
+    "en": "Round-trip flight Paris–Cancún",
+    "es": "Vuelo ida y vuelta Paris–Cancún"
+  },
+  "vol-paris-rio": {
+    "fr": "Vol Paris-Rio de Janeiro aller-retour",
+    "en": "Round-trip flight Paris–Rio de Janeiro",
+    "es": "Vuelo ida y vuelta Paris–Rio de Janeiro"
+  },
+  "vol-paris-pointe-a-pitre": {
+    "fr": "Vol Paris-Pointe-à-Pitre aller-retour",
+    "en": "Round-trip flight Paris–Pointe-à-Pitre",
+    "es": "Vuelo ida y vuelta Paris–Pointe-à-Pitre"
+  },
+  "vol-paris-fort-de-france": {
+    "fr": "Vol Paris-Fort-de-France aller-retour",
+    "en": "Round-trip flight Paris–Fort-de-France",
+    "es": "Vuelo ida y vuelta Paris–Fort-de-France"
+  },
+  "vol-paris-saint-denis-reunion": {
+    "fr": "Vol Paris-Saint-Denis de La Réunion aller-retour",
+    "en": "Round-trip flight Paris–Saint-Denis de La Réunion",
+    "es": "Vuelo ida y vuelta Paris–Saint-Denis de La Réunion"
+  },
+  "vol-paris-dakar": {
+    "fr": "Vol Paris-Dakar aller-retour",
+    "en": "Round-trip flight Paris–Dakar",
+    "es": "Vuelo ida y vuelta Paris–Dakar"
+  },
+  "vol-lyon-porto": {
+    "fr": "Vol Lyon-Porto aller-retour",
+    "en": "Round-trip flight Lyon–Porto",
+    "es": "Vuelo ida y vuelta Lyon–Porto"
+  },
+  "vol-marseille-casablanca": {
+    "fr": "Vol Marseille-Casablanca aller-retour",
+    "en": "Round-trip flight Marseille–Casablanca",
+    "es": "Vuelo ida y vuelta Marseille–Casablanca"
+  },
+  "vol-nice-londres": {
+    "fr": "Vol Nice-Londres aller-retour",
+    "en": "Round-trip flight Nice–Londres",
+    "es": "Vuelo ida y vuelta Nice–Londres"
+  },
+  "vol-toulouse-madrid": {
+    "fr": "Vol Toulouse-Madrid aller-retour",
+    "en": "Round-trip flight Toulouse–Madrid",
+    "es": "Vuelo ida y vuelta Toulouse–Madrid"
+  },
+  "vol-bordeaux-seville": {
+    "fr": "Vol Bordeaux-Séville aller-retour",
+    "en": "Round-trip flight Bordeaux–Séville",
+    "es": "Vuelo ida y vuelta Bordeaux–Séville"
+  },
+  "camping-landes-biscarrosse": {
+    "fr": "Camping 5★ entre pins et océan",
+    "en": "5-star campsite between pines and ocean",
+    "es": "Camping 5★ entre pinos y océano"
+  },
+  "camping-ardeche-vallon": {
+    "fr": "Mobil-home au bord de l'Ardèche",
+    "en": "Mobile home by the Ardèche river",
+    "es": "Casa móvil junto al río Ardèche"
+  },
+  "camping-var-frejus": {
+    "fr": "Résidence club à Fréjus",
+    "en": "Club residence in Fréjus",
+    "es": "Residencia club en Fréjus"
+  },
+  "camping-vendee-saint-jean-de-monts": {
+    "fr": "Camping familial à Saint-Jean-de-Monts",
+    "en": "Family campsite in Saint-Jean-de-Monts",
+    "es": "Camping familiar en Saint-Jean-de-Monts"
+  },
+  "camping-royan-pins": {
+    "fr": "Pins et plage à Royan",
+    "en": "Pines and beach in Royan",
+    "es": "Pinos y playa en Royan"
+  },
+  "camping-cap-agde-aquatique": {
+    "fr": "Espace aquatique au Cap d'Agde",
+    "en": "Water park at Cap d'Agde",
+    "es": "Parque acuático en Cap d'Agde"
+  },
+  "camping-bretagne-benodet": {
+    "fr": "Bord de mer à Bénodet",
+    "en": "Seaside in Bénodet",
+    "es": "Costa en Bénodet"
+  },
+  "camping-corse-porto-vecchio": {
+    "fr": "Camping près des plages de Porto-Vecchio",
+    "en": "Campsite near the beaches of Porto-Vecchio",
+    "es": "Camping cerca de las playas de Porto-Vecchio"
+  },
+  "camping-costa-brava-lloret": {
+    "fr": "Village vacances sur la Costa Brava",
+    "en": "Holiday village on the Costa Brava",
+    "es": "Aldea vacacional en la Costa Brava"
+  },
+  "camping-toscane-viareggio": {
+    "fr": "Camping en Toscane, près de Viareggio",
+    "en": "Campsite in Tuscany, near Viareggio",
+    "es": "Camping en la Toscana, cerca de Viareggio"
+  },
+  "camping-croatie-porec": {
+    "fr": "Camping bord de mer à Poreč",
+    "en": "Seaside campsite in Poreč",
+    "es": "Camping junto al mar en Poreč"
+  },
+  "escapade-bruges": {
+    "fr": "Week-end canaux et chocolat à Bruges",
+    "en": "Canals-and-chocolate weekend in Bruges",
+    "es": "Fin de semana de canales y chocolate en Brujas"
+  },
+  "escapade-prague": {
+    "fr": "Trois nuits sur la Vltava",
+    "en": "Three nights on the Vltava",
+    "es": "Tres noches junto al Moldava"
+  },
+  "escapade-amsterdam": {
+    "fr": "Deux nuits le long des canaux",
+    "en": "Two nights along the canals",
+    "es": "Dos noches junto a los canales"
+  },
+  "escapade-barcelone": {
+    "fr": "Barcelone en trois jours",
+    "en": "Barcelona in three days",
+    "es": "Barcelona en tres días"
+  },
+  "escapade-seville": {
+    "fr": "Séville en trois jours",
+    "en": "Seville in three days",
+    "es": "Sevilla en tres días"
+  },
+  "escapade-porto": {
+    "fr": "Porto, la ville et la vallée du Douro",
+    "en": "Porto, the city and the Douro valley",
+    "es": "Oporto, la ciudad y el valle del Duero"
+  },
+  "escapade-lisbonne": {
+    "fr": "Lisbonne en long week-end",
+    "en": "Lisbon, a long weekend",
+    "es": "Lisboa en un fin de semana largo"
+  },
+  "escapade-rome": {
+    "fr": "Rome en trois jours",
+    "en": "Rome in three days",
+    "es": "Roma en tres días"
+  },
+  "escapade-venise": {
+    "fr": "Venise, deux nuits hors saison",
+    "en": "Venice, two nights off-season",
+    "es": "Venecia, dos noches fuera de temporada"
+  },
+  "escapade-londres": {
+    "fr": "Londres en long week-end",
+    "en": "London, a long weekend",
+    "es": "Londres en un fin de semana largo"
+  },
+  "escapade-edimbourg": {
+    "fr": "Édimbourg, la ville et son château",
+    "en": "Edinburgh, the city and its castle",
+    "es": "Edimburgo, la ciudad y su castillo"
+  },
+  "escapade-deauville": {
+    "fr": "Bord de mer et thalasso à Deauville",
+    "en": "Seaside and thalassotherapy in Deauville",
+    "es": "Costa y talasoterapia en Deauville"
+  },
+  "escapade-annecy": {
+    "fr": "Lac et vieille ville à Annecy",
+    "en": "Lake and old town in Annecy",
+    "es": "Lago y casco antiguo en Annecy"
+  },
+  "escapade-colmar": {
+    "fr": "Colmar et la route des vins",
+    "en": "Colmar and the wine route",
+    "es": "Colmar y la ruta del vino"
+  },
+  "escapade-biarritz": {
+    "fr": "Biarritz, océan et thalasso",
+    "en": "Biarritz, ocean and thalassotherapy",
+    "es": "Biarritz, océano y talasoterapia"
+  },
+  "escapade-saint-malo": {
+    "fr": "Saint-Malo intra-muros",
+    "en": "Saint-Malo within the old walls",
+    "es": "Saint-Malo intramuros"
+  },
+  "voiture-malaga-compacte": {
+    "fr": "Compacte à l'aéroport de Malaga",
+    "en": "Compact car at Malaga airport",
+    "es": "Coche compacto en el aeropuerto de Malaga"
+  },
+  "voiture-faro-citadine": {
+    "fr": "Citadine à Faro, kilométrage illimité",
+    "en": "City car in Faro, unlimited mileage",
+    "es": "Coche urbano en Faro, kilometraje ilimitado"
+  },
+  "voiture-palma-compacte": {
+    "fr": "Compacte à Palma de Majorque",
+    "en": "Compact car in Palma de Mallorca",
+    "es": "Coche compacto en Palma de Mallorca"
+  },
+  "voiture-tenerife-suv": {
+    "fr": "SUV à Ténérife Sud",
+    "en": "SUV in South Tenerife",
+    "es": "SUV en Tenerife Sur"
+  },
+  "voiture-lanzarote-citadine": {
+    "fr": "Citadine à Arrecife",
+    "en": "City car in Arrecife",
+    "es": "Coche urbano en Arrecife"
+  },
+  "voiture-reykjavik-4x4": {
+    "fr": "4x4 à Reykjavik, assurance incluse",
+    "en": "4x4 in Reykjavik, insurance included",
+    "es": "4x4 en Reikiavik, seguro incluido"
+  },
+  "voiture-athenes-compacte": {
+    "fr": "Compacte à l'aéroport d'Athènes",
+    "en": "Compact car at Athens airport",
+    "es": "Coche compacto en el aeropuerto de Atenas"
+  },
+  "voiture-heraklion-citadine": {
+    "fr": "Citadine à Héraklion",
+    "en": "City car in Heraklion",
+    "es": "Coche urbano en Heraklion"
+  },
+  "voiture-catane-compacte": {
+    "fr": "Compacte à Catane, en Sicile",
+    "en": "Compact car in Catania, Sicily",
+    "es": "Coche compacto en Catania, Sicilia"
+  },
+  "voiture-naples-citadine": {
+    "fr": "Citadine à Naples",
+    "en": "City car in Naples",
+    "es": "Coche urbano en Nápoles"
+  },
+  "voiture-lisbonne-compacte": {
+    "fr": "Compacte à Lisbonne",
+    "en": "Compact car in Lisbon",
+    "es": "Coche compacto en Lisboa"
+  },
+  "voiture-marrakech-suv": {
+    "fr": "SUV à Marrakech Ménara",
+    "en": "SUV in Marrakech Ménara",
+    "es": "SUV en Marrakech Ménara"
+  },
+  "voiture-dubai-berline": {
+    "fr": "Berline à Dubaï",
+    "en": "Sedan in Dubai",
+    "es": "Sedán en Dubái"
+  },
+  "voiture-miami-suv": {
+    "fr": "SUV à Miami International",
+    "en": "SUV at Miami International",
+    "es": "SUV en Miami International"
+  },
+  "voiture-fort-de-france-suv": {
+    "fr": "SUV à Fort-de-France",
+    "en": "SUV in Fort-de-France",
+    "es": "SUV en Fort-de-France"
+  },
+  "voiture-pointe-a-pitre-compacte": {
+    "fr": "Compacte à Pointe-à-Pitre",
+    "en": "Compact car in Pointe-à-Pitre",
+    "es": "Coche compacto en Pointe-à-Pitre"
+  },
+  "voiture-nice-cabriolet": {
+    "fr": "Cabriolet à Nice Côte d'Azur",
+    "en": "Convertible in Nice Côte d'Azur",
+    "es": "Descapotable en Niza Costa Azul"
+  },
+  "voiture-ajaccio-compacte": {
+    "fr": "Compacte à Ajaccio",
+    "en": "Compact car in Ajaccio",
+    "es": "Coche compacto en Ajaccio"
+  },
+  "disneyland-paris-2-jours": {
+    "fr": "Disneyland Paris, 2 jours et 1 nuit",
+    "en": "Disneyland Paris, 2 days and 1 night",
+    "es": "Disneyland París, 2 días y 1 noche"
+  },
+  "parc-asterix-sejour": {
+    "fr": "Parc Astérix, 2 jours et 1 nuit",
+    "en": "Parc Astérix, 2 days and 1 night",
+    "es": "Parc Astérix, 2 días y 1 noche"
+  },
+  "puy-du-fou-sejour": {
+    "fr": "Le Puy du Fou, 2 jours et 1 nuit",
+    "en": "Puy du Fou, 2 days and 1 night",
+    "es": "Puy du Fou, 2 días y 1 noche"
+  },
+  "futuroscope-sejour": {
+    "fr": "Futuroscope, 2 jours et 1 nuit",
+    "en": "Futuroscope, 2 days and 1 night",
+    "es": "Futuroscope, 2 días y 1 noche"
+  },
+  "portaventura-salou": {
+    "fr": "PortAventura World, 3 jours et 2 nuits",
+    "en": "PortAventura World, 3 days and 2 nights",
+    "es": "PortAventura World, 3 días y 2 noches"
+  },
+  "europa-park-rust": {
+    "fr": "Europa-Park, 3 jours et 2 nuits",
+    "en": "Europa-Park, 3 days and 2 nights",
+    "es": "Europa-Park, 3 días y 2 noches"
+  },
+  "orlando-parcs-semaine": {
+    "fr": "Orlando, une semaine au pays des parcs",
+    "en": "Orlando, a week in theme-park country",
+    "es": "Orlando, una semana en el país de los parques"
+  },
+  "ski-tignes-val-claret": {
+    "fr": "Résidence club à Tignes Val Claret",
+    "en": "Club residence in Tignes Val Claret",
+    "es": "Residencia club en Tignes Val Claret"
+  },
+  "ski-les-arcs-1800": {
+    "fr": "Club aux Arcs 1800, skis aux pieds",
+    "en": "Club at Les Arcs 1800, ski-in ski-out",
+    "es": "Club en Les Arcs 1800, esquí en la puerta"
+  },
+  "ski-alpe-d-huez": {
+    "fr": "Appartement à l'Alpe d'Huez",
+    "en": "Apartment in Alpe d'Huez",
+    "es": "Apartamento en Alpe d'Huez"
+  },
+  "ski-chamonix-mont-blanc": {
+    "fr": "Face au Mont-Blanc, à Chamonix",
+    "en": "Facing Mont Blanc, in Chamonix",
+    "es": "Frente al Mont Blanc, en Chamonix"
+  },
+  "ski-serre-chevalier": {
+    "fr": "Village club à Serre Chevalier",
+    "en": "Village club in Serre Chevalier",
+    "es": "Club-aldea en Serre Chevalier"
+  },
+  "ski-la-plagne": {
+    "fr": "Club famille à La Plagne",
+    "en": "Family club in La Plagne",
+    "es": "Club familiar en La Plagne"
+  },
+  "ski-les-2-alpes": {
+    "fr": "Résidence aux Deux Alpes",
+    "en": "Residence in Les Deux Alpes",
+    "es": "Residencia en Les Deux Alpes"
+  },
+  "ski-font-romeu-pyrenees": {
+    "fr": "Font-Romeu, soleil des Pyrénées",
+    "en": "Font-Romeu, Pyrenees sunshine",
+    "es": "Font-Romeu, sol de los Pirineos"
+  },
+  "ski-andorre-pas-de-la-case": {
+    "fr": "Tout compris au Pas de la Case",
+    "en": "All-inclusive at Pas de la Case",
+    "es": "Todo incluido en Pas de la Case"
+  },
+  "ski-autriche-tyrol": {
+    "fr": "Chalet au Tyrol autrichien",
+    "en": "Chalet in the Austrian Tyrol",
+    "es": "Chalet en el Tirol austríaco"
+  },
+  "ski-italie-val-gardena": {
+    "fr": "Dolomites, au Val Gardena",
+    "en": "Dolomites, in Val Gardena",
+    "es": "Dolomitas, en Val Gardena"
+  },
+  "montagne-annecy-ete": {
+    "fr": "Lac d'Annecy en été",
+    "en": "Lake Annecy in summer",
+    "es": "Lago de Annecy en verano"
+  },
+  "noel-strasbourg-marche": {
+    "fr": "Marché de Noël de Strasbourg",
+    "en": "Strasbourg Christmas market",
+    "es": "Mercado navideño de Estrasburgo"
+  },
+  "noel-colmar-marche": {
+    "fr": "Marchés de Noël de Colmar",
+    "en": "Colmar Christmas markets",
+    "es": "Mercados navideños de Colmar"
+  },
+  "noel-vienne-marche": {
+    "fr": "Vienne à l'Avent",
+    "en": "Vienna in Advent",
+    "es": "Viena en Adviento"
+  },
+  "noel-prague-avent": {
+    "fr": "Prague sous la neige",
+    "en": "Prague in the snow",
+    "es": "Praga bajo la nieve"
+  },
+  "noel-budapest-thermes": {
+    "fr": "Budapest, marchés et bains thermaux",
+    "en": "Budapest, markets and thermal baths",
+    "es": "Budapest, mercados y baños termales"
+  },
+  "noel-laponie-rovaniemi": {
+    "fr": "Laponie finlandaise et aurores boréales",
+    "en": "Finnish Lapland and the northern lights",
+    "es": "Laponia finlandesa y auroras boreales"
+  },
+  "nouvel-an-marrakech": {
+    "fr": "Nouvel An à Marrakech",
+    "en": "New Year's Eve in Marrakech",
+    "es": "Nochevieja en Marrakech"
+  },
+  "club-djerba-famille": {
+    "fr": "Club famille avec parc aquatique à Djerba",
+    "en": "Family club with water park in Djerba",
+    "es": "Club familiar con parque acuático en Djerba"
+  },
+  "club-hammamet-animations": {
+    "fr": "Club animations à Hammamet",
+    "en": "Activities club in Hammamet",
+    "es": "Club con animación en Hammamet"
+  },
+  "club-agadir-parc-aquatique": {
+    "fr": "Club avec parc aquatique à Agadir",
+    "en": "Club with water park in Agadir",
+    "es": "Club con parque acuático en Agadir"
+  },
+  "club-hurghada-plongee": {
+    "fr": "Club plongée et animations, Hurghada",
+    "en": "Diving and activities club, Hurghada",
+    "es": "Club de buceo y animación, Hurghada"
+  },
+  "club-fuerteventura-jandia": {
+    "fr": "Club de Jandía, Fuerteventura",
+    "en": "Jandía club, Fuerteventura",
+    "es": "Club de Jandía, Fuerteventura"
+  },
+  "club-crete-malia": {
+    "fr": "Club bord de mer à Malia",
+    "en": "Beachfront club in Malia",
+    "es": "Club junto al mar en Malia"
+  },
+  "club-majorque-famille": {
+    "fr": "Club famille à Majorque",
+    "en": "Family club in Mallorca",
+    "es": "Club familiar en Mallorca"
+  },
+  "club-antalya-ultra": {
+    "fr": "Club ultra tout compris à Antalya",
+    "en": "Ultra all-inclusive club in Antalya",
+    "es": "Club todo incluido premium en Antalya"
+  },
+  "club-punta-cana-famille": {
+    "fr": "Club famille à Punta Cana",
+    "en": "Family club in Punta Cana",
+    "es": "Club familiar en Punta Cana"
+  },
+  "club-maurice-cote-ouest": {
+    "fr": "Club de la côte ouest mauricienne",
+    "en": "West coast Mauritius club",
+    "es": "Club de la costa oeste mauriciana"
+  },
+  "combine-thailande-bangkok-phuket": {
+    "fr": "Bangkok et les plages de Phuket",
+    "en": "Bangkok and the beaches of Phuket",
+    "es": "Bangkok y las playas de Phuket"
+  },
+  "combine-vietnam-cambodge": {
+    "fr": "Vietnam et Cambodge, du Mékong à Angkor",
+    "en": "Vietnam and Cambodia, from the Mekong to Angkor",
+    "es": "Vietnam y Camboya, del Mekong a Angkor"
+  },
+  "combine-dubai-maurice": {
+    "fr": "Escale à Dubaï puis plage à Maurice",
+    "en": "Dubai stopover, then a beach stay in Mauritius",
+    "es": "Escala en Dubái y luego playa en Mauricio"
+  },
+  "combine-new-york-punta-cana": {
+    "fr": "New York puis Punta Cana",
+    "en": "New York, then Punta Cana",
+    "es": "Nueva York y luego Punta Cana"
+  },
+  "combine-bali-lombok": {
+    "fr": "Bali et les îles Gili",
+    "en": "Bali and the Gili Islands",
+    "es": "Bali y las islas Gili"
+  },
+  "combine-maroc-desert-plage": {
+    "fr": "Désert marocain puis plage à Agadir",
+    "en": "Moroccan desert, then a beach stay in Agadir",
+    "es": "Desierto marroquí y luego playa en Agadir"
+  },
+  "combine-egypte-nil-mer-rouge": {
+    "fr": "Croisière sur le Nil et séjour en mer Rouge",
+    "en": "Nile cruise and Red Sea stay",
+    "es": "Crucero por el Nilo y estancia en el mar Rojo"
+  },
+  "combine-japon-ville-nature": {
+    "fr": "Japon urbain et Japon rural",
+    "en": "Urban Japan and rural Japan",
+    "es": "Japón urbano y Japón rural"
+  },
+  "combine-kenya-safari-plage": {
+    "fr": "Safari au Kenya puis plage à Diani",
+    "en": "Kenya safari, then Diani beach",
+    "es": "Safari en Kenia y luego playa de Diani"
+  },
+  "combine-perou-bolivie": {
+    "fr": "Pérou et Bolivie, des Andes au salar",
+    "en": "Peru and Bolivia, from the Andes to the salt flats",
+    "es": "Perú y Bolivia, de los Andes al salar"
+  },
+  "seville-printemps-feria": {
+    "fr": "Séville au printemps",
+    "en": "Seville in spring",
+    "es": "Sevilla en primavera"
+  },
+  "amsterdam-tulipes": {
+    "fr": "Amsterdam à la saison des tulipes",
+    "en": "Amsterdam during tulip season",
+    "es": "Ámsterdam en la temporada de los tulipanes"
+  },
+  "kyoto-cerisiers": {
+    "fr": "Japon à la floraison des cerisiers",
+    "en": "Japan during cherry blossom season",
+    "es": "Japón en la floración de los cerezos"
+  },
+  "provence-lavande": {
+    "fr": "Provence, saison de la lavande",
+    "en": "Provence, lavender season",
+    "es": "Provenza, temporada de la lavanda"
+  },
+  "corse-plages-ete": {
+    "fr": "Plages du sud de la Corse",
+    "en": "Beaches of southern Corsica",
+    "es": "Playas del sur de Córcega"
+  },
+  "bretagne-cotes-armor": {
+    "fr": "Côtes-d'Armor, entre plages et falaises",
+    "en": "Côtes-d'Armor, between beaches and cliffs",
+    "es": "Côtes-d'Armor, entre playas y acantilados"
+  },
+  "pays-basque-cote": {
+    "fr": "Côte basque, de Biarritz à Hendaye",
+    "en": "Basque coast, from Biarritz to Hendaye",
+    "es": "Costa vasca, de Biarritz a Hendaya"
+  },
+  "normandie-plages-debarquement": {
+    "fr": "Normandie, plages du Débarquement en autotour",
+    "en": "Normandy, D-Day beaches self-drive tour",
+    "es": "Normandía, playas del Desembarco en autotour"
+  },
+  "chateaux-de-la-loire": {
+    "fr": "Châteaux de la Loire en autotour",
+    "en": "Loire Valley châteaux self-drive tour",
+    "es": "Castillos del Loira en autotour"
+  },
+  "alsace-route-des-vins": {
+    "fr": "Route des vins d'Alsace",
+    "en": "Alsace wine route",
+    "es": "Ruta de los vinos de Alsacia"
+  },
+  "bali-ubud-rizieres": {
+    "fr": "Ubud, entre rizières et temples",
+    "en": "Ubud, between rice paddies and temples",
+    "es": "Ubud, entre arrozales y templos"
+  },
+  "thailande-koh-samui": {
+    "fr": "Koh Samui, plage de Chaweng",
+    "en": "Koh Samui, Chaweng beach",
+    "es": "Koh Samui, playa de Chaweng"
+  },
+  "vietnam-hoi-an-plage": {
+    "fr": "Hoi An, vieille ville et plage d'An Bang",
+    "en": "Hoi An, old town and An Bang beach",
+    "es": "Hoi An, casco antiguo y playa de An Bang"
+  },
+  "mexique-tulum": {
+    "fr": "Tulum, entre ruines mayas et cénotes",
+    "en": "Tulum, between Mayan ruins and cenotes",
+    "es": "Tulum, entre ruinas mayas y cenotes"
+  },
+  "costa-rica-guanacaste": {
+    "fr": "Plages du Guanacaste",
+    "en": "Guanacaste beaches",
+    "es": "Playas de Guanacaste"
+  },
+  "bresil-nordeste-natal": {
+    "fr": "Plages du Nordeste, à Natal",
+    "en": "Nordeste beaches, in Natal",
+    "es": "Playas del Nordeste, en Natal"
+  },
+  "afrique-du-sud-plage-safari": {
+    "fr": "Le Cap et la route des vins",
+    "en": "Cape Town and the wine route",
+    "es": "Ciudad del Cabo y la ruta del vino"
+  },
+  "australie-sydney-cote-est": {
+    "fr": "Côte est australienne en autotour",
+    "en": "Australian east coast self-drive tour",
+    "es": "Costa este australiana en autotour"
+  },
+  "polynesie-tahiti-bora-bora": {
+    "fr": "Tahiti, Moorea et Bora-Bora",
+    "en": "Tahiti, Moorea and Bora Bora",
+    "es": "Tahití, Moorea y Bora Bora"
+  },
+  "canada-rocheuses": {
+    "fr": "Rocheuses canadiennes en autotour",
+    "en": "Canadian Rockies self-drive tour",
+    "es": "Rocosas canadienses en autotour"
+  },
+  "montpellier-ecusson": {
+    "fr": "Dans l'Écusson, à Montpellier",
+    "en": "In the Écusson district, Montpellier",
+    "es": "En el Écusson, Montpellier"
+  },
+  "strasbourg-petite-france": {
+    "fr": "Quartier de la Petite France",
+    "en": "Petite France district",
+    "es": "Barrio de la Petite France"
+  },
+  "annecy-vieille-ville": {
+    "fr": "Vieille ville d'Annecy, au bord des canaux",
+    "en": "Annecy old town, along the canals",
+    "es": "Casco antiguo de Annecy, junto a los canales"
+  },
+  "biarritz-grande-plage": {
+    "fr": "Face à la Grande Plage de Biarritz",
+    "en": "Facing the Grande Plage of Biarritz",
+    "es": "Frente a la Grande Plage de Biarritz"
+  },
+  "cannes-croisette": {
+    "fr": "À deux pas de la Croisette",
+    "en": "Steps from La Croisette",
+    "es": "A pasos de la Croisette"
+  },
+  "valence-espagne-centre": {
+    "fr": "Centre historique de Valence",
+    "en": "Historic centre of Valencia",
+    "es": "Centro histórico de Valencia"
+  },
+  "naples-centro-storico": {
+    "fr": "Centre historique de Naples",
+    "en": "Historic centre of Naples",
+    "es": "Centro histórico de Nápoles"
+  },
+  "cracovie-vieille-ville": {
+    "fr": "Vieille ville de Cracovie",
+    "en": "Old town of Kraków",
+    "es": "Casco antiguo de Cracovia"
+  },
+  "copenhague-nyhavn": {
+    "fr": "À côté de Nyhavn",
+    "en": "Next to Nyhavn",
+    "es": "Junto a Nyhavn"
+  },
+  "stockholm-gamla-stan": {
+    "fr": "Gamla Stan, la vieille ville",
+    "en": "Gamla Stan, the old town",
+    "es": "Gamla Stan, el casco antiguo"
+  },
+  "singapour-marina": {
+    "fr": "Vue sur Marina Bay",
+    "en": "Marina Bay views",
+    "es": "Vistas a Marina Bay"
+  },
+  "tokyo-shinjuku": {
+    "fr": "Shinjuku, au cœur de Tokyo",
+    "en": "Shinjuku, in the heart of Tokyo",
+    "es": "Shinjuku, en el corazón de Tokio"
+  },
+  "vol-paris-marseille": {
+    "fr": "Vol Paris-Marseille aller-retour",
+    "en": "Round-trip flight Paris–Marseille",
+    "es": "Vuelo ida y vuelta Paris–Marseille"
+  },
+  "vol-paris-nice": {
+    "fr": "Vol Paris-Nice aller-retour",
+    "en": "Round-trip flight Paris–Nice",
+    "es": "Vuelo ida y vuelta Paris–Nice"
+  },
+  "vol-paris-ajaccio": {
+    "fr": "Vol Paris-Ajaccio aller-retour",
+    "en": "Round-trip flight Paris–Ajaccio",
+    "es": "Vuelo ida y vuelta Paris–Ajaccio"
+  },
+  "vol-paris-seville": {
+    "fr": "Vol Paris-Séville aller-retour",
+    "en": "Round-trip flight Paris–Séville",
+    "es": "Vuelo ida y vuelta Paris–Séville"
+  },
+  "vol-paris-palma": {
+    "fr": "Vol Paris-Palma de Majorque aller-retour",
+    "en": "Round-trip flight Paris–Palma de Majorque",
+    "es": "Vuelo ida y vuelta Paris–Palma de Majorque"
+  },
+  "vol-paris-tenerife": {
+    "fr": "Vol Paris-Ténérife aller-retour",
+    "en": "Round-trip flight Paris–Ténérife",
+    "es": "Vuelo ida y vuelta Paris–Ténérife"
+  },
+  "vol-paris-naples": {
+    "fr": "Vol Paris-Naples aller-retour",
+    "en": "Round-trip flight Paris–Naples",
+    "es": "Vuelo ida y vuelta Paris–Naples"
+  },
+  "vol-paris-heraklion": {
+    "fr": "Vol Paris-Héraklion aller-retour",
+    "en": "Round-trip flight Paris–Héraklion",
+    "es": "Vuelo ida y vuelta Paris–Héraklion"
+  },
+  "vol-paris-varsovie": {
+    "fr": "Vol Paris-Varsovie aller-retour",
+    "en": "Round-trip flight Paris–Varsovie",
+    "es": "Vuelo ida y vuelta Paris–Varsovie"
+  },
+  "vol-paris-singapour": {
+    "fr": "Vol Paris-Singapour aller-retour",
+    "en": "Round-trip flight Paris–Singapour",
+    "es": "Vuelo ida y vuelta Paris–Singapour"
+  },
+  "vol-paris-sydney": {
+    "fr": "Vol Paris-Sydney aller-retour",
+    "en": "Round-trip flight Paris–Sydney",
+    "es": "Vuelo ida y vuelta Paris–Sydney"
+  },
+  "vol-paris-papeete": {
+    "fr": "Vol Paris-Papeete aller-retour",
+    "en": "Round-trip flight Paris–Papeete",
+    "es": "Vuelo ida y vuelta Paris–Papeete"
+  },
+  "vol-lyon-marrakech": {
+    "fr": "Vol Lyon-Marrakech aller-retour",
+    "en": "Round-trip flight Lyon–Marrakech",
+    "es": "Vuelo ida y vuelta Lyon–Marrakech"
+  },
+  "vol-nantes-lisbonne": {
+    "fr": "Vol Nantes-Lisbonne aller-retour",
+    "en": "Round-trip flight Nantes–Lisbonne",
+    "es": "Vuelo ida y vuelta Nantes–Lisbonne"
+  },
+  "vol-lille-barcelone": {
+    "fr": "Vol Lille-Barcelone aller-retour",
+    "en": "Round-trip flight Lille–Barcelone",
+    "es": "Vuelo ida y vuelta Lille–Barcelone"
+  },
+  "croisiere-antilles-fort-de-france": {
+    "fr": "Antilles au départ de Fort-de-France",
+    "en": "The Antilles, departing from Fort-de-France",
+    "es": "Las Antillas, con salida desde Fort-de-France"
+  },
+  "croisiere-mediterranee-barcelone": {
+    "fr": "Méditerranée au départ de Barcelone",
+    "en": "The Mediterranean, departing from Barcelona",
+    "es": "El Mediterráneo, con salida desde Barcelona"
+  },
+  "croisiere-adriatique-venise": {
+    "fr": "Adriatique au départ de Venise",
+    "en": "The Adriatic, departing from Venice",
+    "es": "El Adriático, con salida desde Venecia"
+  },
+  "croisiere-islande-groenland": {
+    "fr": "Islande et Groenland",
+    "en": "Iceland and Greenland",
+    "es": "Islandia y Groenlandia"
+  },
+  "croisiere-seine-normandie": {
+    "fr": "La Seine normande, de Rouen au Havre",
+    "en": "The Norman Seine, from Rouen to Le Havre",
+    "es": "El Sena normando, de Ruan a Le Havre"
+  },
+  "croisiere-garonne-bordeaux": {
+    "fr": "Garonne et Gironde, vignobles bordelais",
+    "en": "Garonne and Gironde, Bordeaux vineyards",
+    "es": "Garona y Gironda, viñedos de Burdeos"
+  },
+  "croisiere-mekong": {
+    "fr": "Le Mékong, du Cambodge au Vietnam",
+    "en": "The Mekong, from Cambodia to Vietnam",
+    "es": "El Mekong, de Camboya a Vietnam"
+  },
+  "voiture-lisbonne-suv": {
+    "fr": "SUV à Lisbonne, kilométrage illimité",
+    "en": "SUV in Lisbon, unlimited mileage",
+    "es": "SUV en Lisboa, kilometraje ilimitado"
+  },
+  "voiture-seville-compacte": {
+    "fr": "Compacte à Séville",
+    "en": "Compact car in Seville",
+    "es": "Coche compacto en Sevilla"
+  },
+  "voiture-split-compacte": {
+    "fr": "Compacte à Split, Croatie",
+    "en": "Compact car in Split, Croatia",
+    "es": "Coche compacto en Split, Croacia"
+  },
+  "voiture-le-cap-suv": {
+    "fr": "SUV au Cap, Afrique du Sud",
+    "en": "SUV in Cape Town, South Africa",
+    "es": "SUV en Ciudad del Cabo, Sudáfrica"
+  },
+  "voiture-los-angeles-cabriolet": {
+    "fr": "Cabriolet à Los Angeles",
+    "en": "Convertible in Los Angeles",
+    "es": "Descapotable en Los Ángeles"
+  },
+  "voiture-maurice-citadine": {
+    "fr": "Citadine à l'île Maurice",
+    "en": "City car in Mauritius",
+    "es": "Coche urbano en la isla Mauricio"
+  },
+  "disneyland-paris-3-jours": {
+    "fr": "Disneyland Paris, 3 jours et 2 nuits",
+    "en": "Disneyland Paris, 3 days and 2 nights",
+    "es": "Disneyland París, 3 días y 2 noches"
+  },
+  "walibi-rhone-alpes": {
+    "fr": "Walibi Rhône-Alpes, 2 jours et 1 nuit",
+    "en": "Walibi Rhône-Alpes, 2 days and 1 night",
+    "es": "Walibi Rhône-Alpes, 2 días y 1 noche"
+  },
+  "nigloland-sejour": {
+    "fr": "Nigloland, 2 jours et 1 nuit",
+    "en": "Nigloland, 2 days and 1 night",
+    "es": "Nigloland, 2 días y 1 noche"
+  },
+  "puy-du-fou-cinescenie": {
+    "fr": "Le Puy du Fou et la Cinéscénie, 3 jours",
+    "en": "Puy du Fou and the Cinéscénie, 3 days",
+    "es": "Puy du Fou y la Cinéscénie, 3 días"
+  },
+  "efteling-pays-bas": {
+    "fr": "Efteling, 2 jours et 1 nuit",
+    "en": "Efteling, 2 days and 1 night",
+    "es": "Efteling, 2 días y 1 noche"
+  },
+  "saint-gilles-les-bains-escapade-en-demi-pension-a-saint-gilles-les-bains-0": {
+    "fr": "Escapade en demi-pension à Saint-Gilles-les-Bains",
+    "en": "Half-board getaway in Saint-Gilles-les-Bains",
+    "es": "Escapada en media pensión en Saint-Gilles-les-Bains"
+  },
+  "font-romeu-hotel-avec-piscine-a-font-romeu-1": {
+    "fr": "Hôtel avec piscine à Font-Romeu",
+    "en": "Hotel with pool in Font-Romeu",
+    "es": "Hotel con piscina en Font-Romeu"
+  },
+  "essaouira-hotel-avec-piscine-a-essaouira-2": {
+    "fr": "Hôtel avec piscine à Essaouira",
+    "en": "Hotel with pool in Essaouira",
+    "es": "Hotel con piscina en Essaouira"
+  },
+  "olbia-sejour-balneaire-a-olbia-3": {
+    "fr": "Séjour balnéaire à Olbia",
+    "en": "Beach stay in Olbia",
+    "es": "Estancia de playa en Olbia"
+  },
+  "ubud-sejour-balneaire-a-ubud-4": {
+    "fr": "Séjour balnéaire à Ubud",
+    "en": "Beach stay in Ubud",
+    "es": "Estancia de playa en Ubud"
+  },
+  "guanacaste-club-familial-tout-compris-a-guanacaste-5": {
+    "fr": "Club familial tout compris à Guanacaste",
+    "en": "All-inclusive family club in Guanacaste",
+    "es": "Club familiar todo incluido en Guanacaste"
+  },
+  "mombasa-resort-tout-compris-pres-de-mombasa-6": {
+    "fr": "Resort tout compris près de Mombasa",
+    "en": "All-inclusive resort near Mombasa",
+    "es": "Resort todo incluido cerca de Mombasa"
+  },
+  "mahe-sejour-balneaire-a-mahe-7": {
+    "fr": "Séjour balnéaire à Mahé",
+    "en": "Beach stay in Mahé",
+    "es": "Estancia de playa en Mahé"
+  },
+  "koh-samui-sejour-balneaire-a-koh-samui-8": {
+    "fr": "Séjour balnéaire à Koh Samui",
+    "en": "Beach stay in Koh Samui",
+    "es": "Estancia de playa en Koh Samui"
+  },
+  "cancun-sejour-tout-compris-a-cancun-9": {
+    "fr": "Séjour tout compris à Cancún",
+    "en": "All-inclusive stay in Cancún",
+    "es": "Estancia todo incluido en Cancún"
+  },
+  "marsa-alam-club-familial-tout-compris-a-marsa-alam-10": {
+    "fr": "Club familial tout compris à Marsa Alam",
+    "en": "All-inclusive family club in Marsa Alam",
+    "es": "Club familiar todo incluido en Marsa Alam"
+  },
+  "dubai-escapade-en-demi-pension-a-dubai-11": {
+    "fr": "Escapade en demi-pension à Dubaï",
+    "en": "Half-board getaway in Dubaï",
+    "es": "Escapada en media pensión en Dubaï"
+  },
+  "tenerife-club-familial-tout-compris-a-tenerife-12": {
+    "fr": "Club familial tout compris à Ténérife",
+    "en": "All-inclusive family club in Ténérife",
+    "es": "Club familiar todo incluido en Ténérife"
+  },
+  "crete-club-familial-tout-compris-a-crete-13": {
+    "fr": "Club familial tout compris à Crète",
+    "en": "All-inclusive family club in Crète",
+    "es": "Club familiar todo incluido en Crète"
+  },
+  "seminyak-hotel-avec-piscine-a-seminyak-14": {
+    "fr": "Hôtel avec piscine à Seminyak",
+    "en": "Hotel with pool in Seminyak",
+    "es": "Hotel con piscina en Seminyak"
+  },
+  "grande-canarie-sejour-tout-compris-a-grande-canarie-15": {
+    "fr": "Séjour tout compris à Grande Canarie",
+    "en": "All-inclusive stay in Grande Canarie",
+    "es": "Estancia todo incluido en Grande Canarie"
+  },
+  "varadero-club-familial-tout-compris-a-varadero-16": {
+    "fr": "Club familial tout compris à Varadero",
+    "en": "All-inclusive family club in Varadero",
+    "es": "Club familiar todo incluido en Varadero"
+  },
+  "papeete-sejour-balneaire-a-papeete-17": {
+    "fr": "Séjour balnéaire à Papeete",
+    "en": "Beach stay in Papeete",
+    "es": "Estancia de playa en Papeete"
+  },
+  "papeete-escapade-en-demi-pension-a-papeete-18": {
+    "fr": "Escapade en demi-pension à Papeete",
+    "en": "Half-board getaway in Papeete",
+    "es": "Escapada en media pensión en Papeete"
+  },
+  "guanacaste-club-familial-tout-compris-a-guanacaste-19": {
+    "fr": "Club familial tout compris à Guanacaste",
+    "en": "All-inclusive family club in Guanacaste",
+    "es": "Club familiar todo incluido en Guanacaste"
+  },
+  "koh-samui-sejour-balneaire-a-koh-samui-20": {
+    "fr": "Séjour balnéaire à Koh Samui",
+    "en": "Beach stay in Koh Samui",
+    "es": "Estancia de playa en Koh Samui"
+  },
+  "val-gardena-escapade-en-demi-pension-a-val-gardena-21": {
+    "fr": "Escapade en demi-pension à Val Gardena",
+    "en": "Half-board getaway in Val Gardena",
+    "es": "Escapada en media pensión en Val Gardena"
+  },
+  "hurghada-club-familial-tout-compris-a-hurghada-22": {
+    "fr": "Club familial tout compris à Hurghada",
+    "en": "All-inclusive family club in Hurghada",
+    "es": "Club familiar todo incluido en Hurghada"
+  },
+  "taghazout-escapade-en-demi-pension-a-taghazout-23": {
+    "fr": "Escapade en demi-pension à Taghazout",
+    "en": "Half-board getaway in Taghazout",
+    "es": "Escapada en media pensión en Taghazout"
+  },
+  "palma-de-majorque-escapade-en-demi-pension-a-palma-de-majorque-24": {
+    "fr": "Escapade en demi-pension à Palma de Majorque",
+    "en": "Half-board getaway in Palma de Majorque",
+    "es": "Escapada en media pensión en Palma de Majorque"
+  },
+  "djerba-sejour-tout-compris-a-djerba-25": {
+    "fr": "Séjour tout compris à Djerba",
+    "en": "All-inclusive stay in Djerba",
+    "es": "Estancia todo incluido en Djerba"
+  },
+  "phuket-hotel-avec-piscine-a-phuket-26": {
+    "fr": "Hôtel avec piscine à Phuket",
+    "en": "Hotel with pool in Phuket",
+    "es": "Hotel con piscina en Phuket"
+  },
+  "taormine-sejour-balneaire-a-taormine-27": {
+    "fr": "Séjour balnéaire à Taormine",
+    "en": "Beach stay in Taormine",
+    "es": "Estancia de playa en Taormine"
+  },
+  "zanzibar-resort-tout-compris-pres-de-zanzibar-28": {
+    "fr": "Resort tout compris près de Zanzibar",
+    "en": "All-inclusive resort near Zanzibar",
+    "es": "Resort todo incluido cerca de Zanzibar"
+  },
+  "bentota-escapade-en-demi-pension-a-bentota-29": {
+    "fr": "Escapade en demi-pension à Bentota",
+    "en": "Half-board getaway in Bentota",
+    "es": "Escapada en media pensión en Bentota"
+  },
+  "les-deux-alpes-hotel-avec-piscine-a-les-deux-alpes-30": {
+    "fr": "Hôtel avec piscine à Les Deux Alpes",
+    "en": "Hotel with pool in Les Deux Alpes",
+    "es": "Hotel con piscina en Les Deux Alpes"
+  },
+  "kos-club-familial-tout-compris-a-kos-31": {
+    "fr": "Club familial tout compris à Kos",
+    "en": "All-inclusive family club in Kos",
+    "es": "Club familiar todo incluido en Kos"
+  },
+  "l-alpe-d-huez-hotel-avec-piscine-a-l-alpe-d-huez-32": {
+    "fr": "Hôtel avec piscine à L'Alpe d'Huez",
+    "en": "Hotel with pool in L'Alpe d'Huez",
+    "es": "Hotel con piscina en L'Alpe d'Huez"
+  },
+  "sousse-club-familial-tout-compris-a-sousse-33": {
+    "fr": "Club familial tout compris à Sousse",
+    "en": "All-inclusive family club in Sousse",
+    "es": "Club familiar todo incluido en Sousse"
+  },
+  "riviera-maya-resort-tout-compris-pres-de-riviera-maya-34": {
+    "fr": "Resort tout compris près de Riviera Maya",
+    "en": "All-inclusive resort near Riviera Maya",
+    "es": "Resort todo incluido cerca de Riviera Maya"
+  },
+  "porto-vecchio-sejour-balneaire-a-porto-vecchio-35": {
+    "fr": "Séjour balnéaire à Porto-Vecchio",
+    "en": "Beach stay in Porto-Vecchio",
+    "es": "Estancia de playa en Porto-Vecchio"
+  },
+  "hammamet-resort-tout-compris-pres-de-hammamet-36": {
+    "fr": "Resort tout compris près de Hammamet",
+    "en": "All-inclusive resort near Hammamet",
+    "es": "Resort todo incluido cerca de Hammamet"
+  },
+  "corfou-escapade-en-demi-pension-a-corfou-37": {
+    "fr": "Escapade en demi-pension à Corfou",
+    "en": "Half-board getaway in Corfou",
+    "es": "Escapada en media pensión en Corfou"
+  },
+  "essaouira-escapade-en-demi-pension-a-essaouira-38": {
+    "fr": "Escapade en demi-pension à Essaouira",
+    "en": "Half-board getaway in Essaouira",
+    "es": "Escapada en media pensión en Essaouira"
+  },
+  "charm-el-cheikh-club-familial-tout-compris-a-charm-el-cheikh-39": {
+    "fr": "Club familial tout compris à Charm el-Cheikh",
+    "en": "All-inclusive family club in Charm el-Cheikh",
+    "es": "Club familiar todo incluido en Charm el-Cheikh"
+  },
+  "circuit-thailande-0": {
+    "fr": "Grand tour de Thaïlande en petit groupe",
+    "en": "Grand tour of Thaïlande in a small group",
+    "es": "Gran tour de Thaïlande en grupo reducido"
+  },
+  "circuit-cambodge-1": {
+    "fr": "De site en site : circuit en Cambodge",
+    "en": "Site to site: a tour of Cambodge",
+    "es": "De sitio en sitio: circuito por Cambodge"
+  },
+  "circuit-japon-2": {
+    "fr": "Itinéraire guidé à travers Japon",
+    "en": "Guided itinerary across Japon",
+    "es": "Itinerario guiado por Japon"
+  },
+  "circuit-canada-3": {
+    "fr": "Circuit accompagné : les incontournables de Canada",
+    "en": "Escorted tour: the highlights of Canada",
+    "es": "Circuito guiado: lo imprescindible de Canada"
+  },
+  "circuit-maroc-4": {
+    "fr": "Grand tour de Maroc en petit groupe",
+    "en": "Grand tour of Maroc in a small group",
+    "es": "Gran tour de Maroc en grupo reducido"
+  },
+  "circuit-chine-5": {
+    "fr": "De site en site : circuit en Chine",
+    "en": "Site to site: a tour of Chine",
+    "es": "De sitio en sitio: circuito por Chine"
+  },
+  "circuit-jordanie-6": {
+    "fr": "Grand tour de Jordanie en petit groupe",
+    "en": "Grand tour of Jordanie in a small group",
+    "es": "Gran tour de Jordanie en grupo reducido"
+  },
+  "circuit-thailande-7": {
+    "fr": "Itinéraire guidé à travers Thaïlande",
+    "en": "Guided itinerary across Thaïlande",
+    "es": "Itinerario guiado por Thaïlande"
+  },
+  "circuit-finlande-8": {
+    "fr": "De site en site : circuit en Finlande",
+    "en": "Site to site: a tour of Finlande",
+    "es": "De sitio en sitio: circuito por Finlande"
+  },
+  "circuit-kenya-9": {
+    "fr": "Grand tour de Kenya en petit groupe",
+    "en": "Grand tour of Kenya in a small group",
+    "es": "Gran tour de Kenya en grupo reducido"
+  },
+  "circuit-turquie-10": {
+    "fr": "Itinéraire guidé à travers Turquie",
+    "en": "Guided itinerary across Turquie",
+    "es": "Itinerario guiado por Turquie"
+  },
+  "circuit-japon-11": {
+    "fr": "Itinéraire guidé à travers Japon",
+    "en": "Guided itinerary across Japon",
+    "es": "Itinerario guiado por Japon"
+  },
+  "circuit-kenya-12": {
+    "fr": "Itinéraire guidé à travers Kenya",
+    "en": "Guided itinerary across Kenya",
+    "es": "Itinerario guiado por Kenya"
+  },
+  "circuit-grece-13": {
+    "fr": "Grand tour de Grèce en petit groupe",
+    "en": "Grand tour of Grèce in a small group",
+    "es": "Gran tour de Grèce en grupo reducido"
+  },
+  "circuit-sri-lanka-14": {
+    "fr": "Circuit accompagné : les incontournables de Sri Lanka",
+    "en": "Escorted tour: the highlights of Sri Lanka",
+    "es": "Circuito guiado: lo imprescindible de Sri Lanka"
+  },
+  "circuit-kenya-15": {
+    "fr": "De site en site : circuit en Kenya",
+    "en": "Site to site: a tour of Kenya",
+    "es": "De sitio en sitio: circuito por Kenya"
+  },
+  "circuit-maroc-16": {
+    "fr": "Grand tour de Maroc en petit groupe",
+    "en": "Grand tour of Maroc in a small group",
+    "es": "Gran tour de Maroc en grupo reducido"
+  },
+  "circuit-ouzbekistan-17": {
+    "fr": "Circuit accompagné : les incontournables de Ouzbékistan",
+    "en": "Escorted tour: the highlights of Ouzbékistan",
+    "es": "Circuito guiado: lo imprescindible de Ouzbékistan"
+  },
+  "circuit-sri-lanka-18": {
+    "fr": "Circuit accompagné : les incontournables de Sri Lanka",
+    "en": "Escorted tour: the highlights of Sri Lanka",
+    "es": "Circuito guiado: lo imprescindible de Sri Lanka"
+  },
+  "circuit-sri-lanka-19": {
+    "fr": "Itinéraire guidé à travers Sri Lanka",
+    "en": "Guided itinerary across Sri Lanka",
+    "es": "Itinerario guiado por Sri Lanka"
+  },
+  "circuit-tanzanie-20": {
+    "fr": "Circuit accompagné : les incontournables de Tanzanie",
+    "en": "Escorted tour: the highlights of Tanzanie",
+    "es": "Circuito guiado: lo imprescindible de Tanzanie"
+  },
+  "circuit-sri-lanka-21": {
+    "fr": "De site en site : circuit en Sri Lanka",
+    "en": "Site to site: a tour of Sri Lanka",
+    "es": "De sitio en sitio: circuito por Sri Lanka"
+  },
+  "circuit-italie-22": {
+    "fr": "Itinéraire guidé à travers Italie",
+    "en": "Guided itinerary across Italie",
+    "es": "Itinerario guiado por Italie"
+  },
+  "croisiere-venise-0": {
+    "fr": "Croisière thématique au départ de Venise",
+    "en": "Themed cruise departing from Venise",
+    "es": "Crucero temático con salida desde Venise"
+  },
+  "croisiere-vancouver-1": {
+    "fr": "Croisière thématique au départ de Vancouver",
+    "en": "Themed cruise departing from Vancouver",
+    "es": "Crucero temático con salida desde Vancouver"
+  },
+  "croisiere-marseille-2": {
+    "fr": "Escale et navigation au départ de Marseille",
+    "en": "Ports of call departing from Marseille",
+    "es": "Escalas y navegación con salida desde Marseille"
+  },
+  "croisiere-miami-3": {
+    "fr": "Escale et navigation au départ de Miami",
+    "en": "Ports of call departing from Miami",
+    "es": "Escalas y navegación con salida desde Miami"
+  },
+  "croisiere-amsterdam-4": {
+    "fr": "Croisière fluviale au départ d'Amsterdam",
+    "en": "River cruise departing from Amsterdam",
+    "es": "Crucero fluvial con salida desde Amsterdam"
+  },
+  "croisiere-fort-de-france-5": {
+    "fr": "Itinéraire côtier au départ de Fort-de-France",
+    "en": "Coastal itinerary departing from Fort-de-France",
+    "es": "Itinerario costero con salida desde Fort-de-France"
+  },
+  "croisiere-bordeaux-6": {
+    "fr": "Croisière fluviale au départ de Bordeaux",
+    "en": "River cruise departing from Bordeaux",
+    "es": "Crucero fluvial con salida desde Bordeaux"
+  },
+  "croisiere-venise-7": {
+    "fr": "Itinéraire côtier au départ de Venise",
+    "en": "Coastal itinerary departing from Venise",
+    "es": "Itinerario costero con salida desde Venise"
+  },
+  "croisiere-bergen-8": {
+    "fr": "Croisière thématique au départ de Bergen",
+    "en": "Themed cruise departing from Bergen",
+    "es": "Crucero temático con salida desde Bergen"
+  },
+  "croisiere-dubai-9": {
+    "fr": "Itinéraire côtier au départ de Dubaï",
+    "en": "Coastal itinerary departing from Dubaï",
+    "es": "Itinerario costero con salida desde Dubaï"
+  },
+  "croisiere-passau-10": {
+    "fr": "Croisière fluviale au départ de Passau",
+    "en": "River cruise departing from Passau",
+    "es": "Crucero fluvial con salida desde Passau"
+  },
+  "hotel-strasbourg-0": {
+    "fr": "Adresse cosy au cœur de Strasbourg",
+    "en": "Cosy address in the heart of Strasbourg",
+    "es": "Alojamiento acogedor en el corazón de Strasbourg"
+  },
+  "hotel-florence-1": {
+    "fr": "Hôtel de charme au centre de Florence",
+    "en": "Charming hotel in the centre of Florence",
+    "es": "Hotel con encanto en el centro de Florence"
+  },
+  "hotel-nice-2": {
+    "fr": "Étape confort à Nice",
+    "en": "Comfort stopover in Nice",
+    "es": "Parada con confort en Nice"
+  },
+  "hotel-seville-3": {
+    "fr": "Étape confort à Séville",
+    "en": "Comfort stopover in Séville",
+    "es": "Parada con confort en Séville"
+  },
+  "hotel-paris-4": {
+    "fr": "Adresse cosy au cœur de Paris",
+    "en": "Cosy address in the heart of Paris",
+    "es": "Alojamiento acogedor en el corazón de Paris"
+  },
+  "hotel-paris-5": {
+    "fr": "Étape confort à Paris",
+    "en": "Comfort stopover in Paris",
+    "es": "Parada con confort en Paris"
+  },
+  "hotel-montpellier-6": {
+    "fr": "Étape confort à Montpellier",
+    "en": "Comfort stopover in Montpellier",
+    "es": "Parada con confort en Montpellier"
+  },
+  "hotel-montpellier-7": {
+    "fr": "Boutique-hôtel à Montpellier",
+    "en": "Boutique hotel in Montpellier",
+    "es": "Hotel boutique en Montpellier"
+  },
+  "hotel-copenhague-8": {
+    "fr": "Étape confort à Copenhague",
+    "en": "Comfort stopover in Copenhague",
+    "es": "Parada con confort en Copenhague"
+  },
+  "hotel-new-york-9": {
+    "fr": "Boutique-hôtel à New York",
+    "en": "Boutique hotel in New York",
+    "es": "Hotel boutique en New York"
+  },
+  "hotel-paris-10": {
+    "fr": "Étape confort à Paris",
+    "en": "Comfort stopover in Paris",
+    "es": "Parada con confort en Paris"
+  },
+  "hotel-florence-11": {
+    "fr": "Étape confort à Florence",
+    "en": "Comfort stopover in Florence",
+    "es": "Parada con confort en Florence"
+  },
+  "hotel-cannes-12": {
+    "fr": "Hôtel de charme au centre de Cannes",
+    "en": "Charming hotel in the centre of Cannes",
+    "es": "Hotel con encanto en el centro de Cannes"
+  },
+  "hotel-biarritz-13": {
+    "fr": "Hôtel de charme au centre de Biarritz",
+    "en": "Charming hotel in the centre of Biarritz",
+    "es": "Hotel con encanto en el centro de Biarritz"
+  },
+  "hotel-vienne-14": {
+    "fr": "Boutique-hôtel à Vienne",
+    "en": "Boutique hotel in Vienne",
+    "es": "Hotel boutique en Vienne"
+  },
+  "hotel-montpellier-15": {
+    "fr": "Boutique-hôtel à Montpellier",
+    "en": "Boutique hotel in Montpellier",
+    "es": "Hotel boutique en Montpellier"
+  },
+  "hotel-marseille-16": {
+    "fr": "Étape confort à Marseille",
+    "en": "Comfort stopover in Marseille",
+    "es": "Parada con confort en Marseille"
+  },
+  "hotel-dublin-17": {
+    "fr": "Adresse cosy au cœur de Dublin",
+    "en": "Cosy address in the heart of Dublin",
+    "es": "Alojamiento acogedor en el corazón de Dublin"
+  },
+  "vol-paris-djerba-0": {
+    "fr": "Vol Paris-Djerba aller-retour",
+    "en": "Round-trip flight Paris–Djerba",
+    "es": "Vuelo ida y vuelta Paris–Djerba"
+  },
+  "vol-paris-singapour-1": {
+    "fr": "Vol Paris-Singapour aller-retour",
+    "en": "Round-trip flight Paris–Singapour",
+    "es": "Vuelo ida y vuelta Paris–Singapour"
+  },
+  "vol-paris-barcelone-2": {
+    "fr": "Vol Paris-Barcelone aller-retour",
+    "en": "Round-trip flight Paris–Barcelone",
+    "es": "Vuelo ida y vuelta Paris–Barcelone"
+  },
+  "vol-paris-rome-3": {
+    "fr": "Vol Paris-Rome aller-retour",
+    "en": "Round-trip flight Paris–Rome",
+    "es": "Vuelo ida y vuelta Paris–Rome"
+  },
+  "vol-paris-papeete-4": {
+    "fr": "Vol Paris-Papeete aller-retour",
+    "en": "Round-trip flight Paris–Papeete",
+    "es": "Vuelo ida y vuelta Paris–Papeete"
+  },
+  "vol-paris-varsovie-5": {
+    "fr": "Vol Paris-Varsovie aller-retour",
+    "en": "Round-trip flight Paris–Varsovie",
+    "es": "Vuelo ida y vuelta Paris–Varsovie"
+  },
+  "vol-paris-reykjavik-6": {
+    "fr": "Vol Paris-Reykjavik aller-retour",
+    "en": "Round-trip flight Paris–Reykjavik",
+    "es": "Vuelo ida y vuelta Paris–Reykjavik"
+  },
+  "vol-paris-djerba-7": {
+    "fr": "Vol Paris-Djerba aller-retour",
+    "en": "Round-trip flight Paris–Djerba",
+    "es": "Vuelo ida y vuelta Paris–Djerba"
+  },
+  "vol-paris-amsterdam-8": {
+    "fr": "Vol Paris-Amsterdam aller-retour",
+    "en": "Round-trip flight Paris–Amsterdam",
+    "es": "Vuelo ida y vuelta Paris–Amsterdam"
+  },
+  "vol-paris-venise-9": {
+    "fr": "Vol Paris-Venise aller-retour",
+    "en": "Round-trip flight Paris–Venise",
+    "es": "Vuelo ida y vuelta Paris–Venise"
+  },
+  "vol-paris-istanbul-10": {
+    "fr": "Vol Paris-Istanbul aller-retour",
+    "en": "Round-trip flight Paris–Istanbul",
+    "es": "Vuelo ida y vuelta Paris–Istanbul"
+  },
+  "vol-paris-nice-11": {
+    "fr": "Vol Paris-Nice aller-retour",
+    "en": "Round-trip flight Paris–Nice",
+    "es": "Vuelo ida y vuelta Paris–Nice"
+  },
+  "vol-nice-londres-12": {
+    "fr": "Vol Nice-Londres aller-retour",
+    "en": "Round-trip flight Nice–Londres",
+    "es": "Vuelo ida y vuelta Nice–Londres"
+  },
+  "vol-paris-varsovie-13": {
+    "fr": "Vol Paris-Varsovie aller-retour",
+    "en": "Round-trip flight Paris–Varsovie",
+    "es": "Vuelo ida y vuelta Paris–Varsovie"
+  },
+  "vol-paris-new-york-14": {
+    "fr": "Vol Paris-New York aller-retour",
+    "en": "Round-trip flight Paris–New York",
+    "es": "Vuelo ida y vuelta Paris–New York"
+  },
+  "vol-paris-bangkok-15": {
+    "fr": "Vol Paris-Bangkok aller-retour",
+    "en": "Round-trip flight Paris–Bangkok",
+    "es": "Vuelo ida y vuelta Paris–Bangkok"
+  },
+  "vol-paris-dubai-16": {
+    "fr": "Vol Paris-Dubaï aller-retour",
+    "en": "Round-trip flight Paris–Dubaï",
+    "es": "Vuelo ida y vuelta Paris–Dubaï"
+  },
+  "vol-paris-saint-denis-17": {
+    "fr": "Vol Paris-Saint-Denis aller-retour",
+    "en": "Round-trip flight Paris-Saint–Denis",
+    "es": "Vuelo ida y vuelta Paris-Saint–Denis"
+  },
+  "vol-lyon-porto-18": {
+    "fr": "Vol Lyon-Porto aller-retour",
+    "en": "Round-trip flight Lyon–Porto",
+    "es": "Vuelo ida y vuelta Lyon–Porto"
+  },
+  "vol-paris-istanbul-19": {
+    "fr": "Vol Paris-Istanbul aller-retour",
+    "en": "Round-trip flight Paris–Istanbul",
+    "es": "Vuelo ida y vuelta Paris–Istanbul"
+  },
+  "vol-paris-porto-20": {
+    "fr": "Vol Paris-Porto aller-retour",
+    "en": "Round-trip flight Paris–Porto",
+    "es": "Vuelo ida y vuelta Paris–Porto"
+  },
+  "vol-paris-madrid-21": {
+    "fr": "Vol Paris-Madrid aller-retour",
+    "en": "Round-trip flight Paris–Madrid",
+    "es": "Vuelo ida y vuelta Paris–Madrid"
+  },
+  "vol-paris-nice-22": {
+    "fr": "Vol Paris-Nice aller-retour",
+    "en": "Round-trip flight Paris–Nice",
+    "es": "Vuelo ida y vuelta Paris–Nice"
+  },
+  "camping-porec-0": {
+    "fr": "Résidence de plein air à Poreč",
+    "en": "Outdoor residence in Poreč",
+    "es": "Residencia al aire libre en Poreč"
+  },
+  "camping-saint-brieuc-1": {
+    "fr": "Résidence de plein air à Saint-Brieuc",
+    "en": "Outdoor residence in Saint-Brieuc",
+    "es": "Residencia al aire libre en Saint-Brieuc"
+  },
+  "camping-saint-brieuc-2": {
+    "fr": "Pins et plage à Saint-Brieuc",
+    "en": "Pines and beach in Saint-Brieuc",
+    "es": "Pinos y playa en Saint-Brieuc"
+  },
+  "camping-le-cap-d-agde-3": {
+    "fr": "Pins et plage à Le Cap d'Agde",
+    "en": "Pines and beach in Le Cap d'Agde",
+    "es": "Pinos y playa en Le Cap d'Agde"
+  },
+  "camping-porec-4": {
+    "fr": "Mobil-home à Poreč",
+    "en": "Mobile home in Poreč",
+    "es": "Casa móvil en Poreč"
+  },
+  "camping-saint-brieuc-5": {
+    "fr": "Résidence de plein air à Saint-Brieuc",
+    "en": "Outdoor residence in Saint-Brieuc",
+    "es": "Residencia al aire libre en Saint-Brieuc"
+  },
+  "camping-biarritz-6": {
+    "fr": "Pins et plage à Biarritz",
+    "en": "Pines and beach in Biarritz",
+    "es": "Pinos y playa en Biarritz"
+  },
+  "camping-saint-brieuc-7": {
+    "fr": "Résidence de plein air à Saint-Brieuc",
+    "en": "Outdoor residence in Saint-Brieuc",
+    "es": "Residencia al aire libre en Saint-Brieuc"
+  },
+  "camping-saint-jean-de-monts-8": {
+    "fr": "Mobil-home à Saint-Jean-de-Monts",
+    "en": "Mobile home in Saint-Jean-de-Monts",
+    "es": "Casa móvil en Saint-Jean-de-Monts"
+  },
+  "camping-le-cap-d-agde-9": {
+    "fr": "Pins et plage à Le Cap d'Agde",
+    "en": "Pines and beach in Le Cap d'Agde",
+    "es": "Pinos y playa en Le Cap d'Agde"
+  },
+  "camping-royan-10": {
+    "fr": "Résidence de plein air à Royan",
+    "en": "Outdoor residence in Royan",
+    "es": "Residencia al aire libre en Royan"
+  },
+  "camping-lloret-de-mar-11": {
+    "fr": "Pins et plage à Lloret de Mar",
+    "en": "Pines and beach in Lloret de Mar",
+    "es": "Pinos y playa en Lloret de Mar"
+  },
+  "camping-saint-brieuc-12": {
+    "fr": "Mobil-home à Saint-Brieuc",
+    "en": "Mobile home in Saint-Brieuc",
+    "es": "Casa móvil en Saint-Brieuc"
+  },
+  "camping-benodet-13": {
+    "fr": "Mobil-home à Bénodet",
+    "en": "Mobile home in Bénodet",
+    "es": "Casa móvil en Bénodet"
+  },
+  "camping-porto-vecchio-14": {
+    "fr": "Camping familial à Porto-Vecchio",
+    "en": "Family campsite in Porto-Vecchio",
+    "es": "Camping familiar en Porto-Vecchio"
+  },
+  "camping-porec-15": {
+    "fr": "Pins et plage à Poreč",
+    "en": "Pines and beach in Poreč",
+    "es": "Pinos y playa en Poreč"
+  },
+  "camping-porec-16": {
+    "fr": "Résidence de plein air à Poreč",
+    "en": "Outdoor residence in Poreč",
+    "es": "Residencia al aire libre en Poreč"
+  },
+  "camping-viareggio-17": {
+    "fr": "Pins et plage à Viareggio",
+    "en": "Pines and beach in Viareggio",
+    "es": "Pinos y playa en Viareggio"
+  },
+  "voiture-split-compacte-0": {
+    "fr": "Compacte à l'aéroport de Split",
+    "en": "Compact car at Split airport",
+    "es": "Coche compacto en el aeropuerto de Split"
+  },
+  "voiture-fort-de-france-compacte-1": {
+    "fr": "Compacte à l'aéroport de Fort-de-France",
+    "en": "Compact car at Fort-de-France airport",
+    "es": "Coche compacto en el aeropuerto de Fort-de-France"
+  },
+  "voiture-flic-en-flac-citadine-2": {
+    "fr": "Citadine à l'aéroport de Flic en Flac",
+    "en": "City car at Flic en Flac airport",
+    "es": "Coche urbano en el aeropuerto de Flic en Flac"
+  },
+  "voiture-marrakech-suv-3": {
+    "fr": "SUV à l'aéroport de Marrakech",
+    "en": "SUV at Marrakech airport",
+    "es": "SUV en el aeropuerto de Marrakech"
+  },
+  "voiture-seville-monospace-4": {
+    "fr": "Monospace à l'aéroport de Séville",
+    "en": "Minivan at Séville airport",
+    "es": "Monovolumen en el aeropuerto de Séville"
+  },
+  "voiture-le-cap-compacte-5": {
+    "fr": "Compacte à l'aéroport de Le Cap",
+    "en": "Compact car at Le Cap airport",
+    "es": "Coche compacto en el aeropuerto de Le Cap"
+  },
+  "voiture-lanzarote-suv-6": {
+    "fr": "SUV à l'aéroport de Lanzarote",
+    "en": "SUV at Lanzarote airport",
+    "es": "SUV en el aeropuerto de Lanzarote"
+  },
+  "voiture-ajaccio-compacte-7": {
+    "fr": "Compacte à l'aéroport de Ajaccio",
+    "en": "Compact car at Ajaccio airport",
+    "es": "Coche compacto en el aeropuerto de Ajaccio"
+  },
+  "voiture-los-angeles-monospace-8": {
+    "fr": "Monospace à l'aéroport de Los Angeles",
+    "en": "Minivan at Los Angeles airport",
+    "es": "Monovolumen en el aeropuerto de Los Angeles"
+  },
+  "voiture-ajaccio-citadine-9": {
+    "fr": "Citadine à l'aéroport de Ajaccio",
+    "en": "City car at Ajaccio airport",
+    "es": "Coche urbano en el aeropuerto de Ajaccio"
+  },
+  "voiture-le-cap-suv-10": {
+    "fr": "SUV à l'aéroport de Le Cap",
+    "en": "SUV at Le Cap airport",
+    "es": "SUV en el aeropuerto de Le Cap"
+  },
+  "parc-les-avenieres-0": {
+    "fr": "Formule parc à Les Avenières, 2 jours et 1 nuit",
+    "en": "Theme park package in Les Avenières, 2 days and 1 night",
+    "es": "Paquete de parque en Les Avenières, 2 días y 1 noche"
+  },
+  "parc-kaatsheuvel-1": {
+    "fr": "Formule parc à Kaatsheuvel, 2 jours et 1 nuit",
+    "en": "Theme park package in Kaatsheuvel, 2 days and 1 night",
+    "es": "Paquete de parque en Kaatsheuvel, 2 días y 1 noche"
+  },
+  "parc-kaatsheuvel-2": {
+    "fr": "Formule parc à Kaatsheuvel, 3 jours et 2 nuits",
+    "en": "Theme park package in Kaatsheuvel, 3 days and 2 nights",
+    "es": "Paquete de parque en Kaatsheuvel, 3 días y 2 noches"
+  },
+  "parc-rust-3": {
+    "fr": "Formule parc à Rust, 3 jours et 2 nuits",
+    "en": "Theme park package in Rust, 3 days and 2 nights",
+    "es": "Paquete de parque en Rust, 3 días y 2 noches"
+  },
+  "parc-marne-la-vallee-4": {
+    "fr": "Formule parc à Marne-la-Vallée, 3 jours et 2 nuits",
+    "en": "Theme park package in Marne-la-Vallée, 3 days and 2 nights",
+    "es": "Paquete de parque en Marne-la-Vallée, 3 días y 2 noches"
+  },
+  "parc-dolancourt-5": {
+    "fr": "Formule parc à Dolancourt, 2 jours et 1 nuit",
+    "en": "Theme park package in Dolancourt, 2 days and 1 night",
+    "es": "Paquete de parque en Dolancourt, 2 días y 1 noche"
+  }
+}

@@ -17,6 +17,12 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { config as loadEnv } from "dotenv";
 import { CATEGORIES, POSTS, REVIEWS, BRAND, continentOf } from "../src/lib/data";
 import {
+  CATEGORY_TRANSLATIONS,
+  DESTINATION_TRANSLATIONS,
+  POST_TRANSLATIONS,
+  translateOffer,
+} from "../src/lib/catalogue-i18n";
+import {
   DESTINATIONS,
   OFFERS,
   REFERENCE_PRICE_SOURCE,
@@ -218,11 +224,18 @@ async function main() {
 
   console.log("Catégories…");
   for (const [index, category] of CATEGORIES.entries()) {
+    const t9n = CATEGORY_TRANSLATIONS[category.id];
     const data = {
       label: category.label,
       title: category.title ?? "",
       icon: category.icon,
       blurb: category.blurb,
+      labelEn: t9n?.en.label ?? "",
+      labelEs: t9n?.es.label ?? "",
+      titleEn: t9n?.en.title ?? "",
+      titleEs: t9n?.es.title ?? "",
+      blurbEn: t9n?.en.blurb ?? "",
+      blurbEs: t9n?.es.blurb ?? "",
       kind: category.kind,
       rule: category.rule ?? "",
       isOverflow: category.isOverflow ?? false,
@@ -274,12 +287,17 @@ async function main() {
           imageCreditUrl: visuel?.page ?? "",
         };
 
+    const dt9n = DESTINATION_TRANSLATIONS[destination.slug];
     const data = {
       name: destination.name,
       country: destination.country,
       continent: continentOf(destination.country),
       region: destination.region,
       blurb: destination.blurb,
+      nameEn: dt9n?.en.name ?? "",
+      nameEs: dt9n?.es.name ?? "",
+      blurbEn: dt9n?.en.blurb ?? "",
+      blurbEs: dt9n?.es.blurb ?? "",
       ...media,
       featured: destination.featured ?? false,
       origin: "catalogue",
@@ -381,6 +399,7 @@ async function main() {
       amenities: offer.amenities,
       highlights: offer.highlights,
       included: offer.included,
+      ...translateOffer(offer),
       status: "published",
       origin: "catalogue",
       // Mise en avant : une offre par catégorie du catalogue, la première
@@ -544,6 +563,12 @@ async function main() {
         title: post.title,
         excerpt: post.excerpt,
         body: post.body,
+        titleEn: POST_TRANSLATIONS[post.slug]?.en.title ?? "",
+        titleEs: POST_TRANSLATIONS[post.slug]?.es.title ?? "",
+        excerptEn: POST_TRANSLATIONS[post.slug]?.en.excerpt ?? "",
+        excerptEs: POST_TRANSLATIONS[post.slug]?.es.excerpt ?? "",
+        bodyEn: POST_TRANSLATIONS[post.slug]?.en.body ?? "",
+        bodyEs: POST_TRANSLATIONS[post.slug]?.es.body ?? "",
         category: post.category,
         readingTime: post.readingTime,
         imageUrl: seededImageUrl,
@@ -557,6 +582,12 @@ async function main() {
         title: post.title,
         excerpt: post.excerpt,
         body: post.body,
+        titleEn: POST_TRANSLATIONS[post.slug]?.en.title ?? "",
+        titleEs: POST_TRANSLATIONS[post.slug]?.es.title ?? "",
+        excerptEn: POST_TRANSLATIONS[post.slug]?.en.excerpt ?? "",
+        excerptEs: POST_TRANSLATIONS[post.slug]?.es.excerpt ?? "",
+        bodyEn: POST_TRANSLATIONS[post.slug]?.en.body ?? "",
+        bodyEs: POST_TRANSLATIONS[post.slug]?.es.body ?? "",
         category: post.category,
         readingTime: post.readingTime,
         imageUrl: seededImageUrl,
