@@ -12,7 +12,7 @@ import {
   getSearchCategories,
 } from "@/server/catalogue";
 import { subtypeBlurb, subtypeLabel } from "@/lib/constants";
-import { getRequestLocale } from "@/i18n/server";
+import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
 import { localizedPath } from "@/i18n/config";
 import { SEASONS, inSeason, seasonById } from "@/lib/seasons";
 import type { InitialFilters, Sort } from "@/components/search/ResultsView";
@@ -106,6 +106,7 @@ export default async function CategoryPage({
   const { category } = await params;
   const sp = await searchParams;
   const locale = await getRequestLocale();
+  const dict = await getRequestDictionary();
   const l = (href: string) => localizedPath(href, locale);
 
   const found = await getCategoryBySlug(category);
@@ -189,7 +190,7 @@ export default async function CategoryPage({
             className="mb-3 flex items-center gap-1.5 text-xs text-navy-500"
           >
             <Link href={l("/")} className="hover:text-gold-700">
-              Accueil
+              {dict.common.home}
             </Link>
             <Icon name="chevronRight" className="size-3" />
             <span className="font-semibold text-navy-800">{heading}</span>

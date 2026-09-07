@@ -8,7 +8,7 @@ import { getCustomerSession } from "@/server/customer-session";
 import { getOfferBySlug } from "@/server/catalogue";
 import { durationFull, price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
-import { getRequestLocale } from "@/i18n/server";
+import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
 import { localizedPath } from "@/i18n/config";
 
 /**
@@ -49,6 +49,7 @@ export default async function ReservationPage({
   const { slug } = await params;
   const sp = await searchParams;
   const locale = await getRequestLocale();
+  const dict = await getRequestDictionary();
 
   const offer = await getOfferBySlug(slug);
   if (!offer) notFound();
@@ -68,7 +69,7 @@ export default async function ReservationPage({
     <div className="mx-auto max-w-page px-4 py-6">
       <nav aria-label="Fil d'Ariane" className="flex flex-wrap items-center gap-1.5 text-xs text-navy-500">
         <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
-          Accueil
+          {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <Link href={localizedPath(`/offre/${offer.slug}`, locale)} className="hover:text-gold-700">

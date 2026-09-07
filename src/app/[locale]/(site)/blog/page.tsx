@@ -3,7 +3,7 @@ import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { getPosts } from "@/server/catalogue";
 import { withMediaFallback } from "@/lib/media";
-import { getRequestLocale } from "@/i18n/server";
+import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
 import { localizedPath } from "@/i18n/config";
 
 export const metadata = {
@@ -14,6 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
   const locale = await getRequestLocale();
+  const dict = await getRequestDictionary();
   // Aucune limite : la page liste tout ce qui est publié au back-office.
   const posts = await getPosts(100);
 
@@ -21,7 +22,7 @@ export default async function BlogPage() {
     <div className="mx-auto max-w-page px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-xs text-navy-500">
         <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
-          Accueil
+          {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <span className="font-semibold text-navy-800">Carnet de voyage</span>

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { getPostBySlug, getPosts, getPublishedPostSlugs } from "@/server/catalogue";
 import { withMediaFallback } from "@/lib/media";
-import { getRequestLocale } from "@/i18n/server";
+import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
 import { localizedPath } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[sl
 export default async function PostPage({ params }: PageProps<"/[locale]/blog/[slug]">) {
   const { slug } = await params;
   const locale = await getRequestLocale();
+  const dict = await getRequestDictionary();
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
@@ -32,7 +33,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/blog/[sl
     <article className="mx-auto max-w-3xl px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="flex flex-wrap items-center gap-1.5 text-xs text-navy-500">
         <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
-          Accueil
+          {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <Link href={localizedPath("/blog", locale)} className="hover:text-gold-700">

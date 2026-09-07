@@ -10,7 +10,7 @@ import { price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 import { SEO_CITIES } from "@/lib/data";
 import { hreflangAlternates } from "@/i18n/config";
-import { getRequestLocale } from "@/i18n/server";
+import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
 import { localizedPath } from "@/i18n/config";
 
 /**
@@ -38,6 +38,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DestinationsPage() {
   const locale = await getRequestLocale();
+  const dict = await getRequestDictionary();
   const [arbre, france, categories] = await Promise.all([
     getDestinationTree(),
     getRuleOffers("france", 1),
@@ -51,7 +52,7 @@ export default async function DestinationsPage() {
     <div className="mx-auto max-w-page px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-xs text-navy-500">
         <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
-          Accueil
+          {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <span className="font-semibold text-navy-800">Destinations</span>

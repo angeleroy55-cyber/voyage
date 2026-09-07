@@ -6,7 +6,7 @@ import { getCustomer } from "@/server/account";
 import { prisma } from "@/server/prisma";
 import { requireCustomer } from "@/server/customer-session";
 import { logoutCustomer } from "@/server/actions/account";
-import { getRequestLocale } from "@/i18n/server";
+import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
 import { localizedPath } from "@/i18n/config";
 
 // Le groupe `(espace)` couvre les pages accessibles une fois connecté ; la page
@@ -15,6 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AccountLayout({ children }: LayoutProps<"/[locale]/compte">) {
   const locale = await getRequestLocale();
+  const dict = await getRequestDictionary();
   const session = await requireCustomer();
 
   const [customer, bookings, favourites] = await Promise.all([
@@ -35,7 +36,7 @@ export default async function AccountLayout({ children }: LayoutProps<"/[locale]
     <div className="mx-auto max-w-page px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="mb-4 flex items-center gap-1.5 text-xs text-navy-500">
         <Link href={localizedPath("/", locale)} className="transition hover:text-gold-700">
-          Accueil
+          {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <span className="font-semibold text-navy-800">Espace client</span>
