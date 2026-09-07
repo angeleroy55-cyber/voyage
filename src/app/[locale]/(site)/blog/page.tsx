@@ -3,6 +3,8 @@ import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { getPosts } from "@/server/catalogue";
 import { withMediaFallback } from "@/lib/media";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const metadata = {
   title: "Le carnet de voyage",
@@ -11,13 +13,14 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
+  const locale = await getRequestLocale();
   // Aucune limite : la page liste tout ce qui est publié au back-office.
   const posts = await getPosts(100);
 
   return (
     <div className="mx-auto max-w-page px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-xs text-navy-500">
-        <Link href="/" className="hover:text-gold-700">
+        <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
           Accueil
         </Link>
         <Icon name="chevronRight" className="size-3" />
@@ -39,7 +42,7 @@ export default async function BlogPage() {
         <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <article key={post.slug} className="group">
-              <Link href={`/blog/${post.slug}`} className="block overflow-hidden rounded-2xl">
+              <Link href={localizedPath(`/blog/${post.slug}`, locale)} className="block overflow-hidden rounded-2xl">
                 <div className="relative aspect-16/10">
                   <Image
                     src={withMediaFallback(post.image)}
@@ -54,7 +57,7 @@ export default async function BlogPage() {
                 {post.category}
               </p>
               <h2 className="mt-1 text-lg font-bold leading-snug text-navy-900">
-                <Link href={`/blog/${post.slug}`} className="hover:text-gold-700">
+                <Link href={localizedPath(`/blog/${post.slug}`, locale)} className="hover:text-gold-700">
                   {post.title}
                 </Link>
               </h2>

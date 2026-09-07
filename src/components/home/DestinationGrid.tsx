@@ -1,11 +1,14 @@
 import Image from "next/image";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import type { Destination } from "@/lib/types";
 import { price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 
-export default function DestinationGrid({ destinations }: { destinations: Destination[] }) {
+export default async function DestinationGrid({ destinations }: { destinations: Destination[] }) {
+  const locale = await getRequestLocale();
   // Le parent garde déjà l'affichage sur `destinations.length > 0`, mais le
   // composant reste défensif : sans ça, `lead` vaut `undefined` et la tuile
   // plante en lisant ses propriétés.
@@ -17,7 +20,7 @@ export default function DestinationGrid({ destinations }: { destinations: Destin
     <Section
       title="Destinations du moment"
       subtitle="Les régions les plus réservées ces trente derniers jours."
-      href="/destinations"
+      href={localizedPath("/destinations", locale)}
     >
       <div className="grid gap-4 md:grid-cols-4 md:grid-rows-2">
         <Tile destination={lead} className="md:col-span-2 md:row-span-2" priority />
@@ -34,7 +37,7 @@ export default function DestinationGrid({ destinations }: { destinations: Destin
   );
 }
 
-function Tile({
+async function Tile({
   destination,
   className = "",
   priority = false,
@@ -45,9 +48,10 @@ function Tile({
   priority?: boolean;
   short?: boolean;
 }) {
+  const locale = await getRequestLocale();
   return (
     <Link
-      href={`/sejours?q=${encodeURIComponent(destination.name)}`}
+      href={localizedPath(`/sejours?q=${encodeURIComponent(destination.name)}`, locale)}
       className={`group relative overflow-hidden rounded-2xl ${
         short ? "aspect-16/9" : "aspect-4/3 md:aspect-auto md:min-h-44"
       } ${className}`}

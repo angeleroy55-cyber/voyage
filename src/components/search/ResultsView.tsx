@@ -7,6 +7,7 @@ import OfferCard from "@/components/ui/OfferCard";
 import Reveal from "@/components/ui/Reveal";
 import { price } from "@/lib/format";
 import type { Offer } from "@/lib/types";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * Liste de résultats et son panneau de filtres.
@@ -84,6 +85,7 @@ export default function ResultsView({
   carried?: CarriedParams;
 }) {
   const router = useRouter();
+  const { locale } = useI18n();
 
   const bounds = useMemo(() => {
     const prices = offers.map((o) => o.price);
@@ -596,7 +598,7 @@ export default function ResultsView({
                   // elles sont chargées d'un coup au clic sur « Voir plus ».
                   delay={Math.min(index, 4) * 60}
                 >
-                  <OfferCard offer={offer} layout="row" />
+                  <OfferCard offer={offer} layout="row" locale={locale} />
                 </Reveal>
               ))}
             </div>

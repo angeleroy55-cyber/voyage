@@ -8,6 +8,8 @@ import Modal from "@/components/ui/Modal";
 import { discount, durationFull, price, ratingLabel } from "@/lib/format";
 import { galleryWithMediaFallback } from "@/lib/media";
 import type { Offer } from "@/lib/types";
+import { useI18n } from "@/i18n/I18nProvider";
+import { localizedPath } from "@/i18n/config";
 
 /**
  * Aperçu rapide d'une offre, ouvert depuis une carte de résultats.
@@ -17,6 +19,7 @@ import type { Offer } from "@/lib/types";
  * fenêtre, et le lien vers la fiche reste à un clic.
  */
 export default function QuickView({ offer }: { offer: Offer }) {
+  const { locale, dict } = useI18n();
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
 
@@ -36,7 +39,7 @@ export default function QuickView({ offer }: { offer: Offer }) {
         className="pointer-events-auto absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-lg bg-white/95 px-2.5 py-1.5 text-xs font-bold text-navy-800 shadow-card backdrop-blur transition duration-200 hover:bg-white sm:translate-y-1 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100"
       >
         <Icon name="search" className="size-3.5" />
-        Aperçu
+        {dict.common.preview}
       </button>
 
       <Modal
@@ -58,10 +61,10 @@ export default function QuickView({ offer }: { offer: Offer }) {
               <span className="ml-1 text-sm text-navy-500">/ pers.</span>
             </div>
             <Link
-              href={`/offre/${offer.slug}`}
+              href={localizedPath(`/offre/${offer.slug}`, locale)}
               className="rounded-xl bg-gold-400 px-6 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
             >
-              Voir l&apos;offre complète
+              {dict.common.seeFullOffer}
             </Link>
           </div>
         }

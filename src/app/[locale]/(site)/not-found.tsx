@@ -1,8 +1,11 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { getSearchCategories } from "@/server/catalogue";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export default async function NotFound() {
+  const locale = await getRequestLocale();
   // Les raccourcis proposés viennent de la base, comme partout ailleurs : une
   // catégorie désactivée ne doit pas réapparaître par la page d'erreur, dont la
   // charge utile est embarquée dans le flux de chaque route.
@@ -19,7 +22,7 @@ export default async function NotFound() {
         l&apos;accueil ou choisissez un type de voyage.
       </p>
       <Link
-        href="/"
+        href={localizedPath("/", locale)}
         className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-400 px-6 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
       >
         Retour à l&apos;accueil
@@ -29,7 +32,7 @@ export default async function NotFound() {
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/${category.id}`}
+            href={localizedPath(`/${category.id}`, locale)}
             className="flex items-center gap-2 rounded-xl border border-navy-200 px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
           >
             <Icon name={category.icon} className="size-4" />

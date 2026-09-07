@@ -6,10 +6,13 @@ import Reveal from "@/components/ui/Reveal";
 import { discount, durationLabel, price } from "@/lib/format";
 import { getFavourites } from "@/server/account";
 import { requireCustomer } from "@/server/customer-session";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const metadata = { title: "Mes favoris" };
 
 export default async function FavouritesPage() {
+  const locale = await getRequestLocale();
   const session = await requireCustomer();
   const favourites = await getFavourites(session.sub);
 
@@ -38,7 +41,7 @@ export default async function FavouritesPage() {
             le temps.
           </p>
           <Link
-            href="/sejours"
+            href={localizedPath("/sejours", locale)}
             className="mt-4 inline-block rounded-xl bg-gold-400 px-6 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
           >
             Parcourir les séjours
@@ -52,7 +55,7 @@ export default async function FavouritesPage() {
               <Reveal key={item.offer.slug} delay={Math.min(index, 5) * 60}>
                 <article className="group hover-lift flex h-full flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-card">
                   <div className="relative aspect-16/10 overflow-hidden">
-                    <Link href={`/offre/${item.offer.slug}`} className="absolute inset-0 block">
+                    <Link href={localizedPath(`/offre/${item.offer.slug}`, locale)} className="absolute inset-0 block">
                       <Image
                         src={item.offer.image}
                         alt={`${item.offer.title}, ${item.offer.destination}`}
@@ -80,7 +83,7 @@ export default async function FavouritesPage() {
                     </p>
                     <h2 className="mt-1 line-clamp-2 text-[15px] font-bold leading-snug text-navy-900">
                       <Link
-                        href={`/offre/${item.offer.slug}`}
+                        href={localizedPath(`/offre/${item.offer.slug}`, locale)}
                         className="transition hover:text-gold-700"
                       >
                         {item.offer.title}

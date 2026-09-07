@@ -8,6 +8,8 @@ import { getCustomerSession } from "@/server/customer-session";
 import { getOfferBySlug } from "@/server/catalogue";
 import { durationFull, price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 /**
  * Étape 2 de la réservation : récapitulatif du séjour, coordonnées du client et
@@ -46,6 +48,7 @@ export default async function ReservationPage({
 }: PageProps<"/[locale]/reservation/[slug]">) {
   const { slug } = await params;
   const sp = await searchParams;
+  const locale = await getRequestLocale();
 
   const offer = await getOfferBySlug(slug);
   if (!offer) notFound();
@@ -64,11 +67,11 @@ export default async function ReservationPage({
   return (
     <div className="mx-auto max-w-page px-4 py-6">
       <nav aria-label="Fil d'Ariane" className="flex flex-wrap items-center gap-1.5 text-xs text-navy-500">
-        <Link href="/" className="hover:text-gold-700">
+        <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
           Accueil
         </Link>
         <Icon name="chevronRight" className="size-3" />
-        <Link href={`/offre/${offer.slug}`} className="hover:text-gold-700">
+        <Link href={localizedPath(`/offre/${offer.slug}`, locale)} className="hover:text-gold-700">
           {offer.title}
         </Link>
         <Icon name="chevronRight" className="size-3" />
@@ -180,7 +183,7 @@ export default async function ReservationPage({
             </p>
 
             <Link
-              href={`/offre/${offer.slug}`}
+              href={localizedPath(`/offre/${offer.slug}`, locale)}
               className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-gold-700 hover:underline"
             >
               Modifier le séjour

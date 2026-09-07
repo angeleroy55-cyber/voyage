@@ -12,6 +12,8 @@ import {
   getSearchCategories,
 } from "@/server/catalogue";
 import { subtypeBlurb, subtypeLabel } from "@/lib/constants";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 import { SEASONS, inSeason, seasonById } from "@/lib/seasons";
 import type { InitialFilters, Sort } from "@/components/search/ResultsView";
 import type { CategoryId, Offer } from "@/lib/types";
@@ -103,12 +105,14 @@ export default async function CategoryPage({
 }: PageProps<"/[locale]/[category]">) {
   const { category } = await params;
   const sp = await searchParams;
+  const locale = await getRequestLocale();
+  const l = (href: string) => localizedPath(href, locale);
 
   const found = await getCategoryBySlug(category);
   if (!found) notFound();
   // Le hub a sa propre page ; la route statique la sert avant d'arriver ici,
   // cette redirection ne couvre qu'un alias créé au back-office.
-  if (found.kind === "hub") redirect("/destinations");
+  if (found.kind === "hub") redirect(l("/destinations"));
 
   const heading = found.title || found.label;
 
@@ -184,7 +188,7 @@ export default async function CategoryPage({
             aria-label="Fil d'Ariane"
             className="mb-3 flex items-center gap-1.5 text-xs text-navy-500"
           >
-            <Link href="/" className="hover:text-gold-700">
+            <Link href={l("/")} className="hover:text-gold-700">
               Accueil
             </Link>
             <Icon name="chevronRight" className="size-3" />
@@ -213,7 +217,7 @@ export default async function CategoryPage({
         {formules.length > 1 && (
           <FiltreRapide
             titre="Formule"
-            base={`/${found.slug}`}
+            base={l(`/${found.slug}`)}
             actif={formule}
             parametre="formule"
             autres={saison ? { saison: saison.id } : {}}
@@ -228,7 +232,7 @@ export default async function CategoryPage({
         {saisons.length > 1 && (
           <FiltreRapide
             titre="Période de départ"
-            base={`/${found.slug}`}
+            base={l(`/${found.slug}`)}
             actif={saison?.id}
             parametre="saison"
             autres={formule ? { formule } : {}}
@@ -239,7 +243,7 @@ export default async function CategoryPage({
         <div className="mb-7" />
 
         {found.kind === "editorial" ? (
-          <EditorialBlock label={heading} blurb={found.blurb} />
+          <EditorialBlock label={heading} blurb={found.blurb} contactHref={l("/aide#contact")} />
         ) : offers.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-navy-200 p-8 text-center sm:p-12">
             <p className="text-base font-bold text-navy-900">
@@ -252,14 +256,14 @@ export default async function CategoryPage({
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               <Link
-                href="/bons-plans-promos"
+                href={l("/bons-plans-promos")}
                 className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-navy-900 transition hover:bg-gold-400"
               >
                 Voir tous les bons plans
               </Link>
               {(formule || saison) && (
                 <Link
-                  href={`/${found.slug}`}
+                  href={l(`/${found.slug}`)}
                   className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-700 transition hover:border-navy-400"
                 >
                   Réinitialiser le filtre
@@ -269,7 +273,7 @@ export default async function CategoryPage({
             {secours.length > 0 && (
               <div className="mt-8 grid gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
                 {secours.map((offer) => (
-                  <OfferCard key={offer.slug} offer={offer} />
+                  <OfferCard key={offer.slug} offer={offer} locale={locale} />
                 ))}
               </div>
             )}
@@ -291,7 +295,7 @@ export default async function CategoryPage({
               .map((c) => (
                 <Link
                   key={c.id}
-                  href={`/${c.slug}`}
+                  href={l(`/${c.slug}`)}
                   className="flex items-center gap-2 rounded-xl border border-navy-200 bg-white px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
                 >
                   <Icon name={c.icon} className="size-4" />
@@ -390,7 +394,7 @@ function FiltreRapide({
  * l'assurance. Elle renvoie vers un conseiller au lieu d'afficher une liste
  * vide, l'offre se construisant au téléphone.
  */
-function EditorialBlock({ label, blurb }: { label: string; blurb: string }) {
+function EditorialBlock({ label, blurb, contactHref }: { label: string; blurb: string; contactHref: string }) {
   return (
     <div className="rounded-2xl border border-navy-100 bg-white p-8 shadow-card">
       <h2 className="text-lg font-extrabold text-navy-900">{label}, comment ça marche</h2>
@@ -400,7 +404,7 @@ function EditorialBlock({ label, blurb }: { label: string; blurb: string }) {
         nous revenons vers vous sous 48 heures avec une proposition chiffrée.
       </p>
       <Link
-        href="/aide#contact"
+        href={contactHref}
         className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-400 px-5 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
       >
         Parler à un conseiller

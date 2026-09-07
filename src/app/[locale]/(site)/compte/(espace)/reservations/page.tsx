@@ -5,6 +5,8 @@ import Reveal from "@/components/ui/Reveal";
 import { price } from "@/lib/format";
 import { getBookings } from "@/server/account";
 import { requireCustomer } from "@/server/customer-session";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const metadata = { title: "Mes réservations" };
 
@@ -18,6 +20,7 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 export default async function BookingsPage({ searchParams }: PageProps<"/[locale]/compte/reservations">) {
+  const locale = await getRequestLocale();
   const session = await requireCustomer();
   const sp = await searchParams;
   const raw = typeof sp.etat === "string" ? sp.etat : "toutes";
@@ -98,7 +101,7 @@ export default async function BookingsPage({ searchParams }: PageProps<"/[locale
           </p>
           {tab === "toutes" && (
             <Link
-              href="/sejours"
+              href={localizedPath("/sejours", locale)}
               className="mt-4 inline-block rounded-xl bg-gold-400 px-6 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
             >
               Trouver un séjour

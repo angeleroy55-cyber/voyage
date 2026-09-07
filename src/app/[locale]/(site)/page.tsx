@@ -29,6 +29,8 @@ import {
 // Le contenu vient de la base : il est relu à chaque requête, sinon une
 // publication faite au back-office ne remonterait qu'au prochain déploiement.
 import { hreflangAlternates } from "@/i18n/config";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +39,7 @@ export function generateMetadata() {
 }
 
 export default async function HomePage() {
+  const locale = await getRequestLocale();
   const [deals, heroSlides, lastMinute, france, all, destinations, reviews, posts, settings, categories] =
     await Promise.all([
       getBestDeals(8),
@@ -137,7 +140,7 @@ export default async function HomePage() {
             <OfferRail
               title="Départs de dernière minute"
               subtitle="Moins de trois semaines avant le départ, aux derniers prix."
-              href="/derniere-minute"
+              href={localizedPath("/derniere-minute", locale)}
               offers={lastMinute}
             />
           </Reveal>
@@ -148,7 +151,7 @@ export default async function HomePage() {
             <OfferRail
               title="Les meilleures remises du moment"
               subtitle="Stocks limités, prix valables jusqu'à épuisement."
-              href="/bons-plans-promos"
+              href={localizedPath("/bons-plans-promos", locale)}
               offers={deals}
             />
           </Reveal>
@@ -171,7 +174,7 @@ export default async function HomePage() {
             <OfferRail
               title={rail.title}
               subtitle={rail.subtitle}
-              href={`/${rail.slug}`}
+              href={localizedPath(`/${rail.slug}`, locale)}
               offers={rail.offers}
             />
           </Reveal>
@@ -192,7 +195,7 @@ export default async function HomePage() {
             <OfferRail
               title={rail.title}
               subtitle={rail.subtitle}
-              href={`/${rail.slug}`}
+              href={localizedPath(`/${rail.slug}`, locale)}
               offers={rail.offers}
             />
           </Reveal>
@@ -203,7 +206,7 @@ export default async function HomePage() {
             <OfferRail
               title="Séjours en France"
               subtitle="Littoral, montagne et villes d'art, sans avion ni formalités."
-              href="/sejours-france"
+              href={localizedPath("/sejours-france", locale)}
               offers={france}
             />
           </Reveal>

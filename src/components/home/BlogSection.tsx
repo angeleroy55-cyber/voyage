@@ -1,21 +1,24 @@
 import Image from "next/image";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import type { Post } from "@/lib/types";
 import { withMediaFallback } from "@/lib/media";
 
-export default function BlogSection({ posts }: { posts: Post[] }) {
+export default async function BlogSection({ posts }: { posts: Post[] }) {
+  const locale = await getRequestLocale();
   return (
     <Section
       title="Le carnet de voyage"
       subtitle="Conseils pratiques et idées d'itinéraires écrits par nos équipes."
-      href="/blog"
+      href={localizedPath("/blog", locale)}
       linkLabel="Tous les articles"
     >
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {posts.map((p) => (
           <article key={p.slug} className="group">
-            <Link href={`/blog/${p.slug}`} className="block overflow-hidden rounded-2xl">
+            <Link href={localizedPath(`/blog/${p.slug}`, locale)} className="block overflow-hidden rounded-2xl">
               <div className="relative aspect-16/10">
                 <Image
                   src={withMediaFallback(p.image)}
@@ -28,7 +31,7 @@ export default function BlogSection({ posts }: { posts: Post[] }) {
             </Link>
             <p className="mt-3 text-xs font-bold uppercase tracking-wide text-gold-700">{p.category}</p>
             <h3 className="mt-1 text-[15px] font-bold leading-snug text-navy-900">
-              <Link href={`/blog/${p.slug}`} className="hover:text-gold-700">
+              <Link href={localizedPath(`/blog/${p.slug}`, locale)} className="hover:text-gold-700">
                 {p.title}
               </Link>
             </h3>

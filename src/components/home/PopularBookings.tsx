@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 import Icon from "@/components/ui/Icon";
 import Section from "@/components/ui/Section";
 import type { Offer } from "@/lib/types";
 import { durationLabel, price } from "@/lib/format";
 
-export default function PopularBookings({ offers }: { offers: Offer[] }) {
+export default async function PopularBookings({ offers }: { offers: Offer[] }) {
+  const locale = await getRequestLocale();
   const rows = [...offers]
     .filter((o) => o.category !== "location-voiture")
     .sort((a, b) => b.reviews - a.reviews)
@@ -19,7 +22,7 @@ export default function PopularBookings({ offers }: { offers: Offer[] }) {
         {rows.map((o, i) => (
           <li key={o.slug}>
             <Link
-              href={`/offre/${o.slug}`}
+              href={localizedPath(`/offre/${o.slug}`, locale)}
               className="group flex items-center gap-3 rounded-xl border border-navy-100 bg-white px-3.5 py-3 transition hover:border-navy-200 hover:bg-navy-50/60"
             >
               <span className="w-5 shrink-0 text-center text-sm font-extrabold text-navy-300 tabular-nums">

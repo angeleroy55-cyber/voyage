@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 import Icon from "@/components/ui/Icon";
 import Section from "@/components/ui/Section";
 import { SEASONS, currentSeason, upcomingSeason } from "@/lib/seasons";
@@ -15,7 +17,8 @@ import { SEASONS, currentSeason, upcomingSeason } from "@/lib/seasons";
  * de la Toussaint commencent, ceux qui partent ont déjà réservé. Ce qu'il reste
  * à vendre, c'est Noël.
  */
-export default function SeasonRail({ counts }: { counts: Record<string, number> }) {
+export default async function SeasonRail({ counts }: { counts: Record<string, number> }) {
+  const locale = await getRequestLocale();
   const enCours = currentSeason();
   const prochaine = upcomingSeason();
 
@@ -35,7 +38,7 @@ export default function SeasonRail({ counts }: { counts: Record<string, number> 
           return (
             <Link
               key={saison.id}
-              href={`/bons-plans-promos?saison=${saison.id}`}
+              href={localizedPath(`/bons-plans-promos?saison=${saison.id}`, locale)}
               className={`group flex flex-col justify-between rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-card ${
                 enAvant
                   ? "border-gold-300 bg-gold-50"

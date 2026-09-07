@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 import Link from "next/link";
 import StatusBadge from "@/components/account/StatusBadge";
 import Icon from "@/components/ui/Icon";
@@ -9,7 +11,8 @@ import { daysUntil, type AccountBooking } from "@/server/account";
  * Ligne de réservation telle qu'elle apparaît dans la liste et sur le tableau
  * de bord : visuel, référence, dates, état du règlement.
  */
-export default function BookingCard({ booking }: { booking: AccountBooking }) {
+export default async function BookingCard({ booking }: { booking: AccountBooking }) {
+  const locale = await getRequestLocale();
   const offer = booking.offer;
   const countdown = booking.departureDate ? daysUntil(booking.departureDate) : null;
   const paidRatio =
@@ -47,7 +50,7 @@ export default function BookingCard({ booking }: { booking: AccountBooking }) {
           <h3 className="mt-2 text-base font-bold leading-snug text-navy-900">
             {offer ? (
               <Link
-                href={`/compte/reservations/${booking.reference}`}
+                href={localizedPath(`/compte/reservations/${booking.reference}`, locale)}
                 className="transition hover:text-gold-700"
               >
                 {offer.title}
@@ -112,7 +115,7 @@ export default function BookingCard({ booking }: { booking: AccountBooking }) {
           </div>
 
           <Link
-            href={`/compte/reservations/${booking.reference}`}
+            href={localizedPath(`/compte/reservations/${booking.reference}`, locale)}
             className="rounded-lg border border-navy-200 px-3.5 py-2 text-xs font-bold text-navy-800 transition hover:border-navy-400 hover:bg-navy-50"
           >
             Voir le dossier

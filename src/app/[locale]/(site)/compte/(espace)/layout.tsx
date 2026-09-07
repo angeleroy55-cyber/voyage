@@ -6,12 +6,15 @@ import { getCustomer } from "@/server/account";
 import { prisma } from "@/server/prisma";
 import { requireCustomer } from "@/server/customer-session";
 import { logoutCustomer } from "@/server/actions/account";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 // Le groupe `(espace)` couvre les pages accessibles une fois connecté ; la page
 // de connexion vit hors de ce groupe pour ne pas hériter de la barre latérale.
 export const dynamic = "force-dynamic";
 
 export default async function AccountLayout({ children }: LayoutProps<"/[locale]/compte">) {
+  const locale = await getRequestLocale();
   const session = await requireCustomer();
 
   const [customer, bookings, favourites] = await Promise.all([
@@ -31,7 +34,7 @@ export default async function AccountLayout({ children }: LayoutProps<"/[locale]
   return (
     <div className="mx-auto max-w-page px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="mb-4 flex items-center gap-1.5 text-xs text-navy-500">
-        <Link href="/" className="transition hover:text-gold-700">
+        <Link href={localizedPath("/", locale)} className="transition hover:text-gold-700">
           Accueil
         </Link>
         <Icon name="chevronRight" className="size-3" />
@@ -116,7 +119,7 @@ export default async function AccountLayout({ children }: LayoutProps<"/[locale]
               Nos conseillers répondent 7 j/7 de 8 h à 21 h, et 24 h/24 pendant votre séjour.
             </p>
             <Link
-              href="/aide"
+              href={localizedPath("/aide", locale)}
               className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-gold-700 transition hover:underline"
             >
               Contacter le service client

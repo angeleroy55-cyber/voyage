@@ -12,6 +12,8 @@ import { getCategories, getOfferBySlug, getOfferReviews, getOffers, getPublished
 import { departureLabel, durationFull } from "@/lib/format";
 import { galleryWithMediaFallback } from "@/lib/media";
 import { hreflangAlternates } from "@/i18n/config";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +41,7 @@ function readDate(value: string | string[] | undefined): string {
 export default async function OfferPage({ params, searchParams }: PageProps<"/[locale]/offre/[slug]">) {
   const { slug } = await params;
   const sp = await searchParams;
+  const locale = await getRequestLocale();
   const offer = await getOfferBySlug(slug);
   if (!offer) notFound();
 
@@ -60,11 +63,11 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
   return (
     <div className="mx-auto max-w-page px-4 py-6">
       <nav aria-label="Fil d'Ariane" className="flex flex-wrap items-center gap-1.5 text-xs text-navy-500">
-        <Link href="/" className="hover:text-gold-700">
+        <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
           Accueil
         </Link>
         <Icon name="chevronRight" className="size-3" />
-        <Link href={`/${offer.category}`} className="hover:text-gold-700">
+        <Link href={localizedPath(`/${offer.category}`, locale)} className="hover:text-gold-700">
           {category?.label}
         </Link>
         <Icon name="chevronRight" className="size-3" />
@@ -244,7 +247,7 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
         </h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {related.map((o) => (
-            <OfferCard key={o.slug} offer={o} />
+            <OfferCard key={o.slug} offer={o} locale={locale} />
           ))}
         </div>
       </section>

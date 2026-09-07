@@ -6,6 +6,8 @@ import { getBankDetails, getBookingConfirmation } from "@/server/catalogue";
 import { getCustomerSession } from "@/server/customer-session";
 import { PAYMENT_METHODS, paymentLabel, type PaymentId } from "@/lib/constants";
 import { dateRange, price } from "@/lib/format";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 /**
  * Étape 3 : la demande est enregistrée.
@@ -24,6 +26,7 @@ export default async function ConfirmationPage({
   params,
 }: PageProps<"/[locale]/reservation/confirmee/[reference]">) {
   const { reference } = await params;
+  const locale = await getRequestLocale();
   const booking = await getBookingConfirmation(reference);
   if (!booking) notFound();
 
@@ -167,21 +170,21 @@ export default async function ConfirmationPage({
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         {session && booking.customerId === session.sub ? (
           <Link
-            href={`/compte/reservations/${booking.reference}`}
+            href={localizedPath(`/compte/reservations/${booking.reference}`, locale)}
             className="rounded-xl bg-navy-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-navy-800"
           >
             Suivre ma demande
           </Link>
         ) : (
           <Link
-            href="/compte"
+            href={localizedPath("/compte", locale)}
             className="rounded-xl bg-navy-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-navy-800"
           >
             Créer mon espace client pour la suivre
           </Link>
         )}
         <Link
-          href="/"
+          href={localizedPath("/", locale)}
           className="rounded-xl border border-navy-200 px-5 py-3 text-sm font-bold text-navy-800 transition hover:border-navy-400"
         >
           Retour à l&apos;accueil

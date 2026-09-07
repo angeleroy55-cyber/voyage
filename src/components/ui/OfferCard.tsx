@@ -14,6 +14,8 @@ import {
 } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 import type { Offer } from "@/lib/types";
+import { getDictionary } from "@/i18n/dictionaries";
+import { localizedPath, DEFAULT_LOCALE, type Locale } from "@/i18n/config";
 
 /**
  * Carte offre, telle que la spécifie la section 4.2 du cahier de
@@ -132,10 +134,17 @@ function SavingsBadge({ offer }: { offer: Offer }) {
 export default function OfferCard({
   offer,
   layout = "grid",
+  locale = DEFAULT_LOCALE,
 }: {
   offer: Offer;
   layout?: "grid" | "row";
+  /** Composant partagé serveur/client (rendu depuis ResultsView) : la locale
+      lui est donc passée en prop plutôt que lue via `next/headers`, qui ne
+      fonctionne pas dans un arbre client. */
+  locale?: Locale;
 }) {
+  const dict = getDictionary(locale);
+  const offerHref = localizedPath(`/offre/${offer.slug}`, locale);
   const badge = urgency(offer);
   const duree = durationFull(offer.category, offer.days, offer.nights);
   const depart = departureLabel(offer.departureDate);
@@ -150,7 +159,7 @@ export default function OfferCard({
         {/* L'aperçu rapide est un bouton : il ne peut donc pas vivre dans le
             lien vers la fiche, d'où ce conteneur qui les porte côte à côte. */}
         <div className="relative overflow-hidden sm:w-80 sm:shrink-0">
-          <Link href={`/offre/${offer.slug}`} className="block">
+          <Link href={offerHref} className="block">
             {/* À partir de sm le conteneur est absolu : la colonne prend sa
                 hauteur du texte, et le zoom au survol reste dans l'image. */}
             <div className="relative aspect-16/10 sm:absolute sm:inset-0 sm:aspect-auto">
@@ -186,7 +195,7 @@ export default function OfferCard({
               {offer.destination}, {offer.country}
             </p>
             <h3 className="mt-1 text-lg font-bold leading-snug text-navy-900">
-              <Link href={`/offre/${offer.slug}`} className="hover:text-gold-700">
+              <Link href={offerHref} className="hover:text-gold-700">
                 {offer.title}
               </Link>
             </h3>
@@ -210,16 +219,16 @@ export default function OfferCard({
               <p className="text-xs font-semibold text-navy-700">{duree}</p>
               {depart && <p className="text-xs text-navy-500">{depart}</p>}
               {offer.departureCity && offer.category !== "hotels" && (
-                <p className="text-xs text-navy-500">Départ de {offer.departureCity}</p>
+                <p className="text-xs text-navy-500">{dict.search.departureFrom} {offer.departureCity}</p>
               )}
               <div className="mt-2">
                 <Price offer={offer} size="lg" />
               </div>
               <Link
-                href={`/offre/${offer.slug}`}
+                href={offerHref}
                 className="mt-2 inline-block rounded-lg bg-gold-400 px-4 py-2 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
               >
-                Réserver maintenant
+                {dict.common.bookNowNow}
               </Link>
             </div>
           </div>
@@ -231,7 +240,7 @@ export default function OfferCard({
   return (
     <article className="group hover-lift flex h-full flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-card">
       <div className="relative aspect-16/10 overflow-hidden">
-        <Link href={`/offre/${offer.slug}`} className="absolute inset-0 block">
+        <Link href={offerHref} className="absolute inset-0 block">
           <Image
             src={image}
             alt={alt}
@@ -262,7 +271,7 @@ export default function OfferCard({
           {offer.destination}, {offer.country}
         </p>
         <h3 className="mt-1 line-clamp-2 text-[15px] font-bold leading-snug text-navy-900">
-          <Link href={`/offre/${offer.slug}`} className="hover:text-gold-700">
+          <Link href={offerHref} className="hover:text-gold-700">
             {offer.title}
           </Link>
         </h3>
@@ -283,16 +292,16 @@ export default function OfferCard({
           <p className="font-semibold text-navy-700">{duree}</p>
           {depart && <p className="text-navy-500">{depart}</p>}
           {offer.departureCity && offer.category !== "hotels" && (
-            <p className="text-navy-500">Départ de {offer.departureCity}</p>
+            <p className="text-navy-500">{dict.search.departureFrom} {offer.departureCity}</p>
           )}
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-4">
           <Link
-            href={`/offre/${offer.slug}`}
+            href={offerHref}
             className="rounded-lg bg-gold-400 px-3.5 py-2 text-[13px] font-bold text-navy-900 transition hover:bg-gold-500"
           >
-            Réserver
+            {dict.common.bookNow}
           </Link>
           <Price offer={offer} size="sm" />
         </div>

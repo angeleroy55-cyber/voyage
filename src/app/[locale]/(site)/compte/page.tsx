@@ -4,6 +4,8 @@ import AuthForms from "@/components/account/AuthForms";
 import Icon from "@/components/ui/Icon";
 import Reveal from "@/components/ui/Reveal";
 import { getCustomerSession } from "@/server/customer-session";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const metadata = { title: "Espace client" };
 export const dynamic = "force-dynamic";
@@ -32,8 +34,9 @@ const ARGUMENTS = [
 ];
 
 export default async function AccountPage() {
+  const locale = await getRequestLocale();
   // Une session valide n'a rien à faire sur l'écran de connexion.
-  if (await getCustomerSession()) redirect("/compte/tableau-de-bord");
+  if (await getCustomerSession()) redirect(localizedPath("/compte/tableau-de-bord", locale));
 
   // Le compte de démonstration créé par le seed est pré-rempli pour que la
   // maquette soit explorable sans inscription préalable.
@@ -78,7 +81,7 @@ export default async function AccountPage() {
             <p className="mt-8 rounded-xl border border-navy-100 bg-navy-50/60 p-4 text-sm text-navy-600">
               Vous avez réservé sans créer de compte ? Inscrivez-vous avec l&apos;adresse utilisée
               lors de la commande : vos dossiers y seront rattachés automatiquement. Sinon,{" "}
-              <Link href="/aide#contact" className="font-semibold text-gold-700 hover:underline">
+              <Link href={localizedPath("/aide#contact", locale)} className="font-semibold text-gold-700 hover:underline">
                 contactez un conseiller
               </Link>
               .

@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { getPostBySlug, getPosts, getPublishedPostSlugs } from "@/server/catalogue";
 import { withMediaFallback } from "@/lib/media";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[sl
 
 export default async function PostPage({ params }: PageProps<"/[locale]/blog/[slug]">) {
   const { slug } = await params;
+  const locale = await getRequestLocale();
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
@@ -28,11 +31,11 @@ export default async function PostPage({ params }: PageProps<"/[locale]/blog/[sl
   return (
     <article className="mx-auto max-w-3xl px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="flex flex-wrap items-center gap-1.5 text-xs text-navy-500">
-        <Link href="/" className="hover:text-gold-700">
+        <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
           Accueil
         </Link>
         <Icon name="chevronRight" className="size-3" />
-        <Link href="/blog" className="hover:text-gold-700">
+        <Link href={localizedPath("/blog", locale)} className="hover:text-gold-700">
           Carnet de voyage
         </Link>
         <Icon name="chevronRight" className="size-3" />
@@ -97,7 +100,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/blog/[sl
             {others.map((other) => (
               <li key={other.slug}>
                 <Link
-                  href={`/blog/${other.slug}`}
+                  href={localizedPath(`/blog/${other.slug}`, locale)}
                   className="group flex items-center justify-between gap-3 rounded-xl border border-navy-100 px-4 py-3 transition hover:border-navy-200 hover:bg-navy-50/60"
                 >
                   <span className="min-w-0">

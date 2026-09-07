@@ -8,10 +8,13 @@ import { loyaltyTier } from "@/lib/constants";
 import { dateRange, price } from "@/lib/format";
 import { daysUntil, getAccountSummary, getCustomer } from "@/server/account";
 import { requireCustomer } from "@/server/customer-session";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const metadata = { title: "Tableau de bord" };
 
 export default async function DashboardPage() {
+  const locale = await getRequestLocale();
   const session = await requireCustomer();
   const [summary, customer] = await Promise.all([
     getAccountSummary(session.sub),
@@ -140,7 +143,7 @@ export default async function DashboardPage() {
                 </span>
               </div>
               <Link
-                href={`/compte/reservations/${nextTrip.reference}`}
+                href={localizedPath(`/compte/reservations/${nextTrip.reference}`, locale)}
                 className="rounded-xl bg-gold-400 px-5 py-2.5 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
               >
                 Ouvrir le dossier
@@ -158,7 +161,7 @@ export default async function DashboardPage() {
               documents et l&apos;échéancier de paiement.
             </p>
             <Link
-              href="/sejours"
+              href={localizedPath("/sejours", locale)}
               className="mt-4 inline-block rounded-xl bg-gold-400 px-6 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
             >
               Découvrir les offres
@@ -183,7 +186,7 @@ export default async function DashboardPage() {
                 <p className="mt-1 text-sm text-navy-600">
                   Échéance {nextDue.instalment.index} sur {nextDue.booking.instalments} du dossier{" "}
                   <Link
-                    href={`/compte/reservations/${nextDue.booking.reference}`}
+                    href={localizedPath(`/compte/reservations/${nextDue.booking.reference}`, locale)}
                     className="font-semibold text-gold-700 hover:underline"
                   >
                     {nextDue.booking.reference}
@@ -244,7 +247,7 @@ export default async function DashboardPage() {
               Dossiers récents
             </h2>
             <Link
-              href="/compte/reservations"
+              href={localizedPath("/compte/reservations", locale)}
               className="flex items-center gap-1 text-sm font-semibold text-navy-700 transition hover:text-gold-700"
             >
               Tout voir

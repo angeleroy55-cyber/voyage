@@ -10,6 +10,8 @@ import { price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 import { SEO_CITIES } from "@/lib/data";
 import { hreflangAlternates } from "@/i18n/config";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 /**
  * Hub Destinations : continent, puis pays et îles.
@@ -35,6 +37,7 @@ export function generateMetadata() {
 export const dynamic = "force-dynamic";
 
 export default async function DestinationsPage() {
+  const locale = await getRequestLocale();
   const [arbre, france, categories] = await Promise.all([
     getDestinationTree(),
     getRuleOffers("france", 1),
@@ -47,7 +50,7 @@ export default async function DestinationsPage() {
   return (
     <div className="mx-auto max-w-page px-4 py-8">
       <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-xs text-navy-500">
-        <Link href="/" className="hover:text-gold-700">
+        <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
           Accueil
         </Link>
         <Icon name="chevronRight" className="size-3" />
@@ -92,7 +95,7 @@ export default async function DestinationsPage() {
             </p>
           </div>
           <Link
-            href="/sejours-france"
+            href={localizedPath("/sejours-france", locale)}
             className="inline-flex items-center gap-2 rounded-xl bg-gold-400 px-5 py-3 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
           >
             {prixFrance ? `Voir la France dès ${price(prixFrance)}` : "Voir les séjours France"}
@@ -115,7 +118,7 @@ export default async function DestinationsPage() {
             {continent.destinations.map((destination) => (
               <Link
                 key={destination.slug}
-                href={`/sejours?q=${encodeURIComponent(destination.name)}`}
+                href={localizedPath(`/sejours?q=${encodeURIComponent(destination.name)}`, locale)}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-navy-100 bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-pop"
               >
                 <div className="relative aspect-4/3 overflow-hidden">
@@ -154,7 +157,7 @@ export default async function DestinationsPage() {
           {SEO_CITIES.map((ville) => (
             <Link
               key={ville}
-              href={`/sejours?q=${encodeURIComponent(ville)}`}
+              href={localizedPath(`/sejours?q=${encodeURIComponent(ville)}`, locale)}
               className="rounded-xl border border-navy-200 px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
             >
               {ville}
@@ -172,7 +175,7 @@ export default async function DestinationsPage() {
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/${category.id}`}
+              href={localizedPath(`/${category.id}`, locale)}
               className="flex items-center gap-2 rounded-xl border border-navy-200 bg-white px-3.5 py-2 text-sm font-semibold text-navy-700 transition hover:border-gold-300 hover:text-gold-700"
             >
               <Icon name={category.icon} className="size-4" />

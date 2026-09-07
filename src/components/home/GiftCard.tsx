@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 import Icon from "@/components/ui/Icon";
 
-export default function GiftCard() {
+export default async function GiftCard() {
+  const locale = await getRequestLocale();
   return (
     <section className="mx-auto max-w-page px-4">
       <div className="grid items-center gap-6 rounded-2xl border border-gold-200 bg-gold-50 p-6 sm:p-8 lg:grid-cols-[auto_1fr_auto]">
@@ -16,7 +19,7 @@ export default function GiftCard() {
           </p>
         </div>
         <Link
-          href="/aide"
+          href={localizedPath("/aide", locale)}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-navy-800 px-6 py-3 text-sm font-bold text-white transition hover:bg-navy-900"
         >
           Offrir une carte

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import { BRAND } from "@/lib/data";
+import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const metadata = { title: "Aide & contact" };
 
@@ -27,12 +29,14 @@ const FAQ = [
   },
 ];
 
-export default function HelpPage() {
+export default async function HelpPage() {
+  const locale = await getRequestLocale();
+  const dict = await getRequestDictionary();
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-xs text-navy-500">
-        <Link href="/" className="hover:text-gold-700">
-          Accueil
+        <Link href={localizedPath("/", locale)} className="hover:text-gold-700">
+          {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <span className="font-semibold text-navy-800">Aide</span>

@@ -10,6 +10,8 @@ import { BOOKING_TIMELINE, PAYMENT_METHODS, paymentLabel, type PaymentId } from 
 import { dateLabel, dateRange, durationLabel, price } from "@/lib/format";
 import { daysUntil, getBooking } from "@/server/account";
 import { requireCustomer } from "@/server/customer-session";
+import { getRequestLocale } from "@/i18n/server";
+import { localizedPath } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/compte/r
 export default async function BookingDetailPage({
   params,
 }: PageProps<"/[locale]/compte/reservations/[reference]">) {
+  const locale = await getRequestLocale();
   const session = await requireCustomer();
   const { reference } = await params;
 
@@ -69,7 +72,7 @@ export default async function BookingDetailPage({
   return (
     <div className="space-y-5">
       <Link
-        href="/compte/reservations"
+        href={localizedPath("/compte/reservations", locale)}
         className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-600 transition hover:text-gold-700"
       >
         <Icon name="chevronLeft" className="size-4" />
@@ -317,7 +320,7 @@ export default async function BookingDetailPage({
                 <strong className="text-navy-800">{booking.reference}</strong>.
               </p>
               <Link
-                href="/aide#contact"
+                href={localizedPath("/aide#contact", locale)}
                 className="mt-3 block rounded-xl bg-navy-800 px-4 py-2.5 text-center text-sm font-bold text-white transition hover:bg-navy-900"
               >
                 Contacter un conseiller
@@ -334,7 +337,7 @@ export default async function BookingDetailPage({
           {offer && (
             <Reveal variant="right" delay={140}>
               <Link
-                href={`/offre/${offer.slug}`}
+                href={localizedPath(`/offre/${offer.slug}`, locale)}
                 className="hover-lift block rounded-2xl border border-navy-100 bg-white p-4 text-sm font-semibold text-navy-800 shadow-card"
               >
                 <span className="flex items-center justify-between gap-2">
