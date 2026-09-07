@@ -28,7 +28,13 @@ import {
 
 // Le contenu vient de la base : il est relu à chaque requête, sinon une
 // publication faite au back-office ne remonterait qu'au prochain déploiement.
+import { hreflangAlternates } from "@/i18n/config";
+
 export const dynamic = "force-dynamic";
+
+export function generateMetadata() {
+  return { alternates: { languages: hreflangAlternates("/") } };
+}
 
 export default async function HomePage() {
   const [deals, heroSlides, lastMinute, france, all, destinations, reviews, posts, settings, categories] =

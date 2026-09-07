@@ -9,6 +9,7 @@ import {
 import { price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 import { SEO_CITIES } from "@/lib/data";
+import { hreflangAlternates } from "@/i18n/config";
 
 /**
  * Hub Destinations : continent, puis pays et îles.
@@ -23,11 +24,14 @@ import { SEO_CITIES } from "@/lib/data";
  * créer de seconde URL pour le même contenu.
  */
 
-export const metadata = {
-  title: "Toutes les destinations",
-  description:
-    "Nos destinations par continent : Europe, Afrique du Nord, Caraïbes, océan Indien, Asie. Prix d'appel et nombre d'offres pour chaque pays.",
-};
+export function generateMetadata() {
+  return {
+    title: "Toutes les destinations",
+    description:
+      "Nos destinations par continent : Europe, Afrique du Nord, Caraïbes, océan Indien, Asie. Prix d'appel et nombre d'offres pour chaque pays.",
+    alternates: { languages: hreflangAlternates("/destinations") },
+  };
+}
 export const dynamic = "force-dynamic";
 
 export default async function DestinationsPage() {

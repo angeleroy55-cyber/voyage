@@ -84,11 +84,17 @@ function readFilters(sp: Params): InitialFilters {
   };
 }
 
+import { hreflangAlternates } from "@/i18n/config";
+
 export async function generateMetadata({ params }: PageProps<"/[locale]/[category]">) {
   const { category } = await params;
   const found = await getCategoryBySlug(category);
   if (!found) return { title: "Page introuvable" };
-  return { title: `${found.title || found.label} : nos offres`, description: found.blurb };
+  return {
+    title: `${found.title || found.label} : nos offres`,
+    description: found.blurb,
+    alternates: { languages: hreflangAlternates(`/${category}`) },
+  };
 }
 
 export default async function CategoryPage({

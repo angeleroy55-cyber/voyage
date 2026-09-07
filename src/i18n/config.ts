@@ -43,3 +43,16 @@ export function localizedPath(pathname: string, locale: Locale): string {
   if (locale === DEFAULT_LOCALE) return clean;
   return `/${locale}${clean === "/" ? "" : clean}`;
 }
+
+/**
+ * Balises `hreflang` pour `generateMetadata` : une entrée par langue, plus
+ * `x-default` sur le français, qui sert de version par défaut aux moteurs.
+ */
+export function hreflangAlternates(pathname: string): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of LOCALES) {
+    languages[locale] = localizedPath(pathname, locale);
+  }
+  languages["x-default"] = localizedPath(pathname, DEFAULT_LOCALE);
+  return languages;
+}

@@ -11,6 +11,7 @@ import { getCustomerSession } from "@/server/customer-session";
 import { getCategories, getOfferBySlug, getOfferReviews, getOffers, getPublishedOfferSlugs } from "@/server/catalogue";
 import { departureLabel, durationFull } from "@/lib/format";
 import { galleryWithMediaFallback } from "@/lib/media";
+import { hreflangAlternates } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,11 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/offre/[s
   const { slug } = await params;
   const offer = await getOfferBySlug(slug);
   if (!offer) return { title: "Offre introuvable" };
-  return { title: `${offer.title} · ${offer.destination}`, description: offer.description };
+  return {
+    title: `${offer.title} · ${offer.destination}`,
+    description: offer.description,
+    alternates: { languages: hreflangAlternates(`/offre/${slug}`) },
+  };
 }
 
 /** Date `AAAA-MM-JJ` héritée du moteur de recherche, sinon chaîne vide. */
