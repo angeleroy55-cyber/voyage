@@ -18,6 +18,8 @@ import type {
   Review,
 } from "@/lib/types";
 import { listHeroSlides } from "@/server/hero-slides";
+import { getRequestLocale } from "@/i18n/server";
+import { pickLocalized, pickLocalizedList, type Locale } from "@/i18n/config";
 
 /**
  * Lecture du catalogue pour le site public.
@@ -52,11 +54,19 @@ type OfferRow = {
   amenities: string[];
   highlights: string[];
   included: string[];
+  titleEn: string;
+  titleEs: string;
+  descriptionEn: string;
+  descriptionEs: string;
+  highlightsEn: string[];
+  highlightsEs: string[];
+  includedEn: string[];
+  includedEs: string[];
   category: { slug: string; label: string; accent: string; showDiscountPercent: boolean };
   images: { url: string; credit: string; creditUrl: string }[];
 };
 
-function toOffer(row: OfferRow): Offer {
+function toOffer(row: OfferRow, locale: Locale): Offer {
   const urls = row.images.map((image) => image.url);
   return {
     slug: row.slug,
@@ -68,7 +78,7 @@ function toOffer(row: OfferRow): Offer {
     // offre : la carte porte donc le réglage de sa catégorie propriétaire.
     showDiscountPercent: row.category.showDiscountPercent,
     subtype: row.subtype,
-    title: row.title,
+    title: pickLocalized(locale, row.title, row.titleEn, row.titleEs),
     destination: row.destination,
     country: row.country,
     region: row.region,
@@ -98,9 +108,9 @@ function toOffer(row: OfferRow): Offer {
     dates: row.dates,
     tags: row.tags,
     amenities: row.amenities,
-    description: row.description,
-    highlights: row.highlights,
-    included: row.included,
+    description: pickLocalized(locale, row.description, row.descriptionEn, row.descriptionEs),
+    highlights: pickLocalizedList(locale, row.highlights, row.highlightsEn, row.highlightsEs),
+    included: pickLocalizedList(locale, row.included, row.includedEn, row.includedEs),
   };
 }
 
@@ -136,6 +146,14 @@ const OFFER_SELECT = {
   amenities: true,
   highlights: true,
   included: true,
+  titleEn: true,
+  titleEs: true,
+  descriptionEn: true,
+  descriptionEs: true,
+  highlightsEn: true,
+  highlightsEs: true,
+  includedEn: true,
+  includedEs: true,
   category: {
     select: { slug: true, label: true, accent: true, showDiscountPercent: true },
   },
@@ -146,6 +164,7 @@ const OFFER_SELECT = {
 } as const;
 
 export async function getOffers(categorySlug?: string): Promise<Offer[]> {
+  const locale = await getRequestLocale();
   const rows = await prisma.offer.findMany({
     where: {
       status: "published",
@@ -156,7 +175,7 @@ export async function getOffers(categorySlug?: string): Promise<Offer[]> {
     orderBy: [{ position: "asc" }, { createdAt: "desc" }],
     select: OFFER_SELECT,
   });
-  return rows.map(toOffer);
+  return rows.map((row) => toOffer(row, locale));
 }
 
 /**
@@ -184,6 +203,7 @@ function lastMinuteWindow(): { gte: Date; lte: Date } {
  * cahier : jamais deux URLs pour un même contenu.
  */
 export async function getRuleOffers(rule: string, take?: number): Promise<Offer[]> {
+  const locale = await getRequestLocale();
   const commun = { status: "published", category: { active: true } } as const;
 
   switch (rule) {
@@ -195,7 +215,7 @@ export async function getRuleOffers(rule: string, take?: number): Promise<Offer[
         take,
         select: OFFER_SELECT,
       });
-      return rows.map(toOffer);
+      return rows.map((row) => toOffer(row, locale));
     }
     case "tout-compris": {
       const rows = await prisma.offer.findMany({
@@ -204,7 +224,7 @@ export async function getRuleOffers(rule: string, take?: number): Promise<Offer[
         take,
         select: OFFER_SELECT,
       });
-      return rows.map(toOffer);
+      return rows.map((row) => toOffer(row, locale));
     }
     case "france": {
       const rows = await prisma.offer.findMany({
@@ -213,7 +233,7 @@ export async function getRuleOffers(rule: string, take?: number): Promise<Offer[
         take,
         select: OFFER_SELECT,
       });
-      return rows.map(toOffer);
+      return rows.map((row) => toOffer(row, locale));
     }
     case "promos":
     default:
@@ -259,6 +279,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
   const commun = { status: "published", category: { active: true } } as const;
   const parPrix = [{ price: "asc" as const }];
 
+  const locale = await getRequestLocale();
   const [saisonniere, derniereMinute, croisiere, circuit] = await Promise.all([
     prisma.offer.findFirst({
       where: { ...commun, departureDate: { gte, lte } },
@@ -288,7 +309,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
 
   const slides: (HeroSlide | null)[] = [
     saisonniere &&
-      construireSlide(toOffer(saisonniere), {
+      construireSlide(toOffer(saisonniere, locale), {
         id: `saison-${saison.id}`,
         kicker: "Prochaine période à réserver",
         title: saison.label,
@@ -306,7 +327,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         promoTags: ["Vente flash", "Bon plan"],
       }),
     derniereMinute &&
-      construireSlide(toOffer(derniereMinute), {
+      construireSlide(toOffer(derniereMinute, locale), {
         id: "derniere-minute",
         kicker: "Départ sous trois semaines",
         title: "Dernière minute",
@@ -315,7 +336,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         promoTags: ["Dernière minute"],
       }),
     croisiere &&
-      construireSlide(toOffer(croisiere), {
+      construireSlide(toOffer(croisiere, locale), {
         id: "croisieres",
         kicker: "Pension complète incluse",
         title: "Croisières au départ d'Europe",
@@ -324,7 +345,7 @@ export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
         promoTags: ["Pension complète"],
       }),
     circuit &&
-      construireSlide(toOffer(circuit), {
+      construireSlide(toOffer(circuit, locale), {
         id: "circuits",
         kicker: "Guide francophone",
         title: "Circuits accompagnés",
@@ -360,13 +381,14 @@ function construireSlide(
 }
 
 export async function getFeaturedOffers(take = 8): Promise<Offer[]> {
+  const locale = await getRequestLocale();
   const rows = await prisma.offer.findMany({
     where: { status: "published", featured: true },
     orderBy: { position: "asc" },
     take,
     select: OFFER_SELECT,
   });
-  return rows.map(toOffer);
+  return rows.map((row) => toOffer(row, locale));
 }
 
 /**
@@ -389,11 +411,12 @@ export async function getBestDeals(take?: number): Promise<Offer[]> {
 }
 
 export async function getOfferBySlug(slug: string): Promise<Offer | null> {
+  const locale = await getRequestLocale();
   const row = await prisma.offer.findFirst({
     where: { slug, status: "published" },
     select: OFFER_SELECT,
   });
-  return row ? toOffer(row) : null;
+  return row ? toOffer(row, locale) : null;
 }
 
 /**
@@ -449,11 +472,12 @@ export async function getPublishedOfferSlugs(): Promise<string[]> {
 }
 
 export async function getDestinations(onlyFeatured = false): Promise<Destination[]> {
+  const locale = await getRequestLocale();
   const rows = await prisma.destination.findMany({
     where: onlyFeatured ? { featured: true } : {},
     orderBy: [{ position: "asc" }, { name: "asc" }],
   });
-  return rows.map(toDestination);
+  return rows.map((row) => toDestination(row, locale));
 }
 
 function toDestination(row: {
@@ -463,20 +487,24 @@ function toDestination(row: {
   continent: string;
   region: string;
   blurb: string;
+  nameEn: string;
+  nameEs: string;
+  blurbEn: string;
+  blurbEs: string;
   imageUrl: string;
   imageAlt: string;
   imageCredit: string;
   imageCreditUrl: string;
   fromPrice: number;
   offersCount: number;
-}): Destination {
+}, locale: Locale): Destination {
   return {
     slug: row.slug,
-    name: row.name,
+    name: pickLocalized(locale, row.name, row.nameEn, row.nameEs),
     country: row.country,
     continent: row.continent || continentOf(row.country),
     region: row.region,
-    blurb: row.blurb,
+    blurb: pickLocalized(locale, row.blurb, row.blurbEn, row.blurbEs),
     imageSeed: row.slug,
     // Le visuel vient de la base (Cloudinary) ; à défaut, un placeholder local
     // plutôt qu'un service d'images distant.
@@ -523,10 +551,11 @@ export async function getTopCountries(take = 8): Promise<{ country: string; href
 export async function getDestinationTree(): Promise<
   { id: string; label: string; destinations: Destination[] }[]
 > {
+  const locale = await getRequestLocale();
   const rows = await prisma.destination.findMany({
     orderBy: [{ offersCount: "desc" }, { name: "asc" }],
   });
-  const destinations = rows.map(toDestination);
+  const destinations = rows.map((row) => toDestination(row, locale));
 
   return CONTINENTS.map((continent) => ({
     id: continent.id,
@@ -537,8 +566,9 @@ export async function getDestinationTree(): Promise<
 
 /** Une destination par son slug, pour sa page dédiée. */
 export async function getDestinationBySlug(slug: string): Promise<Destination | null> {
+  const locale = await getRequestLocale();
   const row = await prisma.destination.findUnique({ where: { slug } });
-  return row ? toDestination(row) : null;
+  return row ? toDestination(row, locale) : null;
 }
 
 export async function getReviews(take = 6): Promise<Review[]> {
@@ -583,7 +613,15 @@ export async function getOfferReviews(slug: string, take = 8): Promise<Review[]>
 }
 
 export async function getPostBySlug(slug: string) {
-  return prisma.post.findFirst({ where: { slug, status: "published" } });
+  const locale = await getRequestLocale();
+  const row = await prisma.post.findFirst({ where: { slug, status: "published" } });
+  if (!row) return null;
+  return {
+    ...row,
+    title: pickLocalized(locale, row.title, row.titleEn, row.titleEs),
+    excerpt: pickLocalized(locale, row.excerpt, row.excerptEn, row.excerptEs),
+    body: pickLocalized(locale, row.body, row.bodyEn, row.bodyEs),
+  };
 }
 
 export async function getPublishedPostSlugs(): Promise<string[]> {
@@ -595,6 +633,7 @@ export async function getPublishedPostSlugs(): Promise<string[]> {
 }
 
 export async function getPosts(take = 4): Promise<Post[]> {
+  const locale = await getRequestLocale();
   const rows = await prisma.post.findMany({
     where: { status: "published" },
     orderBy: { createdAt: "desc" },
@@ -602,9 +641,9 @@ export async function getPosts(take = 4): Promise<Post[]> {
   });
   return rows.map((row) => ({
     slug: row.slug,
-    title: row.title,
-    excerpt: row.excerpt,
-    body: row.body,
+    title: pickLocalized(locale, row.title, row.titleEn, row.titleEs),
+    excerpt: pickLocalized(locale, row.excerpt, row.excerptEn, row.excerptEs),
+    body: pickLocalized(locale, row.body, row.bodyEn, row.bodyEs),
     category: row.category,
     readingTime: row.readingTime,
     imageSeed: row.slug,
@@ -658,7 +697,15 @@ export async function getCategories() {
 }
 
 export async function getCategoryBySlug(slug: string) {
-  return prisma.category.findFirst({ where: { slug, active: true } });
+  const locale = await getRequestLocale();
+  const row = await prisma.category.findFirst({ where: { slug, active: true } });
+  if (!row) return null;
+  return {
+    ...row,
+    label: pickLocalized(locale, row.label, row.labelEn, row.labelEs),
+    title: pickLocalized(locale, row.title, row.titleEn, row.titleEs),
+    blurb: pickLocalized(locale, row.blurb, row.blurbEn, row.blurbEs),
+  };
 }
 
 /** Forme attendue par le moteur de recherche et la navigation (composants client). */
@@ -681,20 +728,24 @@ export type SearchCategory = {
  * dans les mêmes offres sous deux angles différents.
  */
 export async function getSearchCategories(): Promise<SearchCategory[]> {
+  const locale = await getRequestLocale();
   const rows = await getCategories();
   return rows
     .filter((row) => row.kind === "catalogue")
-    .map((row) => ({
-      id: row.slug,
-      label: row.label,
-      title: row.title || row.label,
-      icon: row.icon,
-      blurb: row.blurb,
-      accent: row.accent,
-      // Stocké en une seule colonne au format « origin,destination,dates » pour
-      // qu'ajouter un champ ne demande pas de table supplémentaire.
-      form: row.formFields.split(",").map((field) => field.trim()).filter(Boolean),
-    }));
+    .map((row) => {
+      const label = pickLocalized(locale, row.label, row.labelEn, row.labelEs);
+      return {
+        id: row.slug,
+        label,
+        title: pickLocalized(locale, row.title || row.label, row.titleEn || row.labelEn, row.titleEs || row.labelEs),
+        icon: row.icon,
+        blurb: pickLocalized(locale, row.blurb, row.blurbEn, row.blurbEs),
+        accent: row.accent,
+        // Stocké en une seule colonne au format « origin,destination,dates » pour
+        // qu'ajouter un champ ne demande pas de table supplémentaire.
+        form: row.formFields.split(",").map((field) => field.trim()).filter(Boolean),
+      };
+    });
 }
 
 /** Entrée de menu, telle que la consomment l'en-tête et le pied de page. */
@@ -776,16 +827,17 @@ export async function getNavigation(): Promise<{
   main: NavCategory[];
   overflow: NavCategory[];
 }> {
+  const locale = await getRequestLocale();
   const [rows, sousCategories] = await Promise.all([
     getCategories(),
     subcategoriesByCategory(),
   ]);
   const toNav = (row: (typeof rows)[number]): NavCategory => ({
     id: row.slug,
-    label: row.label,
-    title: row.title || row.label,
+    label: pickLocalized(locale, row.label, row.labelEn, row.labelEs),
+    title: pickLocalized(locale, row.title || row.label, row.titleEn || row.labelEn, row.titleEs || row.labelEs),
     icon: row.icon,
-    blurb: row.blurb,
+    blurb: pickLocalized(locale, row.blurb, row.blurbEn, row.blurbEs),
     href: `/${row.slug}`,
     subcategories: sousCategories.get(row.slug) ?? [],
   });

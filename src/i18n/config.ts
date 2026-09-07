@@ -45,6 +45,24 @@ export function localizedPath(pathname: string, locale: Locale): string {
 }
 
 /**
+ * Choisit le texte à afficher selon la langue, avec repli sur le français si
+ * la traduction est vide : une colonne EN/ES non encore remplie ne doit
+ * jamais afficher un trou, elle affiche le texte source.
+ */
+export function pickLocalized(locale: Locale, fr: string, en: string, es: string): string {
+  if (locale === "en") return en || fr;
+  if (locale === "es") return es || fr;
+  return fr;
+}
+
+/** Variante tableau, même règle de repli (ex. points forts, inclus). */
+export function pickLocalizedList(locale: Locale, fr: string[], en: string[], es: string[]): string[] {
+  if (locale === "en") return en.length > 0 ? en : fr;
+  if (locale === "es") return es.length > 0 ? es : fr;
+  return fr;
+}
+
+/**
  * Balises `hreflang` pour `generateMetadata` : une entrée par langue, plus
  * `x-default` sur le français, qui sert de version par défaut aux moteurs.
  */
