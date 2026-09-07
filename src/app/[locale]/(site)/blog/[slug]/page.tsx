@@ -5,7 +5,7 @@ import Icon from "@/components/ui/Icon";
 import { getPostBySlug, getPosts, getPublishedPostSlugs } from "@/server/catalogue";
 import { withMediaFallback } from "@/lib/media";
 import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
-import { localizedPath } from "@/i18n/config";
+import { localizedPath, LOCALE_TAGS } from "@/i18n/config";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[slug]">) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  if (!post) return { title: "Article introuvable" };
+  if (!post) return { title: (await getRequestDictionary()).blog.notFound };
   return { title: post.title, description: post.excerpt };
 }
 
@@ -37,7 +37,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/blog/[sl
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <Link href={localizedPath("/blog", locale)} className="hover:text-gold-700">
-          Carnet de voyage
+          {dict.blog.breadcrumb}
         </Link>
         <Icon name="chevronRight" className="size-3" />
         <span className="font-semibold text-navy-800">{post.category}</span>
@@ -50,8 +50,8 @@ export default async function PostPage({ params }: PageProps<"/[locale]/blog/[sl
         {post.title}
       </h1>
       <p className="mt-2 text-sm text-navy-500">
-        {post.readingTime} min de lecture · publié le{" "}
-        {post.createdAt.toLocaleDateString("fr-FR", {
+        {post.readingTime} {dict.blog.readingTime} · {dict.blog.publishedOn}{" "}
+        {post.createdAt.toLocaleDateString(LOCALE_TAGS[locale], {
           day: "numeric",
           month: "long",
           year: "numeric",
@@ -96,7 +96,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/blog/[sl
 
       {others.length > 0 && (
         <section className="mt-14 border-t border-navy-100 pt-8">
-          <h2 className="text-lg font-extrabold text-navy-900">À lire aussi</h2>
+          <h2 className="text-lg font-extrabold text-navy-900">{dict.blog.otherArticles}</h2>
           <ul className="mt-4 space-y-2">
             {others.map((other) => (
               <li key={other.slug}>

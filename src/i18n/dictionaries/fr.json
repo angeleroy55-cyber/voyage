@@ -107,5 +107,15 @@
         "a": "Contactez l'assistance au numéro figurant sur votre bon d'échange, joignable 24 h/24. Un conseiller cherche une solution de report avec la compagnie."
       }
     ]
+  },
+  "blog": {
+    "breadcrumb": "Carnet de voyage",
+    "title": "Le carnet de voyage",
+    "subtitle": "Conseils pratiques et idées d'itinéraires écrits par nos équipes.",
+    "empty": "Aucun article publié pour le moment.",
+    "readingTime": "min de lecture",
+    "notFound": "Article introuvable",
+    "otherArticles": "À lire aussi",
+    "publishedOn": "publié le"
   }
 }

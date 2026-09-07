@@ -107,5 +107,15 @@
         "a": "Contacte con asistencia en el número que figura en su bono, disponible 24 horas. Un asesor buscará una solución de reprogramación con la aerolínea."
       }
     ]
+  },
+  "blog": {
+    "breadcrumb": "Diario de viaje",
+    "title": "El diario de viaje",
+    "subtitle": "Consejos prácticos e ideas de itinerarios escritos por nuestro equipo.",
+    "empty": "Ningún artículo publicado por el momento.",
+    "readingTime": "min de lectura",
+    "notFound": "Artículo no encontrado",
+    "otherArticles": "También puede interesarle",
+    "publishedOn": "publicado el"
   }
 }

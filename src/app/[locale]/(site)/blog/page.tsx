@@ -25,19 +25,17 @@ export default async function BlogPage() {
           {dict.common.home}
         </Link>
         <Icon name="chevronRight" className="size-3" />
-        <span className="font-semibold text-navy-800">Carnet de voyage</span>
+        <span className="font-semibold text-navy-800">{dict.blog.breadcrumb}</span>
       </nav>
 
       <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl">
-        Le carnet de voyage
+        {dict.blog.title}
       </h1>
-      <p className="mt-1.5 text-sm text-navy-600">
-        Conseils pratiques et idées d&apos;itinéraires écrits par nos équipes.
-      </p>
+      <p className="mt-1.5 text-sm text-navy-600">{dict.blog.subtitle}</p>
 
       {posts.length === 0 ? (
         <p className="mt-8 rounded-2xl border border-dashed border-navy-200 p-12 text-center text-sm text-navy-500">
-          Aucun article publié pour le moment.
+          {dict.blog.empty}
         </p>
       ) : (
         <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -63,7 +61,7 @@ export default async function BlogPage() {
                 </Link>
               </h2>
               <p className="mt-1.5 line-clamp-3 text-sm text-navy-600">{post.excerpt}</p>
-              <p className="mt-2 text-xs text-navy-500">{post.readingTime} min de lecture</p>
+              <p className="mt-2 text-xs text-navy-500">{post.readingTime} {dict.blog.readingTime}</p>
             </article>
           ))}
         </div>

@@ -107,5 +107,15 @@
         "a": "Contact assistance at the number shown on your voucher, available 24/7. An advisor will look for a rebooking solution with the airline."
       }
     ]
+  },
+  "blog": {
+    "breadcrumb": "Travel guide",
+    "title": "The travel guide",
+    "subtitle": "Practical advice and itinerary ideas written by our team.",
+    "empty": "No article published yet.",
+    "readingTime": "min read",
+    "notFound": "Article not found",
+    "otherArticles": "Also worth reading",
+    "publishedOn": "published on"
   }
 }

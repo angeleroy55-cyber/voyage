@@ -17,6 +17,13 @@ export const DEFAULT_LOCALE: Locale = "fr";
 
 export const LOCALE_COOKIE = "NEXT_LOCALE";
 
+/** Étiquette IETF, pour `toLocaleDateString`/`Intl` et les nombres. */
+export const LOCALE_TAGS: Record<Locale, string> = {
+  fr: "fr-FR",
+  en: "en-US",
+  es: "es-ES",
+};
+
 export const LOCALE_LABELS: Record<Locale, string> = {
   fr: "Français",
   en: "English",
