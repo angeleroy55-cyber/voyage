@@ -3,6 +3,7 @@ import { BRAND } from "@/lib/data";
 import { STATUS_LABELS, paymentLabel } from "@/lib/constants";
 import { dateRange, price } from "@/lib/format";
 import { prisma } from "@/server/prisma";
+import { getBankDetails } from "@/server/catalogue";
 
 type SiteMailSettings = {
   name: string;
@@ -36,6 +37,9 @@ export type BookingMailData = {
   remainingAmount?: number;
   paidDelta?: number;
   sourceLabel?: string;
+  bankHolder?: string;
+  bankIban?: string;
+  bankBic?: string;
 };
 
 type NewsletterMailData = {
@@ -235,6 +239,44 @@ export function renderBookingCustomerMessage(
     ? `<p style="margin:18px 0 0;line-height:1.6;"><strong>Précisions transmises :</strong> ${escapeHtml(booking.notes)}</p>`
     : "";
 
+  // Même règle que sur la page de confirmation : le RIB n'est présent dans
+  // les données que pour un virement, et on rappelle le même avertissement
+  // anti-fraude (ne jamais payer avant confirmation, ne jamais redonner ces
+  // coordonnées par téléphone).
+  const bankRows = booking.bankIban
+    ? renderDefinitionRows(
+        [
+          booking.bankHolder ? { label: "Titulaire", value: booking.bankHolder } : null,
+          { label: "IBAN", value: booking.bankIban },
+          booking.bankBic ? { label: "BIC", value: booking.bankBic } : null,
+          { label: "Libellé à indiquer", value: booking.reference },
+        ].filter((row): row is { label: string; value: string } => row !== null),
+      )
+    : "";
+  const bankBlockHtml = booking.bankIban
+    ? [
+        `<div style="margin-top:18px;border:1px solid #cbd5e1;border-radius:12px;padding:16px;">`,
+        `<h3 style="margin:0 0 10px;font-size:14px;font-weight:800;color:#0f172a;">Coordonnées pour votre virement</h3>`,
+        `<table style="width:100%;border-collapse:collapse;">${bankRows}</table>`,
+        `<p style="margin:12px 0 0;font-size:12px;line-height:1.6;color:#64748b;">N'effectuez le virement qu'après notre confirmation de disponibilité. Nous ne vous demanderons jamais ces coordonnées par téléphone, et elles ne changent pas : en cas de doute sur un message reçu, appelez-nous avant de payer.</p>`,
+        `</div>`,
+      ].join("")
+    : "";
+  const bankBlockText = booking.bankIban
+    ? [
+        "",
+        "Coordonnées pour votre virement :",
+        booking.bankHolder ? `Titulaire : ${booking.bankHolder}` : "",
+        `IBAN : ${booking.bankIban}`,
+        booking.bankBic ? `BIC : ${booking.bankBic}` : "",
+        `Libellé à indiquer : ${booking.reference}`,
+        "",
+        "N'effectuez le virement qu'après notre confirmation de disponibilité. Nous ne vous demanderons jamais ces coordonnées par téléphone, et elles ne changent pas : en cas de doute sur un message reçu, appelez-nous avant de payer.",
+      ]
+        .filter(Boolean)
+        .join("\n")
+    : "";
+
   return {
     subject,
     text: [
@@ -245,11 +287,14 @@ export function renderBookingCustomerMessage(
       `Dates souhaitées : ${booking.departureDateLabel}`,
       `Montant estimé : ${price(booking.totalPrice)}`,
       `Paiement choisi : ${booking.paymentMethodLabel} (${paymentHint(booking.instalments)})`,
+      bankBlockText,
       "",
       "Un conseiller vérifie maintenant les disponibilités et vous recontacte sous 24 h.",
       "",
       contactBlock(site),
-    ].join("\n"),
+    ]
+      .filter(Boolean)
+      .join("\n"),
     html: renderMailShell(
       site,
       "Demande bien enregistrée",
@@ -257,6 +302,7 @@ export function renderBookingCustomerMessage(
       [
         `<table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">${rows}</table>`,
         notes,
+        bankBlockHtml,
         `<p style="margin:18px 0 0;line-height:1.6;">Un conseiller vérifie les disponibilités et vous recontacte sous 24 h. Aucun montant n'est débité à cette étape.</p>`,
       ].join(""),
     ),
@@ -426,6 +472,11 @@ async function loadBookingMailData(bookingId: string): Promise<BookingMailData |
 
   if (!booking) return null;
 
+  // Le RIB n'est chargé, comme sur la page de confirmation, que pour un
+  // dossier réglé par virement : il ne doit pas se retrouver dans un mail
+  // qui n'a pas à le montrer.
+  const banque = booking.paymentMethod === "sepa" ? await getBankDetails() : null;
+
   return {
     reference: booking.reference,
     customerName: booking.customerName,
@@ -444,6 +495,9 @@ async function loadBookingMailData(bookingId: string): Promise<BookingMailData |
     statusLabel: STATUS_LABELS[booking.status] ?? booking.status,
     paidAmount: booking.paidAmount,
     remainingAmount: Math.max(0, booking.totalPrice - booking.paidAmount),
+    bankHolder: banque?.holder || undefined,
+    bankIban: banque?.iban || undefined,
+    bankBic: banque?.bic || undefined,
   };
 }
 
