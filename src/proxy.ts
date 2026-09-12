@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALES, isLocale, type Locale } from "@/i18n/config";
 
-// Le middleware ne touche jamais /admin, /api, les fichiers statiques ni les
+// Le proxy ne touche jamais /admin, /api, les fichiers statiques ni les
 // routes internes de Next : c'est le rôle du `matcher` ci-dessous.
 //
 // Règle : le français n'a pas de préfixe (`/sejours`), anglais et espagnol en
@@ -9,7 +9,7 @@ import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALES, isLocale, type Locale } from "@
 // `[locale]` : une requête `/sejours` est donc réécrite vers `/fr/sejours`
 // (rewrite, invisible dans la barre d'adresse), tandis qu'une requête
 // `/en/sejours` est déjà dans la bonne forme.
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const segments = pathname.split("/");
