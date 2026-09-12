@@ -55,6 +55,16 @@ export default function Reveal({
       return;
     }
 
+    // Un bloc plus haut que la fenêtre ne peut pas atteindre n'importe quel
+    // ratio d'intersection : la grille des destinations fait près de sept écrans
+    // et plafonne vers 0,13. Le seuil de 0,15 n'était alors jamais franchi,
+    // l'observateur ne se déclenchait pas et le bloc restait à `opacity: 0`,
+    // invisible mais occupant toute sa hauteur. D'où le seuil ramené à ce que
+    // la hauteur réelle rend atteignable, moitié moins pour déclencher quand le
+    // bloc est franchement entré plutôt qu'à son premier pixel.
+    const atteignable = window.innerHeight / Math.max(node.offsetHeight, 1);
+    const seuil = Math.min(threshold, atteignable / 2);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -66,7 +76,7 @@ export default function Reveal({
       },
       // La marge basse négative retarde légèrement le déclenchement : un bloc
       // qui pointe d'un pixel sous le pli n'apparaît pas déjà animé.
-      { threshold, rootMargin: "0px 0px -8% 0px" },
+      { threshold: seuil, rootMargin: "0px 0px -8% 0px" },
     );
 
     observer.observe(node);
