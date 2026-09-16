@@ -4,6 +4,29 @@ import { STATUS_LABELS, paymentLabel } from "@/lib/constants";
 import { dateRange, price } from "@/lib/format";
 import { prisma } from "@/server/prisma";
 
+/**
+ * Coordonnées du virement bancaire, pour l'e-mail de confirmation.
+ *
+ * Dupliqué à dessein plutôt qu'importé depuis `server/catalogue.ts` : ce
+ * module porte `import "server-only"` en tête (résolu par le bundler Next,
+ * pas par un vrai paquet npm), ce qui casse `probe-mail-system.mts` lancé en
+ * script autonome via `tsx`. Même règle que `getBankDetails` : aucune valeur
+ * de repli, sans IBAN renseigné le virement n'est pas proposé.
+ */
+async function getBankDetails(): Promise<{ holder: string; iban: string; bic: string } | null> {
+  const rows = await prisma.setting.findMany({
+    where: { key: { in: ["payment.holder", "payment.iban", "payment.bic"] } },
+  });
+  const settings = new Map(rows.map((r) => [r.key, r.value]));
+  const iban = (settings.get("payment.iban") ?? "").trim();
+  if (!iban) return null;
+  return {
+    holder: (settings.get("payment.holder") ?? "").trim(),
+    iban,
+    bic: (settings.get("payment.bic") ?? "").trim(),
+  };
+}
+
 type SiteMailSettings = {
   name: string;
   phone: string;
@@ -27,8 +50,12 @@ export type BookingMailData = {
   totalPrice: number;
   travellers: number;
   insurance: boolean;
+  paymentMethod: string;
   paymentMethodLabel: string;
   instalments: number;
+  /** Présent seulement si le règlement choisi est le virement et qu'un IBAN
+   * est renseigné au back-office (voir `getBankDetails`). */
+  bankDetails?: { holder: string; iban: string; bic: string } | null;
   departureDateLabel: string;
   notes: string;
   statusLabel?: string;
@@ -235,6 +262,44 @@ export function renderBookingCustomerMessage(
     ? `<p style="margin:18px 0 0;line-height:1.6;"><strong>Précisions transmises :</strong> ${escapeHtml(booking.notes)}</p>`
     : "";
 
+  // Coordonnées de virement : uniquement quand ce règlement a été choisi et
+  // qu'un IBAN est renseigné au back-office (voir `getBankDetails`). Le motif
+  // reprend la référence du dossier, pour que le rapprochement bancaire ne
+  // demande pas d'aller-retour.
+  const bank = booking.bankDetails;
+  const bankTextLines = bank
+    ? [
+        "",
+        "Votre dossier reste en attente jusqu'à réception du virement. Coordonnées bancaires :",
+        `Titulaire : ${bank.holder}`,
+        `IBAN : ${bank.iban}`,
+        bank.bic ? `BIC : ${bank.bic}` : "",
+        `Motif à indiquer : ${booking.reference}`,
+        "Type de virement : SEPA (immédiat de préférence)",
+        "",
+        "Une fois le virement effectué, répondez à cet e-mail avec une preuve de paiement (capture, photo ou PDF) : le dossier est confirmé dès sa réception.",
+      ].filter(Boolean)
+    : [];
+
+  const bankHtml = bank
+    ? `<div style="margin-top:18px;padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
+        <p style="margin:0 0 10px;font-weight:700;">Coordonnées bancaires pour le virement</p>
+        <p style="margin:0 0 14px;line-height:1.6;color:#475569;">Votre dossier reste en attente jusqu'à réception du virement.</p>
+        <table style="width:100%;border-collapse:collapse;">
+          ${renderDefinitionRows(
+            [
+              { label: "Titulaire", value: bank.holder },
+              { label: "IBAN", value: bank.iban },
+              bank.bic ? { label: "BIC", value: bank.bic } : null,
+              { label: "Motif à indiquer", value: booking.reference },
+              { label: "Type de virement", value: "SEPA (immédiat de préférence)" },
+            ].filter((row): row is { label: string; value: string } => row !== null),
+          )}
+        </table>
+        <p style="margin:14px 0 0;line-height:1.6;">Une fois le virement effectué, répondez à cet e-mail avec une preuve de paiement (capture, photo ou PDF) : le dossier est confirmé dès sa réception.</p>
+      </div>`
+    : "";
+
   return {
     subject,
     text: [
@@ -245,8 +310,11 @@ export function renderBookingCustomerMessage(
       `Dates souhaitées : ${booking.departureDateLabel}`,
       `Montant estimé : ${price(booking.totalPrice)}`,
       `Paiement choisi : ${booking.paymentMethodLabel} (${paymentHint(booking.instalments)})`,
+      ...bankTextLines,
       "",
-      "Un conseiller vérifie maintenant les disponibilités et vous recontacte sous 24 h.",
+      bank
+        ? "Un conseiller finalise votre dossier dès réception du virement."
+        : "Un conseiller vérifie maintenant les disponibilités et vous recontacte sous 24 h.",
       "",
       contactBlock(site),
     ].join("\n"),
@@ -257,7 +325,12 @@ export function renderBookingCustomerMessage(
       [
         `<table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">${rows}</table>`,
         notes,
-        `<p style="margin:18px 0 0;line-height:1.6;">Un conseiller vérifie les disponibilités et vous recontacte sous 24 h. Aucun montant n'est débité à cette étape.</p>`,
+        bankHtml,
+        `<p style="margin:18px 0 0;line-height:1.6;">${
+          bank
+            ? "Un conseiller finalise votre dossier dès réception du virement."
+            : "Un conseiller vérifie les disponibilités et vous recontacte sous 24 h. Aucun montant n'est débité à cette étape."
+        }</p>`,
       ].join(""),
     ),
   };
@@ -426,6 +499,10 @@ async function loadBookingMailData(bookingId: string): Promise<BookingMailData |
 
   if (!booking) return null;
 
+  // Uniquement pour un règlement par virement : pas de coordonnées bancaires
+  // dans un e-mail où le client a choisi la carte ou PayPal.
+  const bankDetails = booking.paymentMethod === "sepa" ? await getBankDetails() : null;
+
   return {
     reference: booking.reference,
     customerName: booking.customerName,
@@ -437,7 +514,9 @@ async function loadBookingMailData(bookingId: string): Promise<BookingMailData |
     totalPrice: booking.totalPrice,
     travellers: booking.travellers,
     insurance: booking.insurance,
+    paymentMethod: booking.paymentMethod,
     paymentMethodLabel: paymentLabel(booking.paymentMethod),
+    bankDetails,
     instalments: booking.instalments,
     departureDateLabel: dateRange(booking.departureDate, booking.returnDate),
     notes: booking.notes,

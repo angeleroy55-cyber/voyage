@@ -33,7 +33,7 @@ export function whatsappLink(number: string, message?: string): string | null {
 /**
  * Navigation du site, dans l'ordre du cahier de catégorisation.
  *
- * Les entrées sans `isOverflow` forment le menu principal (huit aujourd'hui),
+ * Les entrées sans `isOverflow` forment le menu principal (quatre aujourd'hui),
  * du plus fort taux de conversion vers le plus large. Les autres portent
  * `isOverflow` et se regroupent sous « Voir plus de voyages » : elles restent
  * publiques et indexées, mais un menu trop long fait chuter la conversion.
@@ -57,6 +57,10 @@ export const CATEGORIES: Category[] = [
     // Seul univers où la remise est l'argument principal : c'est donc l'un des
     // rares à afficher le taux en pourcentage, en plus du montant en euros.
     showDiscountPercent: true,
+    // Passée en « Voir plus » avec Destinations : quatre entrées fixes
+    // (les formats de réservation) tiennent large sur une ligne, six
+    // recommençaient à serrer sur les écrans intermédiaires.
+    isOverflow: true,
     form: ["destination", "dates", "travellers"],
     blurb: "Toutes nos offres à prix réduit, tous types de voyage confondus.",
   },
@@ -69,6 +73,10 @@ export const CATEGORIES: Category[] = [
     rule: "derniere-minute",
     accent: "rose",
     showDiscountPercent: true,
+    // Passée en « Voir plus » avec Camping & Escapades : six entrées fixes
+    // tiennent sur une ligne, huit forçaient un retour à la ligne sur les
+    // écrans intermédiaires (demande client).
+    isOverflow: true,
     form: ["destination", "dates", "travellers"],
     blurb: "Départs imminents, stock limité : les meilleures affaires du moment.",
   },
@@ -79,6 +87,7 @@ export const CATEGORIES: Category[] = [
     icon: "compass",
     kind: "hub",
     accent: "navy",
+    isOverflow: true,
     form: ["destination", "dates", "travellers"],
     blurb: "Continent, pays, ville : trouvez votre voyage par la carte.",
   },
@@ -122,6 +131,12 @@ export const CATEGORIES: Category[] = [
     form: ["destination", "dates", "travellers"],
     blurb: "Des chambres négociées dans plus de 400 000 établissements.",
   },
+  // ---- « Voir plus de voyages » ----
+  // Vols et Location de voiture restent des recherches à part entière (elles
+  // gardent leur onglet dans le moteur de recherche), mais sortent du menu
+  // principal : demande client, pour ne garder en avant que les formats les
+  // plus réservés.
+
   {
     id: "camping-escapades",
     label: "Camping & Escapades",
@@ -129,16 +144,10 @@ export const CATEGORIES: Category[] = [
     icon: "tent",
     kind: "catalogue",
     accent: "emerald",
+    isOverflow: true,
     form: ["destination", "dates", "travellers"],
     blurb: "Mobil-homes, clubs nature et courts séjours, sans poser de congés.",
   },
-
-  // ---- « Voir plus de voyages » ----
-  // Vols et Location de voiture restent des recherches à part entière (elles
-  // gardent leur onglet dans le moteur de recherche), mais sortent du menu
-  // principal : demande client, pour ne garder en avant que les formats les
-  // plus réservés.
-
   {
     id: "vols",
     label: "Vols",

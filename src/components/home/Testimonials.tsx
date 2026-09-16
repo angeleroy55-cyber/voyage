@@ -13,9 +13,11 @@ export default function Testimonials({ reviews }: { reviews: Review[] }) {
       subtitle={`Note moyenne de ${average.replace(".", ",")}/10 sur 3 450 avis vérifiés après séjour.`}
     >
       <div className="rail -mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2">
-        {reviews.map((r) => (
+        {reviews.map((r, i) => (
           <figure
-            key={r.author}
+            // `author` seul n'est pas unique (deux avis peuvent partager le même
+            // prénom) : la date et le rang complètent la clé.
+            key={`${r.author}-${r.date}-${i}`}
             className="flex w-[300px] shrink-0 snap-start flex-col rounded-2xl border border-navy-100 bg-white p-5 shadow-card sm:w-[340px]"
           >
             <div className="flex items-center justify-between">

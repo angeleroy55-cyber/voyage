@@ -28,8 +28,10 @@ export default async function DestinationGrid({ destinations }: { destinations: 
           <Tile key={d.slug} destination={d} />
         ))}
       </div>
+      {/* Trois lignes au plus (3 colonnes × 3 lignes) : au-delà, la grille de
+          villes s'étirait sans fin et écrasait le reste de la page d'accueil. */}
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
-        {rest.slice(4).map((d) => (
+        {rest.slice(4, 13).map((d) => (
           <Tile key={d.slug} destination={d} short />
         ))}
       </div>

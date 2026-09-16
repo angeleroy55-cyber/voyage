@@ -152,17 +152,38 @@ export default function Header({
                   <Icon name="chevronDown" className="size-4" />
                 </button>
                 {moreOpen && (
-                  <div className="absolute right-0 top-full w-72 rounded-xl border border-navy-100 bg-white p-2 shadow-pop">
-                    {overflow.map((c) => (
-                      <Link
-                        key={c.id}
-                        href={l(c.href)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-navy-700 hover:bg-navy-50"
-                      >
-                        <Icon name={c.icon} className="size-4.5 text-gold-600" />
-                        {c.label}
-                      </Link>
-                    ))}
+                  <div className="absolute right-0 top-full w-[520px] max-w-[90vw] pt-1">
+                    <div className="rounded-2xl border border-navy-100 bg-white p-4 shadow-pop">
+                      <p className="px-1 pb-3 text-xs font-bold uppercase tracking-wide text-navy-400">
+                        {t.seeMoreTrips}
+                      </p>
+                      {/* Grille à deux colonnes plutôt qu'une liste étroite : le
+                          menu déroulant tenait dans 288px et forçait à faire
+                          défiler pour lire une petite quinzaine d'entrées. */}
+                      <div className="grid grid-cols-2 gap-1">
+                        {overflow.map((c) => (
+                          <Link
+                            key={c.id}
+                            href={l(c.href)}
+                            className="group flex items-start gap-3 rounded-xl px-3 py-2.5 hover:bg-navy-50"
+                          >
+                            <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-navy-50 text-gold-600 transition group-hover:bg-gold-50">
+                              <Icon name={c.icon} className="size-4.5" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-semibold text-navy-800">
+                                {c.label}
+                              </span>
+                              {c.blurb && (
+                                <span className="mt-0.5 block line-clamp-2 text-xs leading-snug text-navy-500">
+                                  {c.blurb}
+                                </span>
+                              )}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
