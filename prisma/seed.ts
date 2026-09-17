@@ -48,9 +48,13 @@ const prisma = new PrismaClient({
 });
 
 /**
- * Bandeaux d'accueil composés au seed, avec de vraies photos de destination
- * (Wikimedia Commons, comme le reste du catalogue) plutôt qu'un service
- * d'images génériques. `promoTags` porte jusqu'à cinq mots-clés saisonniers
+ * Bandeaux d'accueil composés au seed.
+ *
+ * Deux sources d'image possibles : `photoQuery` va chercher une photo de
+ * destination réelle dans `photos.json` (Wikimedia Commons, comme le reste du
+ * catalogue) ; `localImage` sert un visuel fourni directement (public/hero/),
+ * sans requête ni crédit à afficher puisqu'il n'est pas soumis à une licence
+ * à attribution. `promoTags` porte jusqu'à cinq mots-clés saisonniers
  * affichés sur la bannière ; au-delà de cinq, l'accroche devient un mur de
  * texte, d'où la limite imposée à la saisie (voir /admin/hero).
  */
@@ -61,8 +65,8 @@ const HERO_SLIDES = [
     text: "Séjours tout compris en Méditerranée, vol et transferts inclus.",
     href: "/sejours",
     cta: "Voir les séjours",
-    photoQuery: "Mallorca beach cove",
-    imageAlt: "Crique méditerranéenne à Majorque",
+    localImage: "/hero/mediterranee-sunset.jpg",
+    imageAlt: "Village côtier méditerranéen au coucher du soleil",
     promoTags: ["Été", "Tout compris", "Dernière minute"],
   },
   {
@@ -91,19 +95,29 @@ const HERO_SLIDES = [
     text: "Résidences pied des pistes dans les Alpes, forfait remontées en option.",
     href: "/camping-escapades",
     cta: "Voir les séjours au ski",
-    photoQuery: "French Alps ski resort",
-    imageAlt: "Station de ski dans les Alpes françaises",
+    localImage: "/hero/chalet-alpes.jpg",
+    imageAlt: "Couple devant un chalet de montagne enneigé, dans les Alpes",
     promoTags: ["Hiver", "Ski", "Familles"],
   },
   {
-    kicker: "Fêtes de fin d'année",
-    title: "Un Noël à Paris ou un réveillon dans une capitale européenne",
-    text: "City-breaks courts séjours, marchés de Noël et illuminations inclus dans le prix.",
-    href: "/sejours-france",
-    cta: "Réserver un city-break",
-    photoQuery: "Paris Eiffel Tower",
-    imageAlt: "Tour Eiffel illuminée pour les fêtes de fin d'année",
-    promoTags: ["Noël", "City-break", "Sans avion"],
+    kicker: "City-break romantique",
+    title: "Un week-end à Rome dès 249 € par personne",
+    text: "Vol et hôtel réservés ensemble, à deux pas des grands monuments.",
+    href: "/sejours?q=Rome",
+    cta: "Voir les séjours à Rome",
+    localImage: "/hero/rome-citybreak.jpg",
+    imageAlt: "Coucher de soleil sur Rome et la basilique Saint-Pierre",
+    promoTags: ["Romantique", "Week-end", "Italie"],
+  },
+  {
+    kicker: "Tout compris",
+    title: "L'océan Indien tout compris dès 899 €",
+    text: "Bungalow sur pilotis, plage privée, pension complète incluse.",
+    href: "/tout-compris-clubs",
+    cta: "Voir les séjours tout compris",
+    localImage: "/hero/maldives-beach.jpg",
+    imageAlt: "Couple sur un ponton face aux bungalows sur pilotis, Maldives",
+    promoTags: ["Océan Indien", "Tout compris", "Plage"],
   },
 ];
 
@@ -609,16 +623,21 @@ async function main() {
   await prisma.heroSlide.deleteMany({});
   await prisma.heroSlide.createMany({
     data: HERO_SLIDES.map((slide, index) => {
-      const visuel = photoFor(slide.photoQuery);
+      // `localImage` (visuel fourni directement, sans requête ni crédit) a
+      // priorité sur `photoQuery` (résolution Wikimedia) quand les deux
+      // seraient présents — aucun slide n'a actuellement les deux.
+      const local = "localImage" in slide ? slide.localImage : undefined;
+      const query = "photoQuery" in slide ? slide.photoQuery : undefined;
+      const visuel = query ? photoFor(query) : null;
       return {
         kicker: slide.kicker,
         title: slide.title,
         text: slide.text,
         href: slide.href,
         cta: slide.cta,
-        imageUrl: visuel?.url ?? photo(slide.photoQuery, 1600, 700),
+        imageUrl: local ?? visuel?.url ?? photo(query ?? slide.kicker, 1600, 700),
         imageAlt: slide.imageAlt,
-        imageCredit: visuel ? creditFor(visuel) : "",
+        imageCredit: local ? "" : visuel ? creditFor(visuel) : "",
         promoTags: slide.promoTags.slice(0, 5).join(","),
         position: index,
         active: true,
