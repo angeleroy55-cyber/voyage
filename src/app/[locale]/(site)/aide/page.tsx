@@ -56,8 +56,6 @@ export default async function HelpPage() {
           </details>
         ))}
       </div>
-
-      <p className="mt-10 rounded-2xl bg-navy-50 p-5 text-sm text-navy-600">{t.demoNotice}</p>
     </div>
   );
 }

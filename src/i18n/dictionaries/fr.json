@@ -84,7 +84,6 @@
     "emergencyValue": "24 h/24",
     "emergencyHint": "Numéro sur votre bon",
     "faqTitle": "Questions fréquentes",
-    "demoNotice": "Ce site est une maquette de démonstration : les coordonnées, offres, prix et avis affichés sont fictifs et aucune réservation réelle n'est possible.",
     "faq": [
       {
         "q": "Quand vais-je recevoir mes documents de voyage ?",

@@ -111,27 +111,25 @@ export default function SitePopups() {
                 nécessaire.
               </p>
             </div>
+            {/* Deux options, pas trois : « Accepter et fermer » en avant pour que
+                le choix le plus rapide soit aussi le plus visible, « Choisir »
+                pour qui veut vraiment personnaliser. Refuser reste possible,
+                mais dans la fenêtre de paramètres plutôt qu'au même niveau que
+                le bouton principal — sans quoi les deux se neutralisent. */}
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSettingsOpen(true)}
-                className="rounded-xl px-3 py-2.5 text-sm font-semibold text-navy-700 transition hover:bg-navy-50"
-              >
-                Personnaliser
-              </button>
-              <button
-                type="button"
-                onClick={() => decideCookies("essential")}
                 className="rounded-xl border border-navy-200 px-4 py-2.5 text-sm font-semibold text-navy-800 transition hover:border-navy-400"
               >
-                Refuser
+                Choisir
               </button>
               <button
                 type="button"
                 onClick={() => decideCookies("all")}
                 className="rounded-xl bg-gold-400 px-5 py-2.5 text-sm font-bold text-navy-900 transition hover:bg-gold-500"
               >
-                Tout accepter
+                Accepter et fermer
               </button>
             </div>
           </div>
