@@ -184,12 +184,8 @@ export default function Footer({
           </div>
         )}
 
-        {/* La mention suit l'état réel du site, elle n'est pas décorative :
-            les prix de référence viennent d'un relevé concurrentiel et non de
-            nos propres tarifs passés, et les visuels illustrent la destination
-            et non l'établissement. L'écrire évite d'avoir à s'en expliquer. */}
-        <p className="mt-8 max-w-4xl text-xs leading-relaxed text-navy-500">
-          © {new Date().getFullYear()} {settings.name}. {t.legalNotice.replace("{name}", settings.name)}
+        <p className="mt-8 text-xs text-navy-500">
+          © {new Date().getFullYear()} {settings.name}
         </p>
       </div>
     </footer>
