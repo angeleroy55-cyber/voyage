@@ -457,6 +457,107 @@ Après le retour, l'espace client conserve l'historique complet des voyages rés
 
 Ce fonctionnement ne remplace pas un accompagnement sur place assuré par un professionnel local (c'est le cas des circuits accompagnés, avec guide francophone du premier au dernier jour), mais garantit qu'aucune réservation n'est laissée sans interlocuteur joignable.`,
   },
+  {
+    slug: "comment-reserver-sejour-gosejour",
+    title: "Comment réserver un séjour sur gosejour.fr, étape par étape",
+    excerpt: "De la recherche à la confirmation : le détail de chaque étape, pour savoir à quoi s'attendre avant de commencer.",
+    category: "Conseils",
+    readingTime: 5,
+    imageSeed: "post-reservation-etapes",
+    body: `Réserver un voyage sur un site qu'on ne connaît pas encore peut hésiter : voici précisément ce qui se passe, du premier clic à la confirmation.
+
+Première étape, la recherche. Depuis la page d'accueil ou une catégorie (Séjours, Circuits, Croisières...), le moteur de recherche propose une ville de départ, des dates et le nombre de voyageurs. La ville de départ est pré-remplie automatiquement si le navigateur autorise la localisation, mais reste modifiable à tout moment.
+
+Deuxième étape, le choix de l'offre. Chaque fiche affiche la durée, la formule (pension, tout compris...), les photos et, pour les séjours, circuits et croisières, un choix de date de départ libre : le retour se calcule automatiquement selon la durée de la formule.
+
+Troisième étape, la demande. Un clic sur "Demander cette offre" (ou "Demander un devis" pour les formules à date libre) mène à un récapitulatif, puis à un formulaire de coordonnées. Aucun paiement n'est demandé à ce stade : la demande est transmise à l'équipe, qui vérifie la disponibilité réelle avant toute confirmation.
+
+Quatrième étape, la confirmation. Un e-mail de confirmation arrive avec la référence du dossier (format GO-XXXXX), à conserver pour toute démarche ultérieure. Si le virement bancaire a été choisi comme moyen de paiement, les coordonnées bancaires sont jointes dans ce même e-mail, avec la référence comme motif de virement.
+
+Cinquième étape, le suivi. Un compte client (facultatif mais recommandé) permet de retrouver l'historique des demandes depuis "Mes réservations", sans avoir à fouiller dans sa boîte mail.
+
+Un préavis n'engage à rien tant que la disponibilité n'est pas confirmée : c'est volontairement le cas sur ce type de catalogue, où les disponibilités réelles ne sont connues qu'au moment de la vérification par l'équipe.`,
+  },
+  {
+    slug: "comment-finaliser-demande-devis",
+    title: "Comment finaliser votre demande de devis sur gosejour.fr",
+    excerpt: "Dates, voyageurs, coordonnées : ce qu'il faut préparer pour que votre devis parte sans aller-retour inutile.",
+    category: "Conseils",
+    readingTime: 4,
+    imageSeed: "post-devis",
+    body: `Pour un séjour, un circuit ou une croisière, la demande de devis remplace la réservation ferme immédiate : les disponibilités à une date précise dépendent souvent du prestataire, elles sont donc vérifiées avant toute confirmation. Voici comment préparer une demande qui aboutit vite.
+
+Fixer une date de départ, même approximative. Le sélecteur de date sur la fiche offre calcule automatiquement la date de retour à partir de la durée de la formule. Une date précise permet une vérification de disponibilité réelle ; une période large ("en juillet") demande un aller-retour supplémentaire par e-mail ou WhatsApp pour affiner.
+
+Indiquer le nombre exact de voyageurs, adultes et enfants séparément : la tarification et parfois la disponibilité des chambres en dépendent directement.
+
+Laisser une précision en commentaire si besoin : chambre communicante, régime alimentaire, étage bas, proximité de la plage. Ces détails ne changent pas le prix affiché, mais orientent la recherche de disponibilité du côté de l'équipe.
+
+Vérifier son e-mail et son numéro de téléphone avant l'envoi : c'est le seul canal par lequel le devis définitif revient, avec le prix confirmé pour les dates demandées.
+
+Une fois la demande envoyée, un e-mail de confirmation de réception arrive immédiatement, avec la référence du dossier. Le devis chiffré suit généralement sous 24 h ouvrées.`,
+  },
+  {
+    slug: "reduire-cout-voyage",
+    title: "Comment réduire le coût de votre prochain voyage",
+    excerpt: "Dates flexibles, durée, formule : les leviers qui font vraiment baisser la note, sans sacrifier le voyage.",
+    category: "Conseils",
+    readingTime: 6,
+    imageSeed: "post-budget",
+    body: `Le prix d'un même voyage peut varier du simple au double selon quelques choix simples, bien avant de toucher à la destination elle-même.
+
+La date de départ est le levier le plus puissant. Partir en dehors des vacances scolaires (hors zones concernées) ou en milieu de semaine plutôt qu'un samedi fait souvent une différence nette sur le prix du vol comme de l'hébergement. Les périodes d'été indien (septembre-octobre) offrent un climat encore chaud pour un budget nettement inférieur à juillet-août sur la plupart des destinations méditerranéennes.
+
+La durée du séjour compte aussi, dans les deux sens : un aller-retour très court paie souvent le vol presque au même prix qu'un séjour d'une semaine, pour beaucoup moins de nuits sur place. À l'inverse, une semaine de plus se négocie en général mieux par nuit qu'un week-end.
+
+La formule change la facture visible, pas toujours la facture réelle. Un "tout compris" semble plus cher au premier regard qu'un "petit-déjeuner", mais inclut repas, boissons et souvent des activités qu'il faudrait payer à part en formule plus légère : comparer le prix total du séjour, repas compris, donne une image plus juste.
+
+La ville de départ joue un rôle sous-estimé. Un vol depuis une ville secondaire est parfois moins cher qu'au départ de Paris, en particulier sur les destinations desservies par plusieurs aéroports régionaux.
+
+Enfin, les bons plans et dernières minutes concentrent les remises les plus fortes, mais demandent de la souplesse sur la date : ils conviennent à qui peut partir sous trois semaines, pas à un voyage calé à une date fixe imposée (mariage, anniversaire).`,
+  },
+  {
+    slug: "attitudes-avant-pendant-apres-sejour",
+    title: "Les bons réflexes avant, pendant et après un séjour",
+    excerpt: "Ce qui évite les mauvaises surprises, à chaque étape du voyage, destination comprise.",
+    category: "Conseils",
+    readingTime: 6,
+    imageSeed: "post-reflexes-voyage",
+    body: `Un voyage qui se passe bien tient autant à l'organisation en amont qu'à la destination elle-même. Quelques réflexes simples évitent la plupart des mauvaises surprises.
+
+Avant le départ, vérifier la validité des documents d'identité est la première chose à faire, bien avant de préparer les bagages : un passeport arrivant à expiration dans les six mois suivant le voyage est refusé par de nombreux pays hors Union européenne, une règle qui surprend encore chaque année des voyageurs mal informés. Vérifier aussi si une autorisation de voyage électronique est nécessaire (ETIAS pour l'espace Schengen, ESTA pour les États-Unis, e-visa pour certains pays d'Asie) : ces démarches se font en ligne, mais prennent parfois plusieurs jours à être validées, et leur date d'entrée en vigueur a déjà été repoussée plusieurs fois selon les pays — mieux vaut vérifier l'information officielle à jour avant de partir.
+
+Souscrire une assurance voyage adaptée à la destination, en particulier hors Union européenne où les frais médicaux peuvent être très élevés sans couverture (certains pays, comme les États-Unis, facturent une hospitalisation plusieurs dizaines de milliers d'euros). Vérifier ce que couvre déjà une carte bancaire haut de gamme avant d'en souscrire une en double.
+
+Pendant le séjour, garder une copie numérique (photo ou scan) des documents importants - passeport, billets, réservations - accessible même sans connexion internet. En cas de perte, cela accélère considérablement les démarches auprès du consulat ou de l'hébergeur.
+
+Respecter les usages locaux, en particulier vestimentaires pour les lieux de culte et comportementaux dans les pays où certains gestes anodins en France sont mal perçus ailleurs : se renseigner quelques minutes avant le départ évite le faux pas.
+
+Après le retour, signaler rapidement tout problème resté en suspens (bagage égaré, prestation non conforme) pendant que les échanges avec les prestataires sont encore simples à établir : plus le délai s'allonge, plus la résolution devient compliquée. Conserver les justificatifs de dépenses imprévues liées à un incident de voyage, utiles en cas de recours auprès d'une assurance.`,
+  },
+  {
+    slug: "pourquoi-choisir-gosejour",
+    title: "Pourquoi choisir GoSéjour pour réserver vos voyages",
+    excerpt: "Ce que le site fait concrètement différemment, sans promesse qu'on ne peut pas tenir.",
+    category: "Conseils",
+    readingTime: 4,
+    imageSeed: "post-pourquoi-gosejour",
+    body: `GoSéjour est une agence de voyages en ligne récente : plutôt que d'avancer des chiffres qui n'existeraient pas encore, voici ce que le site propose concrètement aujourd'hui.
+
+Un seul endroit pour comparer séjours, circuits, croisières, hôtels, vols, campings et locations de voiture, plutôt que de rouvrir un site différent pour chaque type de réservation.
+
+Un devis sans engagement sur les séjours, circuits et croisières : la demande part avec une date de départ choisie librement, et rien n'est débité avant la confirmation définitive du dossier par l'équipe.
+
+Un contact direct par WhatsApp, en plus du téléphone et de l'e-mail, pour une question rapide sans passer par un formulaire de contact classique.
+
+Des photographies réelles de destination, sous licence Wikimedia Commons avec mention de l'auteur sur chaque fiche, plutôt que des visuels génériques ou des photos d'hébergements qui ne correspondent pas à ce qui sera réellement réservé.
+
+Un espace client qui conserve l'historique des demandes et réservations, avec la référence de dossier (format GO-XXXXX) comme repère unique pour toute démarche ultérieure.
+
+Un règlement par virement bancaire sans frais, le temps que d'autres moyens de paiement soient mis en place : les coordonnées bancaires sont transmises par e-mail uniquement après la demande, jamais affichées publiquement.
+
+Ce sont des choix de fonctionnement, pas des arguments marketing : ils se vérifient en utilisant le site, pas en lisant une page "à propos".`,
+  },
 ];
 
 /**
