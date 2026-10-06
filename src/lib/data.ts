@@ -352,56 +352,18 @@ export const DEPARTURE_CITIES = [
   "Bruxelles",
 ];
 
-export const REVIEWS: Review[] = [
-  {
-    author: "Camille D.",
-    city: "Lyon",
-    score: 9.4,
-    date: "12 juillet 2026",
-    trip: "Crète, 7 nuits en tout compris",
-    text: "Réservation faite en dix minutes un dimanche soir. Le transfert nous attendait à l'aéroport et l'hôtel correspondait exactement aux photos. Rien à redire.",
-  },
-  {
-    author: "Sofiane B.",
-    city: "Toulouse",
-    score: 8.8,
-    date: "3 juin 2026",
-    trip: "Circuit Andalousie",
-    text: "Le guide connaissait vraiment sa région et le rythme laissait du temps libre. Seul bémol : deux hôtels un peu excentrés, mais les navettes suivaient.",
-  },
-  {
-    author: "Marie-Laure P.",
-    city: "Rennes",
-    score: 9.1,
-    date: "28 mai 2026",
-    trip: "Croisière Méditerranée",
-    text: "Premier voyage en croisière et clairement pas le dernier. Le service client a répondu en moins d'une heure quand j'ai voulu changer de cabine.",
-  },
-  {
-    author: "Thomas & Élodie",
-    city: "Nantes",
-    score: 9.6,
-    date: "19 avril 2026",
-    trip: "Escapade à Lisbonne",
-    text: "Excellent rapport qualité-prix pour un long week-end. L'hôtel était à cinq minutes à pied du tram et le petit-déjeuner très correct.",
-  },
-  {
-    author: "Nadia K.",
-    city: "Marseille",
-    score: 8.6,
-    date: "8 mars 2026",
-    trip: "Camping dans les Landes",
-    text: "Parfait avec deux enfants en bas âge. Le club enfants a sauvé nos matinées et la piscine était impeccable.",
-  },
-  {
-    author: "Julien R.",
-    city: "Lille",
-    score: 9.0,
-    date: "22 février 2026",
-    trip: "Vol Paris-New York",
-    text: "Meilleur tarif trouvé après avoir comparé trois sites. Le billet était émis dans la foulée, aucun frais surprise.",
-  },
-];
+/**
+ * Aucun avis fictif ici, volontairement.
+ *
+ * Le tableau précédent contenait six témoignages inventés (faux prénoms,
+ * fausses villes, faux textes), insérés en base avec le statut "published" :
+ * de vrais visiteurs les lisaient comme des avis réels sur une agence qui n'a
+ * pas encore eu de client. C'est le cas exact que la règle « jamais de
+ * contenu inventé » interdit. Les vrais avis arrivent par le modèle `Review`
+ * (voir prisma/schema.prisma), modérés depuis /admin/avis : ils existent dès
+ * qu'un client en laisse un, pas avant.
+ */
+export const REVIEWS: Review[] = [];
 
 export const POSTS: Post[] = [
   {
@@ -497,11 +459,23 @@ Ce fonctionnement ne remplace pas un accompagnement sur place assuré par un pro
   },
 ];
 
+/**
+ * Repères du bandeau de réassurance de l'accueil.
+ *
+ * Des capacités réelles du site, pas des statistiques : GoSéjour est une
+ * agence qui démarre, elle n'a ni volume de clients ni note moyenne à
+ * afficher honnêtement pour l'instant. Un chiffre inventé ("4,3 M de
+ * voyageurs", une note sur des milliers d'avis qui n'existent pas encore)
+ * serait un faux témoignage déguisé en statistique — interdit par les règles
+ * du projet. Ces quatre lignes se mettent à jour au fil de l'activité
+ * réelle : virement (seul moyen de paiement actif aujourd'hui, voir
+ * PAYMENT_ENABLED), WhatsApp, devis sans engagement, catalogue unique.
+ */
 export const TRUST_POINTS = [
-  { value: "4,3 M", label: "de voyageurs accompagnés" },
-  { value: "9,2/10", label: "note moyenne sur 3 450 avis" },
-  { value: "4×", label: "paiement en plusieurs fois" },
-  { value: "24 h/24", label: "assistance pendant le voyage" },
+  { value: "Devis", label: "gratuit et sans engagement" },
+  { value: "WhatsApp", label: "une question, une réponse directe" },
+  { value: "Virement", label: "sans frais, coordonnées transmises par e-mail" },
+  { value: "6", label: "types de voyage réunis en une recherche" },
 ];
 
 export const BENEFITS = [

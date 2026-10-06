@@ -3,14 +3,19 @@ import Section from "@/components/ui/Section";
 import type { Review } from "@/lib/types";
 
 export default function Testimonials({ reviews }: { reviews: Review[] }) {
-  const average = reviews.length
-    ? (reviews.reduce((sum, review) => sum + review.score, 0) / reviews.length).toFixed(1)
-    : "0";
+  // Rien à afficher tant qu'aucun avis réel n'a été publié : un chiffre codé
+  // en dur ici serait un faux avis déguisé en statistique, ce qui est
+  // justement ce qu'on vient de retirer (voir REVIEWS dans src/lib/data.ts).
+  if (reviews.length === 0) return null;
+
+  const average = (
+    reviews.reduce((sum, review) => sum + review.score, 0) / reviews.length
+  ).toFixed(1);
 
   return (
     <Section
       title="Votre avis compte"
-      subtitle={`Note moyenne de ${average.replace(".", ",")}/10 sur 3 450 avis vérifiés après séjour.`}
+      subtitle={`Note moyenne de ${average.replace(".", ",")}/10 sur ${reviews.length} avis vérifiés après séjour.`}
     >
       <div className="rail -mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2">
         {reviews.map((r, i) => (
