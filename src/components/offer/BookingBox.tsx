@@ -14,6 +14,18 @@ import type { Offer } from "@/lib/types";
  * voyagent dans l'URL, ce qui rend l'étape suivante partageable, rechargeable
  * et accessible au bouton « précédent » sans réenvoi de formulaire.
  */
+/** Catégories où le départ se négocie par date libre, en devis. */
+const QUOTE_CATEGORIES = new Set(["sejours", "circuits", "croisieres"]);
+
+/** Jour civil local au format `AAAA-MM-JJ`, décalé de `days` jours. */
+function isoDayFrom(base: Date, days: number): string {
+  const d = new Date(base);
+  d.setDate(d.getDate() + days);
+  const mois = String(d.getMonth() + 1).padStart(2, "0");
+  const jour = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mois}-${jour}`;
+}
+
 export default function BookingBox({
   offer,
   departureDate = "",
@@ -25,6 +37,18 @@ export default function BookingBox({
 }) {
   const [travellers, setTravellers] = useState(2);
   const [insurance, setInsurance] = useState(false);
+
+  // Séjours, circuits et croisières : le client choisit sa propre date de
+  // départ plutôt que de rester figé sur l'unique date du catalogue. La date
+  // de retour suit automatiquement, à la durée réelle de la formule — aucun
+  // prix par date n'est inventé, le montant affiché reste celui du catalogue,
+  // confirmé ensuite dans le devis.
+  const quoteFlow = QUOTE_CATEGORIES.has(offer.category);
+  const todayIso = isoDayFrom(new Date(), 0);
+  const [pickedDeparture, setPickedDeparture] = useState(departureDate || "");
+  const pickedReturn = pickedDeparture
+    ? isoDayFrom(new Date(`${pickedDeparture}T12:00:00`), Math.max(offer.nights, 1))
+    : "";
 
   const off = discount(offer.price, offer.oldPrice);
   const insurancePerPerson = Math.round(offer.price * 0.06);
@@ -44,8 +68,10 @@ export default function BookingBox({
         className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card"
       >
         <input type="hidden" name="voyageurs" value={travellers} />
-        {departureDate && <input type="hidden" name="du" value={departureDate} />}
-        {returnDate && <input type="hidden" name="au" value={returnDate} />}
+        {!quoteFlow && departureDate && <input type="hidden" name="du" value={departureDate} />}
+        {!quoteFlow && returnDate && <input type="hidden" name="au" value={returnDate} />}
+        {quoteFlow && pickedDeparture && <input type="hidden" name="du" value={pickedDeparture} />}
+        {quoteFlow && pickedReturn && <input type="hidden" name="au" value={pickedReturn} />}
 
         {off && (
           <span className="inline-block rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">
@@ -63,6 +89,29 @@ export default function BookingBox({
         <p className="mt-0.5 text-xs text-navy-500">
           {durationLabel(offer.nights, offer.category)} · {offer.board} · taxes incluses
         </p>
+
+        {quoteFlow && (
+          <div className="mt-4 rounded-xl border border-navy-200 p-3.5">
+            <label className="block text-sm font-semibold text-navy-800" htmlFor="booking-departure">
+              Date de départ souhaitée
+            </label>
+            <input
+              id="booking-departure"
+              type="date"
+              name="du-visible"
+              min={todayIso}
+              value={pickedDeparture}
+              onChange={(e) => setPickedDeparture(e.target.value)}
+              className="mt-2 w-full rounded-lg border border-navy-200 px-3 py-2 text-sm outline-none focus:border-navy-400"
+            />
+            <p className="mt-2 text-xs text-navy-500">
+              {pickedReturn
+                ? `Retour estimé le ${new Date(`${pickedReturn}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}, pour ${durationLabel(offer.nights, offer.category)}.`
+                : "Le retour se calcule automatiquement à partir de la durée de la formule."}
+              {" "}Prix indicatif ci-dessus : le tarif définitif pour ces dates est confirmé dans le devis.
+            </p>
+          </div>
+        )}
 
         <div className="mt-4 flex items-center justify-between rounded-xl border border-navy-200 px-3.5 py-3">
           <span className="text-sm font-semibold text-navy-800">Voyageurs</span>
@@ -126,13 +175,16 @@ export default function BookingBox({
 
         <button
           type="submit"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gold-400 py-3.5 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500"
+          disabled={quoteFlow && !pickedDeparture}
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gold-400 py-3.5 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Demander cette offre
+          {quoteFlow ? "Demander un devis" : "Demander cette offre"}
           <Icon name="chevronRight" className="size-4" />
         </button>
         <p className="mt-2 text-center text-xs text-navy-500">
-          Étape suivante : vos coordonnées et le moyen de paiement.
+          {quoteFlow
+            ? "Étape suivante : vos coordonnées, pour recevoir votre devis par e-mail."
+            : "Étape suivante : vos coordonnées et le moyen de paiement."}
         </p>
 
         <ul className="mt-4 space-y-2 text-xs text-navy-600">
