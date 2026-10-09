@@ -2,6 +2,7 @@ import DepartureCityProvider from "@/components/site/DepartureCity";
 import Header from "@/components/site/Header";
 import Footer from "@/components/site/Footer";
 import SitePopups from "@/components/site/SitePopups";
+import WhatsAppFloatButton from "@/components/site/WhatsAppFloatButton";
 import I18nProvider from "@/i18n/I18nProvider";
 import { getDictionary } from "@/i18n/dictionaries";
 import { isLocale, DEFAULT_LOCALE } from "@/i18n/config";
@@ -52,6 +53,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
             topCountries={topCountries}
           />
           <SitePopups />
+          <WhatsAppFloatButton number={settings.whatsapp} />
         </div>
       </DepartureCityProvider>
     </I18nProvider>
