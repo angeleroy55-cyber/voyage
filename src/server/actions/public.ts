@@ -7,7 +7,7 @@ import { getCustomerSession } from "@/server/customer-session";
 import { sendBookingCreatedEmails, sendNewsletterWelcomeEmail } from "@/server/mail";
 import { bookingReference } from "@/lib/reference";
 import { PAYMENT_CHOICES } from "@/lib/constants";
-import { priceForDate } from "@/lib/pricing";
+import { leadDaysFor, priceForDate } from "@/lib/pricing";
 
 /**
  * Écritures déclenchées par les visiteurs du site public.
@@ -66,7 +66,7 @@ export async function createBooking(
 
   const offer = await prisma.offer.findFirst({
     where: { slug: offerSlug, status: "published" },
-    select: { id: true, price: true, title: true },
+    select: { id: true, price: true, title: true, category: { select: { slug: true } } },
   });
   if (!offer) {
     return { ok: false, message: "Cette offre n'est plus disponible." };
@@ -78,6 +78,26 @@ export async function createBooking(
   const departureDateIso = readDateIso(formData.get("departureDate"));
   const departureDate = readDate(formData.get("departureDate"));
   const returnDate = readDate(formData.get("returnDate"));
+
+  // Même délai minimum que celui affiché sur le calendrier de la fiche offre
+  // (DepartureCalendar) : une date trop proche envoyée en contournant
+  // l'interface est refusée plutôt que silencieusement acceptée.
+  if (departureDateIso) {
+    const lead = leadDaysFor(offer.category?.slug ?? "");
+    if (lead > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const minDate = new Date(today);
+      minDate.setDate(minDate.getDate() + lead);
+      const picked = new Date(`${departureDateIso}T00:00:00`);
+      if (picked < minDate) {
+        return {
+          ok: false,
+          message: `Cette offre demande un départ au moins ${lead} jours après la date de la demande.`,
+        };
+      }
+    }
+  }
 
   // Le total est recalculé côté serveur à partir du prix en base, jamais de
   // celui envoyé par le formulaire : modifiable depuis le navigateur, il

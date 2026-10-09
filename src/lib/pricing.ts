@@ -28,6 +28,20 @@ const WEEKEND_SURCHARGE = 0.05;
 const LAST_MINUTE_DISCOUNT = 0.05;
 const LAST_MINUTE_WINDOW_DAYS = 10;
 
+/**
+ * Délai minimum avant un départ, par catégorie.
+ *
+ * Deux jours francs pour les séjours (délai d'émission des billets et de
+ * confirmation hôtelière) ; aucun délai supplémentaire pour les circuits et
+ * croisières, dont les départs sont déjà des dates précises et plus
+ * espacées. Utilisé à la fois par le calendrier affiché (DepartureCalendar)
+ * et par l'action serveur qui enregistre la demande (createBooking) : les
+ * mêmes dates sont acceptées des deux côtés.
+ */
+export function leadDaysFor(category: string): number {
+  return category === "sejours" ? 2 : 0;
+}
+
 /** Nombre de jours entre aujourd'hui (minuit local) et une date `AAAA-MM-JJ`. */
 function daysFromToday(iso: string): number {
   const today = new Date();

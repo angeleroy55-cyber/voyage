@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
+import DepartureCalendar from "@/components/offer/DepartureCalendar";
 import { discount, durationLabel, price } from "@/lib/format";
 import { priceForDate } from "@/lib/pricing";
 import type { Offer } from "@/lib/types";
@@ -17,15 +18,6 @@ import type { Offer } from "@/lib/types";
  */
 /** Catégories où le départ se choisit librement sur un calendrier de dates. */
 const QUOTE_CATEGORIES = new Set(["sejours", "circuits", "croisieres"]);
-
-/**
- * Fenêtre du calendrier de dates, à partir d'aujourd'hui, et jour sans
- * départ. Les lundis sont exclus (contrainte réelle d'exploitation : pas de
- * rotation vol/transfert ce jour-là), ce qui laisse environ 26 dates
- * proposées sur 31 jours — largement au-dessus du minimum attendu.
- */
-const CALENDAR_WINDOW_DAYS = 31;
-const NO_DEPARTURE_WEEKDAY = 1; // lundi
 
 /** Jour civil local au format `AAAA-MM-JJ`, décalé de `days` jours. */
 function isoDayFrom(base: Date, days: number): string {
@@ -55,16 +47,7 @@ export default function BookingBox({
   // on ne va pas en inventer un différent par jour comme le fait un
   // comparateur qui a un vrai flux tarifaire par date.
   const quoteFlow = QUOTE_CATEGORIES.has(offer.category);
-  const calendarDates = useMemo(
-    () =>
-      Array.from({ length: CALENDAR_WINDOW_DAYS }, (_, i) => isoDayFrom(new Date(), i)).filter(
-        (iso) => new Date(`${iso}T12:00:00`).getDay() !== NO_DEPARTURE_WEEKDAY,
-      ),
-    [],
-  );
-  const [pickedDeparture, setPickedDeparture] = useState(
-    departureDate && calendarDates.includes(departureDate) ? departureDate : "",
-  );
+  const [pickedDeparture, setPickedDeparture] = useState(departureDate || "");
   const pickedReturn = pickedDeparture
     ? isoDayFrom(new Date(`${pickedDeparture}T12:00:00`), Math.max(offer.nights, 1))
     : "";
@@ -118,44 +101,20 @@ export default function BookingBox({
         {quoteFlow && (
           <div className="mt-4 rounded-xl border border-navy-200 p-3.5">
             <p className="text-sm font-semibold text-navy-800">Choisissez votre date de départ</p>
-            <p className="mt-0.5 text-xs text-navy-500">
-              Le prix varie selon la date : départs week-end un peu plus chers, départs dans les 10
-              prochains jours à prix réduit.
-            </p>
+            <p className="mt-0.5 text-xs text-navy-500">Prix affiché sur chaque date disponible.</p>
 
-            {/* Calendrier de dates plutôt qu'un simple champ de saisie : le
-                prix est déjà visible sur chaque date, pas seulement après
-                l'avoir choisie — c'est tout l'intérêt par rapport à un champ
-                de date suivi d'un devis séparé. */}
-            <div className="rail mt-3 flex gap-2 overflow-x-auto pb-1">
-              {calendarDates.map((iso) => {
-                const d = new Date(`${iso}T12:00:00`);
-                const selected = iso === pickedDeparture;
-                const datePrice = priceForDate(offer.price, iso);
-                return (
-                  <button
-                    key={iso}
-                    type="button"
-                    onClick={() => setPickedDeparture(iso)}
-                    aria-pressed={selected}
-                    className={`flex shrink-0 flex-col items-center rounded-xl border px-2.5 py-2 text-center transition ${
-                      selected
-                        ? "border-navy-800 bg-navy-800 text-white"
-                        : "border-navy-200 text-navy-700 hover:border-navy-400"
-                    }`}
-                  >
-                    <span className={`text-[10px] uppercase ${selected ? "text-white/70" : "text-navy-400"}`}>
-                      {d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
-                    </span>
-                    <span className="text-base font-extrabold leading-tight">{d.getDate()}</span>
-                    <span className="text-[11px] font-semibold tabular-nums">{price(datePrice)}</span>
-                  </button>
-                );
-              })}
+            <div className="mt-3">
+              <DepartureCalendar
+                basePrice={offer.price}
+                nights={offer.nights}
+                category={offer.category}
+                value={pickedDeparture}
+                onChange={setPickedDeparture}
+              />
             </div>
 
             {pickedReturn && (
-              <p className="mt-2.5 text-xs text-navy-500">
+              <p className="mt-3 text-xs text-navy-500">
                 Retour le {new Date(`${pickedReturn}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}, pour {durationLabel(offer.nights, offer.category)}.
               </p>
             )}
