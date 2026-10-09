@@ -14,8 +14,11 @@ import type { Offer } from "@/lib/types";
  * voyagent dans l'URL, ce qui rend l'étape suivante partageable, rechargeable
  * et accessible au bouton « précédent » sans réenvoi de formulaire.
  */
-/** Catégories où le départ se négocie par date libre, en devis. */
+/** Catégories où le départ se choisit librement sur un calendrier de dates. */
 const QUOTE_CATEGORIES = new Set(["sejours", "circuits", "croisieres"]);
+
+/** Nombre de dates proposées dans le calendrier, à partir d'aujourd'hui. */
+const CALENDAR_WINDOW_DAYS = 21;
 
 /** Jour civil local au format `AAAA-MM-JJ`, décalé de `days` jours. */
 function isoDayFrom(base: Date, days: number): string {
@@ -38,14 +41,20 @@ export default function BookingBox({
   const [travellers, setTravellers] = useState(2);
   const [insurance, setInsurance] = useState(false);
 
-  // Séjours, circuits et croisières : le client choisit sa propre date de
-  // départ plutôt que de rester figé sur l'unique date du catalogue. La date
-  // de retour suit automatiquement, à la durée réelle de la formule — aucun
-  // prix par date n'est inventé, le montant affiché reste celui du catalogue,
-  // confirmé ensuite dans le devis.
+  // Séjours, circuits et croisières : le client choisit sa date de départ sur
+  // un calendrier, prix déjà affiché sur chaque date — pas de détour par un
+  // formulaire de date suivi d'un devis à part. Le prix est le même sur
+  // chaque date proposée : c'est le seul tarif réel qu'on a pour cette offre,
+  // on ne va pas en inventer un différent par jour comme le fait un
+  // comparateur qui a un vrai flux tarifaire par date.
   const quoteFlow = QUOTE_CATEGORIES.has(offer.category);
-  const todayIso = isoDayFrom(new Date(), 0);
-  const [pickedDeparture, setPickedDeparture] = useState(departureDate || "");
+  const calendarDates = useMemo(
+    () => Array.from({ length: CALENDAR_WINDOW_DAYS }, (_, i) => isoDayFrom(new Date(), i)),
+    [],
+  );
+  const [pickedDeparture, setPickedDeparture] = useState(
+    departureDate && calendarDates.includes(departureDate) ? departureDate : "",
+  );
   const pickedReturn = pickedDeparture
     ? isoDayFrom(new Date(`${pickedDeparture}T12:00:00`), Math.max(offer.nights, 1))
     : "";
@@ -92,24 +101,44 @@ export default function BookingBox({
 
         {quoteFlow && (
           <div className="mt-4 rounded-xl border border-navy-200 p-3.5">
-            <label className="block text-sm font-semibold text-navy-800" htmlFor="booking-departure">
-              Date de départ souhaitée
-            </label>
-            <input
-              id="booking-departure"
-              type="date"
-              name="du-visible"
-              min={todayIso}
-              value={pickedDeparture}
-              onChange={(e) => setPickedDeparture(e.target.value)}
-              className="mt-2 w-full rounded-lg border border-navy-200 px-3 py-2 text-sm outline-none focus:border-navy-400"
-            />
-            <p className="mt-2 text-xs text-navy-500">
-              {pickedReturn
-                ? `Retour estimé le ${new Date(`${pickedReturn}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}, pour ${durationLabel(offer.nights, offer.category)}.`
-                : "Le retour se calcule automatiquement à partir de la durée de la formule."}
-              {" "}Prix indicatif ci-dessus : le tarif définitif pour ces dates est confirmé dans le devis.
-            </p>
+            <p className="text-sm font-semibold text-navy-800">Choisissez votre date de départ</p>
+            <p className="mt-0.5 text-xs text-navy-500">Le prix affiché est le même à chaque date.</p>
+
+            {/* Calendrier de dates plutôt qu'un simple champ de saisie : le
+                prix est déjà visible sur chaque date, pas seulement après
+                l'avoir choisie — c'est tout l'intérêt par rapport à un champ
+                de date suivi d'un devis séparé. */}
+            <div className="rail mt-3 flex gap-2 overflow-x-auto pb-1">
+              {calendarDates.map((iso) => {
+                const d = new Date(`${iso}T12:00:00`);
+                const selected = iso === pickedDeparture;
+                return (
+                  <button
+                    key={iso}
+                    type="button"
+                    onClick={() => setPickedDeparture(iso)}
+                    aria-pressed={selected}
+                    className={`flex shrink-0 flex-col items-center rounded-xl border px-2.5 py-2 text-center transition ${
+                      selected
+                        ? "border-navy-800 bg-navy-800 text-white"
+                        : "border-navy-200 text-navy-700 hover:border-navy-400"
+                    }`}
+                  >
+                    <span className={`text-[10px] uppercase ${selected ? "text-white/70" : "text-navy-400"}`}>
+                      {d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
+                    </span>
+                    <span className="text-base font-extrabold leading-tight">{d.getDate()}</span>
+                    <span className="text-[11px] font-semibold tabular-nums">{price(offer.price)}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {pickedReturn && (
+              <p className="mt-2.5 text-xs text-navy-500">
+                Retour le {new Date(`${pickedReturn}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}, pour {durationLabel(offer.nights, offer.category)}.
+              </p>
+            )}
           </div>
         )}
 
@@ -178,13 +207,11 @@ export default function BookingBox({
           disabled={quoteFlow && !pickedDeparture}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gold-400 py-3.5 text-[15px] font-bold text-navy-900 transition hover:bg-gold-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {quoteFlow ? "Demander un devis" : "Demander cette offre"}
+          {quoteFlow && !pickedDeparture ? "Choisissez une date" : "Réserver cette offre"}
           <Icon name="chevronRight" className="size-4" />
         </button>
         <p className="mt-2 text-center text-xs text-navy-500">
-          {quoteFlow
-            ? "Étape suivante : vos coordonnées, pour recevoir votre devis par e-mail."
-            : "Étape suivante : vos coordonnées et le moyen de paiement."}
+          Étape suivante : vos coordonnées et le moyen de paiement.
         </p>
 
         <ul className="mt-4 space-y-2 text-xs text-navy-600">
