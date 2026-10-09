@@ -7,6 +7,7 @@ import { getCustomerSession } from "@/server/customer-session";
 import { sendBookingCreatedEmails, sendNewsletterWelcomeEmail } from "@/server/mail";
 import { bookingReference } from "@/lib/reference";
 import { PAYMENT_CHOICES } from "@/lib/constants";
+import { priceForDate } from "@/lib/pricing";
 
 /**
  * Écritures déclenchées par les visiteurs du site public.
@@ -24,11 +25,17 @@ function email(value: FormDataEntryValue | null): string {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/** Chaîne `AAAA-MM-JJ` transmise par le formulaire, sinon vide. */
+function readDateIso(value: FormDataEntryValue | null): string {
+  const raw = String(value ?? "").trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : "";
+}
+
 /** Date `AAAA-MM-JJ` transmise par le moteur de recherche, sinon `null`. */
 function readDate(value: FormDataEntryValue | null): Date | null {
-  const raw = String(value ?? "").trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
-  const date = new Date(`${raw}T12:00:00`);
+  const iso = readDateIso(value);
+  if (!iso) return null;
+  const date = new Date(`${iso}T12:00:00`);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
@@ -65,20 +72,27 @@ export async function createBooking(
     return { ok: false, message: "Cette offre n'est plus disponible." };
   }
 
-  // Le total est recalculé côté serveur : un prix envoyé par le formulaire
-  // serait modifiable depuis le navigateur.
-  const insurancePerPerson = Math.round(offer.price * 0.06);
-  const totalPrice = travellers * (offer.price + (insurance ? insurancePerPerson : 0));
+  // Dates issues du moteur de recherche ou du calendrier de la fiche offre.
+  // Une valeur illisible est ignorée plutôt que refusée : ce sont des dates
+  // souhaitées, confirmées ensuite par un conseiller.
+  const departureDateIso = readDateIso(formData.get("departureDate"));
+  const departureDate = readDate(formData.get("departureDate"));
+  const returnDate = readDate(formData.get("returnDate"));
+
+  // Le total est recalculé côté serveur à partir du prix en base, jamais de
+  // celui envoyé par le formulaire : modifiable depuis le navigateur, il
+  // n'est donc pas une source fiable. La variation par date de départ suit la
+  // même règle que celle affichée au client (voir src/lib/pricing.ts), pour
+  // que le montant facturé soit toujours celui qui a été montré.
+  const effectivePrice = departureDateIso
+    ? priceForDate(offer.price, departureDateIso)
+    : offer.price;
+  const insurancePerPerson = Math.round(effectivePrice * 0.06);
+  const totalPrice = travellers * (effectivePrice + (insurance ? insurancePerPerson : 0));
 
   // Un visiteur connecté voit sa demande rattachée à son espace client ; sinon
   // le rattachement se fera à l'inscription, sur l'adresse e-mail.
   const session = await getCustomerSession();
-
-  // Dates issues du moteur de recherche, quand la fiche a été atteinte depuis
-  // une recherche datée. Une valeur illisible est ignorée plutôt que refusée :
-  // ce sont des dates souhaitées, confirmées ensuite par un conseiller.
-  const departureDate = readDate(formData.get("departureDate"));
-  const returnDate = readDate(formData.get("returnDate"));
 
   const instalments = formData.get("instalments") === "4" ? 4 : 1;
 

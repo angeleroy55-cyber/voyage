@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { discount, durationLabel, price } from "@/lib/format";
+import { priceForDate } from "@/lib/pricing";
 import type { Offer } from "@/lib/types";
 
 /**
@@ -17,8 +18,14 @@ import type { Offer } from "@/lib/types";
 /** Catégories où le départ se choisit librement sur un calendrier de dates. */
 const QUOTE_CATEGORIES = new Set(["sejours", "circuits", "croisieres"]);
 
-/** Nombre de dates proposées dans le calendrier, à partir d'aujourd'hui. */
-const CALENDAR_WINDOW_DAYS = 21;
+/**
+ * Fenêtre du calendrier de dates, à partir d'aujourd'hui, et jour sans
+ * départ. Les lundis sont exclus (contrainte réelle d'exploitation : pas de
+ * rotation vol/transfert ce jour-là), ce qui laisse environ 26 dates
+ * proposées sur 31 jours — largement au-dessus du minimum attendu.
+ */
+const CALENDAR_WINDOW_DAYS = 31;
+const NO_DEPARTURE_WEEKDAY = 1; // lundi
 
 /** Jour civil local au format `AAAA-MM-JJ`, décalé de `days` jours. */
 function isoDayFrom(base: Date, days: number): string {
@@ -49,7 +56,10 @@ export default function BookingBox({
   // comparateur qui a un vrai flux tarifaire par date.
   const quoteFlow = QUOTE_CATEGORIES.has(offer.category);
   const calendarDates = useMemo(
-    () => Array.from({ length: CALENDAR_WINDOW_DAYS }, (_, i) => isoDayFrom(new Date(), i)),
+    () =>
+      Array.from({ length: CALENDAR_WINDOW_DAYS }, (_, i) => isoDayFrom(new Date(), i)).filter(
+        (iso) => new Date(`${iso}T12:00:00`).getDay() !== NO_DEPARTURE_WEEKDAY,
+      ),
     [],
   );
   const [pickedDeparture, setPickedDeparture] = useState(
@@ -59,14 +69,20 @@ export default function BookingBox({
     ? isoDayFrom(new Date(`${pickedDeparture}T12:00:00`), Math.max(offer.nights, 1))
     : "";
 
+  // Prix réel pour la date choisie (ou le prix catalogue tant qu'aucune date
+  // n'est sélectionnée) : même fonction que côté serveur, voir src/lib/pricing.ts.
+  const effectivePrice = quoteFlow && pickedDeparture
+    ? priceForDate(offer.price, pickedDeparture)
+    : offer.price;
+
   const off = discount(offer.price, offer.oldPrice);
-  const insurancePerPerson = Math.round(offer.price * 0.06);
+  const insurancePerPerson = Math.round(effectivePrice * 0.06);
 
   // Total affiché à titre indicatif : le montant qui fait foi est recalculé par
-  // l'action serveur, à partir du prix en base.
+  // l'action serveur, à partir du prix en base et de la même règle de date.
   const total = useMemo(
-    () => travellers * (offer.price + (insurance ? insurancePerPerson : 0)),
-    [travellers, insurance, offer.price, insurancePerPerson],
+    () => travellers * (effectivePrice + (insurance ? insurancePerPerson : 0)),
+    [travellers, insurance, effectivePrice, insurancePerPerson],
   );
 
   return (
@@ -92,7 +108,7 @@ export default function BookingBox({
           {offer.oldPrice && (
             <span className="text-base text-navy-400 line-through">{price(offer.oldPrice)}</span>
           )}
-          <span className="text-3xl font-extrabold text-navy-900">{price(offer.price)}</span>
+          <span className="text-3xl font-extrabold text-navy-900">{price(effectivePrice)}</span>
           <span className="pb-1 text-sm text-navy-500">/ pers.</span>
         </div>
         <p className="mt-0.5 text-xs text-navy-500">
@@ -102,7 +118,10 @@ export default function BookingBox({
         {quoteFlow && (
           <div className="mt-4 rounded-xl border border-navy-200 p-3.5">
             <p className="text-sm font-semibold text-navy-800">Choisissez votre date de départ</p>
-            <p className="mt-0.5 text-xs text-navy-500">Le prix affiché est le même à chaque date.</p>
+            <p className="mt-0.5 text-xs text-navy-500">
+              Le prix varie selon la date : départs week-end un peu plus chers, départs dans les 10
+              prochains jours à prix réduit.
+            </p>
 
             {/* Calendrier de dates plutôt qu'un simple champ de saisie : le
                 prix est déjà visible sur chaque date, pas seulement après
@@ -112,6 +131,7 @@ export default function BookingBox({
               {calendarDates.map((iso) => {
                 const d = new Date(`${iso}T12:00:00`);
                 const selected = iso === pickedDeparture;
+                const datePrice = priceForDate(offer.price, iso);
                 return (
                   <button
                     key={iso}
@@ -128,7 +148,7 @@ export default function BookingBox({
                       {d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", "")}
                     </span>
                     <span className="text-base font-extrabold leading-tight">{d.getDate()}</span>
-                    <span className="text-[11px] font-semibold tabular-nums">{price(offer.price)}</span>
+                    <span className="text-[11px] font-semibold tabular-nums">{price(datePrice)}</span>
                   </button>
                 );
               })}
@@ -185,9 +205,9 @@ export default function BookingBox({
         <div className="mt-4 space-y-1.5 border-t border-navy-100 pt-4 text-sm">
           <div className="flex justify-between text-navy-600">
             <span>
-              {price(offer.price)} × {travellers}
+              {price(effectivePrice)} × {travellers}
             </span>
-            <span>{price(offer.price * travellers)}</span>
+            <span>{price(effectivePrice * travellers)}</span>
           </div>
           {insurance && (
             <div className="flex justify-between text-navy-600">

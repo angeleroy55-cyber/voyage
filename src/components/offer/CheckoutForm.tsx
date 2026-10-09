@@ -7,6 +7,7 @@ import { PaymentLogo } from "@/components/ui/BrandLogos";
 import { createBooking, type FormState } from "@/server/actions/public";
 import { PAYMENT_CHOICES } from "@/lib/constants";
 import { price } from "@/lib/format";
+import { priceForDate } from "@/lib/pricing";
 import type { Offer } from "@/lib/types";
 
 const INITIAL: FormState = { ok: false, message: "" };
@@ -40,10 +41,13 @@ export default function CheckoutForm({
   const [method, setMethod] = useState<string>("");
   const [instalments, setInstalments] = useState(1);
 
-  const insurancePerPerson = Math.round(offer.price * 0.06);
+  // Même règle de prix par date qu'à l'étape précédente (BookingBox) et que
+  // le serveur (createBooking) : voir src/lib/pricing.ts.
+  const effectivePrice = departureDate ? priceForDate(offer.price, departureDate) : offer.price;
+  const insurancePerPerson = Math.round(effectivePrice * 0.06);
   const total = useMemo(
-    () => travellers * (offer.price + (insurance ? insurancePerPerson : 0)),
-    [travellers, insurance, offer.price, insurancePerPerson],
+    () => travellers * (effectivePrice + (insurance ? insurancePerPerson : 0)),
+    [travellers, insurance, effectivePrice, insurancePerPerson],
   );
 
   return (
@@ -214,9 +218,9 @@ export default function CheckoutForm({
         <dl className="mt-4 space-y-1.5 text-sm">
           <div className="flex justify-between text-navy-600">
             <dt>
-              {price(offer.price)} × {travellers} voyageur{travellers > 1 ? "s" : ""}
+              {price(effectivePrice)} × {travellers} voyageur{travellers > 1 ? "s" : ""}
             </dt>
-            <dd>{price(offer.price * travellers)}</dd>
+            <dd>{price(effectivePrice * travellers)}</dd>
           </div>
           {insurance && (
             <div className="flex justify-between text-navy-600">
