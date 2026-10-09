@@ -10,7 +10,7 @@
  * à déboguer en cas de souci avec les types générés.
  */
 
-export const LOCALES = ["fr", "en", "es"] as const;
+export const LOCALES = ["fr", "en", "es", "de"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = "fr";
@@ -22,12 +22,26 @@ export const LOCALE_TAGS: Record<Locale, string> = {
   fr: "fr-FR",
   en: "en-US",
   es: "es-ES",
+  de: "de-DE",
 };
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   fr: "Français",
   en: "English",
   es: "Español",
+  de: "Deutsch",
+};
+
+/**
+ * Drapeau associé à chaque langue, pour le sélecteur (icône plutôt que texte
+ * sur mobile/en barre étroite). Allemagne pour l'allemand, pas l'Autriche ni
+ * la Suisse : c'est la variante standard, sans ambiguïté pour l'utilisateur.
+ */
+export const LOCALE_FLAGS: Record<Locale, string> = {
+  fr: "🇫🇷",
+  en: "🇬🇧",
+  es: "🇪🇸",
+  de: "🇩🇪",
 };
 
 export function isLocale(value: string | undefined | null): value is Locale {
@@ -55,6 +69,12 @@ export function localizedPath(pathname: string, locale: Locale): string {
  * Choisit le texte à afficher selon la langue, avec repli sur le français si
  * la traduction est vide : une colonne EN/ES non encore remplie ne doit
  * jamais afficher un trou, elle affiche le texte source.
+ *
+ * L'allemand n'a pas encore de colonnes dédiées en base (titleDe, etc.) : il
+ * retombe donc sur le français comme n'importe quelle langue sans valeur
+ * saisie, au même titre qu'un EN/ES vide. L'interface, elle, est intégralement
+ * traduite (voir src/i18n/dictionaries/de.json) — seul le catalogue (offres,
+ * destinations) reste à traduire pour cette langue.
  */
 export function pickLocalized(locale: Locale, fr: string, en: string, es: string): string {
   if (locale === "en") return en || fr;

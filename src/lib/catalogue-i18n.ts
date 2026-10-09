@@ -16,6 +16,7 @@
 
 import type { SourceOffer } from "@/lib/catalogue-source";
 import offerTitles from "@/lib/offer-title-translations.json";
+import type { Locale } from "@/i18n/config";
 
 // ---------------------------------------------------------------------------
 // Catégories (15)
@@ -734,9 +735,13 @@ export const CONTINENT_TRANSLATIONS: Record<string, { en: string; es: string }> 
   oceanie: { en: "Oceania", es: "Oceanía" },
 };
 
-/** Libellé de continent selon la locale, avec repli sur le français. */
-export function translateContinentLabel(id: string, label: string, locale: "fr" | "en" | "es"): string {
+/**
+ * Libellé de continent selon la locale, avec repli sur le français — et donc
+ * sur l'allemand aussi tant qu'aucune traduction dédiée n'existe ici (même
+ * principe que `pickLocalized`).
+ */
+export function translateContinentLabel(id: string, label: string, locale: Locale): string {
   const t9n = CONTINENT_TRANSLATIONS[id];
-  if (!t9n || locale === "fr") return label;
+  if (!t9n || locale === "fr" || locale === "de") return label;
   return locale === "en" ? t9n.en : t9n.es;
 }
