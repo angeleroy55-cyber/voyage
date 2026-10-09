@@ -596,7 +596,20 @@ export type ActivityEvent = { label: string; createdAt: Date };
  * s'affiche pas — jamais un nom ou un évènement fabriqué pour « amorcer ».
  */
 export async function getRecentActivity(take = 5): Promise<ActivityEvent[]> {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
   const rows = await prisma.booking.findMany({
+    where: {
+      // Trois conditions, pas une seule : un accord explicite du client
+      // (consentement RGPD, voir `activityOptIn`), une réservation
+      // réellement confirmée par l'équipe (pas une simple demande en
+      // attente, qui n'est pas encore « réservée »), et une fenêtre de
+      // 30 jours pour ne pas afficher un évènement vieux de plusieurs mois
+      // comme s'il venait de se produire.
+      activityOptIn: true,
+      status: "confirmed",
+      createdAt: { gte: thirtyDaysAgo },
+    },
     orderBy: { createdAt: "desc" },
     take,
     select: {

@@ -133,6 +133,7 @@ export async function createBooking(
       returnDate,
       notes: String(formData.get("notes") ?? "").trim().slice(0, 500),
       status: "pending",
+      activityOptIn: formData.get("activityOptIn") === "on",
     },
   });
 

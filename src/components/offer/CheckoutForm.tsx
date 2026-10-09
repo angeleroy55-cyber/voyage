@@ -251,6 +251,23 @@ export default function CheckoutForm({
           </span>
         </label>
 
+        {/* Case à part, décochée par défaut : contrairement aux conditions de
+            vente, ce n'est pas une condition pour réserver, c'est un accord
+            distinct pour une réutilisation différente de la donnée (bandeau
+            public). Les deux ne doivent jamais être fondus en une seule case,
+            sous peine de consentement non valable au sens RGPD. */}
+        <label className="mt-2.5 flex cursor-pointer items-start gap-2.5 rounded-xl p-3.5">
+          <input
+            type="checkbox"
+            name="activityOptIn"
+            className="mt-0.5 size-4 rounded border-navy-300 accent-gold-500"
+          />
+          <span className="text-sm text-navy-700">
+            J&apos;accepte que mon prénom et ma destination apparaissent dans le bandeau
+            d&apos;activité du site une fois ma réservation confirmée (facultatif).
+          </span>
+        </label>
+
         <SubmitButton />
 
         {state.message && !state.ok && (

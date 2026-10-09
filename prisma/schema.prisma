@@ -343,6 +343,11 @@ model Booking {
   paymentMethod String @default("")
 
   status    String   @default("pending") // pending | confirmed | cancelled | completed
+  /// Accord explicite du client pour que son prénom et sa destination
+  /// apparaissent dans le bandeau d'activité publique du site (voir
+  /// getRecentActivity). Faux par défaut : sans case cochée au moment de la
+  /// demande, aucune donnée personnelle n'est réutilisée à cette fin.
+  activityOptIn Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
