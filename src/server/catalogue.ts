@@ -572,6 +572,48 @@ export async function getDestinationBySlug(slug: string): Promise<Destination | 
   return row ? toDestination(row, locale) : null;
 }
 
+/**
+ * Prénom et initiale du nom, pour l'affichage public d'une activité
+ * individuelle (ex. « Lucas P. ») : jamais le nom complet d'un client sur une
+ * page vue par n'importe quel visiteur anonyme.
+ */
+function firstNameInitial(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "Un voyageur";
+  if (parts.length === 1) return parts[0];
+  return `${parts[0]} ${parts[1][0].toUpperCase()}.`;
+}
+
+export type ActivityEvent = { label: string; createdAt: Date };
+
+/**
+ * Activité récente réelle, pour le bandeau « Lucas P. vient de réserver... ».
+ *
+ * Tirée des vraies demandes de réservation, jamais inventée : voir REVIEWS
+ * dans src/lib/data.ts pour le précédent concret de ce qu'il ne faut pas
+ * faire (faux témoignages publiés comme s'ils étaient réels). Tant
+ * qu'aucune demande réelle n'existe, la liste est vide et le bandeau ne
+ * s'affiche pas — jamais un nom ou un évènement fabriqué pour « amorcer ».
+ */
+export async function getRecentActivity(take = 5): Promise<ActivityEvent[]> {
+  const rows = await prisma.booking.findMany({
+    orderBy: { createdAt: "desc" },
+    take,
+    select: {
+      customerName: true,
+      createdAt: true,
+      offer: { select: { destination: true } },
+    },
+  });
+
+  return rows
+    .filter((row) => row.offer)
+    .map((row) => ({
+      label: `${firstNameInitial(row.customerName)} vient de réserver un séjour à ${row.offer!.destination}`,
+      createdAt: row.createdAt,
+    }));
+}
+
 export async function getReviews(take = 6): Promise<Review[]> {
   const rows = await prisma.review.findMany({
     where: { status: "published" },

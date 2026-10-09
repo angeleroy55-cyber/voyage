@@ -3,10 +3,11 @@ import Header from "@/components/site/Header";
 import Footer from "@/components/site/Footer";
 import SitePopups from "@/components/site/SitePopups";
 import WhatsAppFloatButton from "@/components/site/WhatsAppFloatButton";
+import ActivityToast from "@/components/site/ActivityToast";
 import I18nProvider from "@/i18n/I18nProvider";
 import { getDictionary } from "@/i18n/dictionaries";
 import { isLocale, DEFAULT_LOCALE } from "@/i18n/config";
-import { getNavigation, getSiteSettings, getTopCountries } from "@/server/catalogue";
+import { getNavigation, getRecentActivity, getSiteSettings, getTopCountries } from "@/server/catalogue";
 import { getCustomerSession } from "@/server/customer-session";
 import { detectDepartureCity } from "@/server/geo";
 
@@ -19,12 +20,13 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
   const locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
   const dict = getDictionary(locale);
 
-  const [settings, navigation, session, detectedCity, topCountries] = await Promise.all([
+  const [settings, navigation, session, detectedCity, topCountries, activity] = await Promise.all([
     getSiteSettings(),
     getNavigation(),
     getCustomerSession(),
     detectDepartureCity(),
     getTopCountries(),
+    getRecentActivity(),
   ]);
 
   // Le nom porté par le cookie signé suffit à l'en-tête : inutile d'interroger
@@ -54,6 +56,9 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
           />
           <SitePopups />
           <WhatsAppFloatButton number={settings.whatsapp} />
+          <ActivityToast
+            events={activity.map((e) => ({ label: e.label, createdAtIso: e.createdAt.toISOString() }))}
+          />
         </div>
       </DepartureCityProvider>
     </I18nProvider>
