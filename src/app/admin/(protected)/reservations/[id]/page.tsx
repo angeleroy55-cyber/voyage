@@ -74,6 +74,11 @@ export default async function EditBookingPage({ params }: PageProps<"/admin/rese
         <span className="rounded-full bg-navy-50 px-3 py-1.5">
           Paiement : {paymentLabel(booking.paymentMethod)}
         </span>
+        {booking.departureCity && (
+          <span className="rounded-full bg-gold-50 px-3 py-1.5 font-semibold text-navy-700">
+            Départ souhaité : {booking.departureCity} (à confirmer, prix vu au départ de l&apos;offre)
+          </span>
+        )}
         {booking.instalments > 1 && (
           <span className="rounded-full bg-navy-50 px-3 py-1.5">
             {booking.instalments} fois sans frais

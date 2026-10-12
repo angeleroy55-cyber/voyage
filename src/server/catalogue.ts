@@ -487,6 +487,32 @@ export async function getBestDeals(take?: number): Promise<Offer[]> {
   return take === undefined ? deals : deals.slice(0, take);
 }
 
+/**
+ * Suggestions « Vous aimerez peut-être aussi » de la fiche offre : les
+ * premières offres de la même catégorie, dans l'ordre du catalogue. Requête
+ * limitée en base plutôt que tout le catalogue de la catégorie chargé puis
+ * coupé à 4 : avec plusieurs centaines d'offres par catégorie, la fiche
+ * mettait plusieurs dizaines de secondes à s'afficher sur une connexion lente.
+ */
+export async function getRelatedOffers(
+  categorySlug: string,
+  excludeSlug: string,
+  take = 4,
+): Promise<Offer[]> {
+  const locale = await getRequestLocale();
+  const rows = await prisma.offer.findMany({
+    where: {
+      status: "published",
+      slug: { not: excludeSlug },
+      category: { active: true, slug: categorySlug },
+    },
+    orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+    take,
+    select: OFFER_SELECT,
+  });
+  return rows.map((row) => toOffer(row, locale));
+}
+
 export async function getOfferBySlug(slug: string): Promise<Offer | null> {
   await ensureFreshDepartures();
   const locale = await getRequestLocale();
@@ -495,6 +521,25 @@ export async function getOfferBySlug(slug: string): Promise<Offer | null> {
     select: OFFER_SELECT,
   });
   return row ? toOffer(row, locale) : null;
+}
+
+/**
+ * Offre qui existe encore en base mais n'est plus publiée (brouillon, archivée). Un client qui rouvre un lien partagé ou un ancien e-mail
+ * doit comprendre que l'offre n'est plus en vente, et retrouver des offres
+ * proches, plutôt que de tomber sur une page 404 qui laisse croire à un lien
+ * cassé ou à une date passée.
+ */
+export async function getRetiredOffer(slug: string) {
+  return prisma.offer.findFirst({
+    where: { slug, status: { not: "published" } },
+    select: {
+      title: true,
+      reference: true,
+      destination: true,
+      country: true,
+      category: { select: { slug: true, label: true, active: true } },
+    },
+  });
 }
 
 /**
@@ -1006,7 +1051,40 @@ export async function getSiteSettings() {
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean),
+    legal: legalEntityFrom(settings),
   };
+}
+
+/**
+ * Entreprise responsable du contrat de voyage, affichée sur chaque fiche offre
+ * et dans le tunnel (demande de clients avant de valider un devis : « qui est
+ * responsable de ma réservation ? »). Valeurs saisies au back-office
+ * (/admin/parametres, clés `legal.*`), jamais de repli codé en dur : une
+ * mention légale inexacte est pire qu'une mention absente. `null` tant que le
+ * nom de l'entreprise n'est pas renseigné.
+ */
+export type LegalEntity = {
+  company: string;
+  siret: string;
+  address: string;
+  registration: string;
+  guarantee: string;
+};
+
+function legalEntityFrom(settings: Record<string, string>): LegalEntity | null {
+  const company = (settings["legal.company"] ?? "").trim();
+  if (!company) return null;
+  return {
+    company,
+    siret: (settings["legal.siret"] ?? "").trim(),
+    address: (settings["legal.address"] ?? "").trim(),
+    registration: (settings["legal.registration"] ?? "").trim(),
+    guarantee: (settings["legal.guarantee"] ?? "").trim(),
+  };
+}
+
+export async function getLegalEntity(): Promise<LegalEntity | null> {
+  return legalEntityFrom(await getSettings());
 }
 
 /**

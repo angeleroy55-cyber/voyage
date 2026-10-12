@@ -34,7 +34,7 @@ const FRENCH_TERRITORIES = new Set([
 ]);
 
 /** Produits qui comprennent un vol (tout sauf l'hébergement ou la voiture seuls). */
-function includesFlight(o: DetailsInput): boolean {
+export function includesFlight(o: DetailsInput): boolean {
   if (o.category === "vols") return true;
   if (["hotels", "location-voiture", "parcs-loisirs"].includes(o.category)) return false;
   if (o.subtype === "camping") return false;
@@ -239,3 +239,116 @@ export function freeCancellationLine(category: string): string {
     ? "Annulation gratuite jusqu'à 48 h avant la prise en charge"
     : "Annulation gratuite jusqu'à 30 jours avant le départ";
 }
+
+// ---------------------------------------------------------------------------
+// L'essentiel avant de réserver
+// ---------------------------------------------------------------------------
+
+/**
+ * Réponses aux questions que posent les clients avant de valider une demande
+ * (relevées dans de vrais messages reçus) : hébergement, vols et horaires,
+ * bagages, repas et boissons, transferts, prix final. Chaque ligne se déduit
+ * des données de l'offre ; ce que la base ne contient pas (nom de l'hôtel,
+ * compagnie, horaires) est dit tel quel, avec le moment où l'information est
+ * donnée, plutôt que d'être inventé.
+ */
+export function essentialsFor(o: DetailsInput & Pick<Offer, "included">): { label: string; value: string }[] {
+  const rows: { label: string; value: string }[] = [];
+  const has = (needle: string) => o.included.some((i) => i.toLowerCase().includes(needle.toLowerCase()));
+  const flight = includesFlight(o);
+  const beforePayment = "précisés avec la confirmation de disponibilité, avant tout paiement";
+
+  // Hébergement / produit.
+  if (o.category === "location-voiture") {
+    rows.push({
+      label: "Véhicule",
+      value: `${o.title}, prise en charge à ${o.destination} (${o.country}). Modèle exact selon le parc de l'agence de location, indiqué sur le bon de réservation.`,
+    });
+  } else if (o.category === "croisieres") {
+    rows.push({
+      label: "Navire et cabine",
+      value: `${o.title}, embarquement à ${o.destination}. Nom du navire et catégorie de cabine ${beforePayment}.`,
+    });
+  } else if (o.category !== "vols") {
+    const stars = o.stars > 0 ? ` ${o.stars}★` : "";
+    rows.push({
+      label: "Hébergement",
+      value: `Établissement${stars} à ${o.destination} (${o.country}) : « ${o.title} ». Nom et adresse exacts ${beforePayment}.`,
+    });
+  }
+
+  // Transport.
+  if (o.category === "location-voiture") {
+    // Pas de transport : la ligne n'aurait pas de sens.
+  } else if (flight) {
+    const mode = has("Vol ou train") ? "Vol ou train aller-retour" : "Vol aller-retour";
+    rows.push({
+      label: "Vols",
+      value: `${mode} au départ de ${o.departureCity} compris. Compagnie et horaires ${beforePayment} : ils dépendent des places disponibles au jour de la demande, aucun horaire n'est annoncé avant.`,
+    });
+  } else {
+    rows.push({
+      label: "Transport",
+      value:
+        o.category === "croisieres"
+          ? `Pas de vol : embarquement directement à ${o.destination}.`
+          : `Non compris : vous rejoignez ${o.destination} par vos propres moyens.`,
+    });
+  }
+
+  // Bagages.
+  if (o.category === "vols") {
+    rows.push({
+      label: "Bagages",
+      value: "Bagage cabine compris. Bagage en soute selon le tarif de la compagnie, précisé avant tout paiement.",
+    });
+  } else if (flight) {
+    rows.push({
+      label: "Bagages",
+      value: "Franchise cabine et soute selon la compagnie et le tarif retenus, indiquée sur la confirmation avant tout paiement.",
+    });
+  }
+
+  // Repas et boissons.
+  const meals: Record<string, string> = {
+    "Tout compris": "Tout compris : repas, boissons et snacks pendant tout le séjour, aux horaires et points de restauration de l'établissement.",
+    "Pension complète": "Pension complète : petit-déjeuner, déjeuner et dîner. Boissons selon les conditions précisées avec la confirmation.",
+    "Demi-pension": "Demi-pension : petit-déjeuner et dîner. Déjeuners et boissons non compris.",
+    "Petit-déjeuner": "Petit-déjeuner compris. Autres repas et boissons non compris.",
+    "Sans repas": "Aucun repas compris.",
+  };
+  if (meals[o.board]) rows.push({ label: "Repas et boissons", value: meals[o.board] });
+
+  // Transferts.
+  if (o.category !== "location-voiture") {
+    rows.push({
+      label: "Transferts",
+      value: has("Transferts")
+        ? "Transferts entre l'aéroport et l'hébergement compris, à l'aller et au retour."
+        : "Non compris.",
+    });
+  }
+
+  // Prix.
+  rows.push({
+    label: "Prix",
+    value: `Prix par personne, ${has("frais de dossier") ? "taxes et frais de dossier compris" : "taxes comprises"}. Le montant du récapitulatif est celui enregistré pour votre demande : aucun frais de service ou de dossier n'y est ajouté. Seule option payante, l'assurance annulation, que vous cochez vous-même.`,
+  });
+
+  return rows;
+}
+
+/**
+ * Le client peut-il indiquer une autre ville de départ ? Oui pour les forfaits
+ * avec vol (séjours, circuits, croisières avec vol, week-ends) ; non pour un
+ * vol sec, dont la ligne est le produit lui-même, ni pour ce qui n'a pas de
+ * vol. Le choix est un souhait transmis au conseiller : aucune disponibilité
+ * ni aucun prix par ville n'est connu en base, rien n'est donc affiché comme
+ * garanti.
+ */
+export function allowsDepartureChoice(o: DetailsInput): boolean {
+  return includesFlight(o) && o.category !== "vols";
+}
+
+/** Engagement répété sur la fiche, l'encart de réservation et le tunnel. */
+export const NO_COMMITMENT_LINE = "Demande sans engagement : aucun paiement avant confirmation.";

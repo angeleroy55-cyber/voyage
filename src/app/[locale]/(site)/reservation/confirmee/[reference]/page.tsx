@@ -182,6 +182,16 @@ export default async function ConfirmationPage({
             {t.createAccount}
           </Link>
         )}
+        {/* Des clients ont écrit « je n'ai plus le lien du séjour » : la page
+            de confirmation garde donc un accès direct à la fiche. */}
+        {booking.offer && (
+          <Link
+            href={localizedPath(`/offre/${booking.offer.slug}`, locale)}
+            className="rounded-xl border border-navy-200 px-5 py-3 text-sm font-bold text-navy-800 transition hover:border-navy-400"
+          >
+            Revoir l&apos;offre
+          </Link>
+        )}
         <Link
           href={localizedPath("/", locale)}
           className="rounded-xl border border-navy-200 px-5 py-3 text-sm font-bold text-navy-800 transition hover:border-navy-400"

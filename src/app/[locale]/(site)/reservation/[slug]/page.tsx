@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isBookable, rulesOf } from "@/lib/booking-rules";
+import { allowsDepartureChoice } from "@/lib/offer-details";
+import { isDepartureCity } from "@/lib/places";
 import CheckoutForm from "@/components/offer/CheckoutForm";
 import Icon from "@/components/ui/Icon";
 import { getCustomer } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
-import { getOfferBySlug } from "@/server/catalogue";
+import { getLegalEntity, getOfferBySlug } from "@/server/catalogue";
 import { durationFull, price } from "@/lib/format";
 import { withMediaFallback } from "@/lib/media";
 import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
@@ -58,6 +60,7 @@ export default async function ReservationPage({
   // Un visiteur déjà connecté ne ressaisit pas ce que son compte contient déjà.
   const session = await getCustomerSession();
   const customer = session ? await getCustomer(session.sub) : null;
+  const legal = await getLegalEntity();
 
   const travellers = readTravellers(sp.voyageurs);
   const insurance = sp.assurance === "1" || sp.assurance === "on";
@@ -68,6 +71,11 @@ export default async function ReservationPage({
   const departureDate =
     requestedDeparture && isBookable(requestedDeparture, rulesOf(offer)) ? requestedDeparture : "";
   const returnDate = departureDate ? readDate(sp.au) : "";
+  // Ville de départ souhaitée : seulement une ville de la liste, et seulement
+  // pour une offre où le choix a un sens ; sinon celle de l'offre.
+  const requestedCity = typeof sp.depart === "string" ? sp.depart : "";
+  const departureCity =
+    allowsDepartureChoice(offer) && isDepartureCity(requestedCity) ? requestedCity : "";
 
   const cover = withMediaFallback(offer.images?.[0] ?? offer.image);
 
@@ -121,6 +129,8 @@ export default async function ReservationPage({
           insurance={insurance}
           departureDate={departureDate}
           returnDate={returnDate}
+          legal={legal}
+          departureCity={departureCity}
           customer={
             customer
               ? {
@@ -177,7 +187,9 @@ export default async function ReservationPage({
               </div>
               <div className="flex justify-between text-navy-600">
                 <dt>{dict.reservation.departureFrom}</dt>
-                <dd className="font-semibold text-navy-800">{offer.departureCity}</dd>
+                <dd className="font-semibold text-navy-800">
+                  {departureCity ? `${departureCity} (sur demande)` : offer.departureCity}
+                </dd>
               </div>
             </dl>
 

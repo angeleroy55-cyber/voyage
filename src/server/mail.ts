@@ -47,6 +47,12 @@ export type BookingMailData = {
   destination: string;
   country: string;
   offerTitle: string;
+  /** Numéro public de l'offre (GSJ-XXXXXX), pour la retrouver sans le lien. */
+  offerReference?: string;
+  /** Lien absolu vers la fiche, seulement si SITE_URL est configurée. */
+  offerUrl?: string;
+  /** Ville de départ souhaitée par le client, si elle a été choisie. */
+  departureCity?: string;
   totalPrice: number;
   travellers: number;
   insurance: boolean;
@@ -250,9 +256,11 @@ export function renderBookingCustomerMessage(
   const rows = renderDefinitionRows([
     { label: "Référence", value: booking.reference },
     { label: "Séjour", value: booking.offerTitle },
+    ...(booking.offerReference ? [{ label: "Réf. de l'offre", value: booking.offerReference }] : []),
     { label: "Destination", value: destination || "À confirmer" },
     { label: "Voyageurs", value: String(booking.travellers) },
     { label: "Dates souhaitées", value: booking.departureDateLabel },
+    ...(booking.departureCity ? [{ label: "Départ souhaité", value: booking.departureCity }] : []),
     { label: "Paiement", value: booking.paymentMethodLabel },
     { label: "Échéancier", value: paymentHint(booking.instalments) },
     { label: "Montant", value: price(booking.totalPrice) },
@@ -306,7 +314,12 @@ export function renderBookingCustomerMessage(
       `Bonjour ${booking.customerName},`,
       "",
       `Votre demande ${booking.reference} a bien été reçue pour ${booking.offerTitle}.`,
+      // Lignes facultatives en décomposition conditionnelle : le texte est
+      // joint sans filtre, une chaîne vide y laisserait une ligne blanche.
+      ...(booking.offerReference ? [`Référence de l'offre : ${booking.offerReference}`] : []),
+      ...(booking.offerUrl ? [`Revoir l'offre : ${booking.offerUrl}`] : []),
       `Destination : ${destination || "À confirmer"}`,
+      ...(booking.departureCity ? [`Départ souhaité : ${booking.departureCity}`] : []),
       `Dates souhaitées : ${booking.departureDateLabel}`,
       `Montant estimé : ${price(booking.totalPrice)}`,
       `Paiement choisi : ${booking.paymentMethodLabel} (${paymentHint(booking.instalments)})`,
@@ -324,6 +337,9 @@ export function renderBookingCustomerMessage(
       `Bonjour ${booking.customerName}, votre demande ${booking.reference} a bien été enregistrée.`,
       [
         `<table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">${rows}</table>`,
+        booking.offerUrl
+          ? `<p style="margin:14px 0 0;"><a href="${escapeHtml(booking.offerUrl)}" style="color:#0f2747;font-weight:700;">Revoir l'offre en ligne</a></p>`
+          : "",
         notes,
         bankHtml,
         `<p style="margin:18px 0 0;line-height:1.6;">${
@@ -351,6 +367,7 @@ export function renderBookingAdminMessage(
     { label: "Séjour", value: booking.offerTitle },
     { label: "Destination", value: destination || "À confirmer" },
     { label: "Dates", value: booking.departureDateLabel },
+    ...(booking.departureCity ? [{ label: "Départ souhaité", value: booking.departureCity }] : []),
     { label: "Voyageurs", value: String(booking.travellers) },
     { label: "Montant", value: price(booking.totalPrice) },
     { label: "Paiement", value: `${booking.paymentMethodLabel} · ${paymentHint(booking.instalments)}` },
@@ -371,6 +388,7 @@ export function renderBookingAdminMessage(
       `Séjour : ${booking.offerTitle}`,
       `Destination : ${destination || "À confirmer"}`,
       `Dates : ${booking.departureDateLabel}`,
+      booking.departureCity ? `Départ souhaité : ${booking.departureCity}` : "",
       `Voyageurs : ${booking.travellers}`,
       `Montant : ${price(booking.totalPrice)}`,
       `Paiement : ${booking.paymentMethodLabel} (${paymentHint(booking.instalments)})`,
@@ -469,6 +487,22 @@ export function renderPaymentReceiptMessage(
   };
 }
 
+/**
+ * Lien absolu vers une fiche offre, pour les e-mails. Uniquement si SITE_URL
+ * est configurée : deviner un domaine enverrait le client vers une adresse
+ * peut-être fausse. Sans elle, l'e-mail donne la référence de l'offre.
+ */
+function offerUrl(slug: string): string | undefined {
+  const base = process.env.SITE_URL?.trim();
+  if (!base) return undefined;
+  const normalized = /^https?:\/\//.test(base) ? base : `https://${base}`;
+  try {
+    return new URL(`/offre/${slug}`, normalized).toString();
+  } catch {
+    return undefined;
+  }
+}
+
 async function loadBookingMailData(bookingId: string): Promise<BookingMailData | null> {
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
@@ -487,11 +521,14 @@ async function loadBookingMailData(bookingId: string): Promise<BookingMailData |
       returnDate: true,
       paidAmount: true,
       status: true,
+      departureCity: true,
       offer: {
         select: {
           title: true,
           destination: true,
           country: true,
+          reference: true,
+          slug: true,
         },
       },
     },
@@ -511,6 +548,9 @@ async function loadBookingMailData(bookingId: string): Promise<BookingMailData |
     destination: booking.offer?.destination || "",
     country: booking.offer?.country || "",
     offerTitle: booking.offer?.title || "Offre retirée du catalogue",
+    offerReference: booking.offer?.reference,
+    offerUrl: booking.offer ? offerUrl(booking.offer.slug) : undefined,
+    departureCity: booking.departureCity || undefined,
     totalPrice: booking.totalPrice,
     travellers: booking.travellers,
     insurance: booking.insurance,

@@ -7,6 +7,7 @@ import { getCustomerSession } from "@/server/customer-session";
 import { sendBookingCreatedEmails, sendNewsletterWelcomeEmail } from "@/server/mail";
 import { bookingReference } from "@/lib/reference";
 import { PAYMENT_CHOICES } from "@/lib/constants";
+import { isDepartureCity } from "@/lib/places";
 import { priceForDate } from "@/lib/pricing";
 import {
   calendarLabels,
@@ -153,6 +154,12 @@ export async function createBooking(
 
   const instalments = formData.get("instalments") === "4" ? 4 : 1;
 
+  // Ville de départ souhaitée : conservée seulement si elle figure dans la
+  // liste fermée des villes de départ ; c'est un souhait pour le conseiller,
+  // sans effet sur le prix enregistré (aucun tarif par ville n'est connu).
+  const wantedCity = String(formData.get("departureCity") ?? "").trim();
+  const departureCity = isDepartureCity(wantedCity) ? wantedCity : "";
+
   const booking = await prisma.booking.create({
     data: {
       reference: bookingReference(),
@@ -168,6 +175,7 @@ export async function createBooking(
       paymentMethod,
       departureDate,
       returnDate,
+      departureCity,
       notes: String(formData.get("notes") ?? "").trim().slice(0, 500),
       status: "pending",
       activityOptIn: formData.get("activityOptIn") === "on",

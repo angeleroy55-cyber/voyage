@@ -6,7 +6,12 @@ import DepartureCalendar from "@/components/offer/DepartureCalendar";
 import { discount, durationLabel, price } from "@/lib/format";
 import { priceForDate } from "@/lib/pricing";
 import { calendarLabels, isBookable, priceBandOf, rulesOf } from "@/lib/booking-rules";
-import { freeCancellationLine } from "@/lib/offer-details";
+import {
+  allowsDepartureChoice,
+  freeCancellationLine,
+  NO_COMMITMENT_LINE,
+} from "@/lib/offer-details";
+import { DEPARTURE_GROUPS } from "@/lib/places";
 import type { Offer } from "@/lib/types";
 
 /** Jour civil local au format `AAAA-MM-JJ`, décalé de `days` jours. */
@@ -37,6 +42,10 @@ export default function BookingBox({
   returnDate?: string;
 }) {
   const [travellers, setTravellers] = useState(2);
+  // Ville de départ souhaitée : celle de l'offre par défaut, modifiable pour
+  // les forfaits avec vol (demande de clients : « départ possible de Nantes ? »).
+  const departureChoice = allowsDepartureChoice(offer);
+  const [departureCity, setDepartureCity] = useState(offer.departureCity);
   const [insurance, setInsurance] = useState(false);
 
   // Toutes les offres passent par le calendrier : chaque catégorie du
@@ -87,6 +96,9 @@ export default function BookingBox({
         <input type="hidden" name="voyageurs" value={travellers} />
         {pickedDeparture && <input type="hidden" name="du" value={pickedDeparture} />}
         {pickedReturn && <input type="hidden" name="au" value={pickedReturn} />}
+        {departureChoice && departureCity !== offer.departureCity && (
+          <input type="hidden" name="depart" value={departureCity} />
+        )}
 
         {off && (
           <span className="inline-block rounded-md bg-gold-400 px-2 py-1 text-xs font-bold text-navy-900">
@@ -103,6 +115,13 @@ export default function BookingBox({
         </div>
         <p className="mt-0.5 text-xs text-navy-500">
           {durationLabel(offer.nights, offer.category)} · {offer.board} · taxes incluses
+        </p>
+
+        {/* Engagement mis en avant, pas noyé dans la liste du bas : des
+            clients ont écrit attendre cette assurance avant de faire une demande. */}
+        <p className="mt-3 flex items-start gap-2 rounded-xl bg-teal-50 px-3 py-2 text-xs font-bold text-teal-800">
+          <Icon name="shield" className="mt-px size-3.5 shrink-0" />
+          {NO_COMMITMENT_LINE}
         </p>
 
         <div className="mt-4 rounded-xl border border-navy-200 p-3.5">
@@ -126,6 +145,37 @@ export default function BookingBox({
               </p>
             )}
           </div>
+
+        {departureChoice && (
+          <label className="mt-4 block rounded-xl border border-navy-200 px-3.5 py-3">
+            <span className="text-sm font-semibold text-navy-800">Ville de départ</span>
+            <select
+              value={departureCity}
+              onChange={(e) => setDepartureCity(e.target.value)}
+              className="mt-1.5 w-full rounded-lg border border-navy-200 px-2.5 py-2 text-sm outline-none focus:border-navy-400"
+            >
+              <option value={offer.departureCity}>{offer.departureCity} (prix affiché)</option>
+              {DEPARTURE_GROUPS.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.cities
+                    .filter((city) => city !== offer.departureCity)
+                    .map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+            {departureCity !== offer.departureCity && (
+              <span className="mt-1.5 block text-xs text-navy-500">
+                Départ de {departureCity} sur demande : le prix affiché est celui au départ de{" "}
+                {offer.departureCity}. Votre conseiller vérifie les vols depuis {departureCity} et
+                vous confirme le prix avant tout paiement.
+              </span>
+            )}
+          </label>
+        )}
 
         <div className="mt-4 flex items-center justify-between rounded-xl border border-navy-200 px-3.5 py-3">
           <span className="text-sm font-semibold text-navy-800">Voyageurs</span>
@@ -196,7 +246,7 @@ export default function BookingBox({
           <Icon name="chevronRight" className="size-4" />
         </button>
         <p className="mt-2 text-center text-xs text-navy-500">
-          Étape suivante : vos coordonnées et le moyen de paiement.
+          Étape suivante : vos coordonnées et le moyen de paiement souhaité, sans payer.
         </p>
 
         <ul className="mt-4 space-y-2 text-xs text-navy-600">

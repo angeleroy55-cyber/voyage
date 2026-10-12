@@ -9,7 +9,8 @@ import { PAYMENT_CHOICES } from "@/lib/constants";
 import { price } from "@/lib/format";
 import { priceForDate } from "@/lib/pricing";
 import { priceBandOf, rulesOf } from "@/lib/booking-rules";
-import { freeCancellationLine } from "@/lib/offer-details";
+import { freeCancellationLine, NO_COMMITMENT_LINE } from "@/lib/offer-details";
+import type { LegalEntity } from "@/server/catalogue";
 import type { Offer } from "@/lib/types";
 
 const INITIAL: FormState = { ok: false, message: "" };
@@ -31,6 +32,8 @@ export default function CheckoutForm({
   departureDate,
   returnDate,
   customer,
+  legal = null,
+  departureCity = "",
 }: {
   offer: Offer;
   travellers: number;
@@ -38,6 +41,10 @@ export default function CheckoutForm({
   departureDate: string;
   returnDate: string;
   customer: Prefill | null;
+  /** Entreprise responsable du contrat (réglages `legal.*`), affichée au récapitulatif. */
+  legal?: LegalEntity | null;
+  /** Ville de départ souhaitée si différente de celle de l'offre, sinon vide. */
+  departureCity?: string;
 }) {
   const [state, formAction] = useActionState(createBooking, INITIAL);
   const [method, setMethod] = useState<string>("");
@@ -61,6 +68,7 @@ export default function CheckoutForm({
       <input type="hidden" name="insurance" value={insurance ? "on" : ""} />
       <input type="hidden" name="departureDate" value={departureDate} />
       <input type="hidden" name="returnDate" value={returnDate} />
+      <input type="hidden" name="departureCity" value={departureCity} />
 
       <section className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card">
         <h2 className="flex items-center gap-2 text-lg font-extrabold text-navy-900">
@@ -241,6 +249,21 @@ export default function CheckoutForm({
             <dd className="font-semibold text-teal-700">0 €</dd>
           </div>
         </dl>
+
+        <p className="mt-4 flex items-start gap-2 rounded-xl bg-teal-50 px-3.5 py-2.5 text-sm font-bold text-teal-800">
+          <Icon name="shield" className="mt-0.5 size-4 shrink-0" />
+          {NO_COMMITMENT_LINE}
+        </p>
+
+        {legal && (
+          <p className="mt-3 text-xs leading-relaxed text-navy-500">
+            Organisateur responsable de votre réservation :{" "}
+            <span className="font-semibold text-navy-700">{legal.company}</span>
+            {legal.address && `, ${legal.address}`}
+            {legal.siret && `, SIRET ${legal.siret}`}
+            {legal.registration && `, immatriculation ${legal.registration}`}.
+          </p>
+        )}
 
         <label className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-xl bg-navy-50 p-3.5">
           <input

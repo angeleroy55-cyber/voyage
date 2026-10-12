@@ -367,6 +367,10 @@ model Booking {
   /// Dates du séjour, telles que demandées au moteur de recherche.
   departureDate DateTime?
   returnDate    DateTime?
+  /// Ville de départ souhaitée par le client (liste DEPARTURE_GROUPS). Vide =
+  /// celle de l'offre. C'est un souhait, confirmé ou non par le conseiller :
+  /// aucune disponibilité par ville n'est connue en base.
+  departureCity String @default("")
 
   /// Suivi du règlement. `paidAmount` est en euros entiers, comme `totalPrice` ;
   /// `instalments` vaut 1 pour un paiement comptant, 4 pour le fractionnement.

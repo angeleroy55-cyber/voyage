@@ -8,7 +8,8 @@ import Icon from "@/components/ui/Icon";
 import OfferCard, { RatingBadge, Stars } from "@/components/ui/OfferCard";
 import { getFavouriteSlugs } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
-import { getCategories, getOfferBySlug, getOfferReviews, getOffers, getPublishedOfferSlugs } from "@/server/catalogue";
+import OfferEssentials from "@/components/offer/OfferEssentials";
+import { getCategories, getLegalEntity, getOfferBySlug, getRelatedOffers, getRetiredOffer, getOfferReviews, getPublishedOfferSlugs } from "@/server/catalogue";
 import { departureLabel, durationFull } from "@/lib/format";
 import { calendarLabels, firstBookableDate, rulesOf } from "@/lib/booking-rules";
 import {
@@ -51,13 +52,50 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
   const locale = await getRequestLocale();
   const dict = await getRequestDictionary();
   const offer = await getOfferBySlug(slug);
-  if (!offer) notFound();
+  if (!offer) {
+    // Lien ancien ou partagé vers une offre retirée de la vente : on le dit
+    // clairement et on propose la suite, au lieu d'une 404 qui fait croire à
+    // un lien cassé ou à une date passée. Une offre supprimée reste en 404.
+    const retired = await getRetiredOffer(slug);
+    if (!retired) notFound();
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
+        <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">
+          Cette offre n&apos;est plus en vente
+        </h1>
+        <p className="mt-3 text-sm text-navy-600">
+          « {retired.title} » ({retired.destination}, {retired.country}), réf.{" "}
+          <span className="font-mono font-semibold">{retired.reference}</span>, a été retirée du
+          catalogue. Ce n&apos;est pas une question de date : les dates de départ des offres en
+          ligne se renouvellent automatiquement. Si vous aviez fait une demande, elle reste
+          consultable dans votre espace client.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          {retired.category.active && (
+            <Link
+              href={localizedPath(`/${retired.category.slug}`, locale)}
+              className="rounded-xl bg-gold-400 px-5 py-3 text-sm font-bold text-navy-900 hover:bg-gold-500"
+            >
+              Voir les offres {retired.category.label}
+            </Link>
+          )}
+          <Link
+            href={localizedPath(`/sejours?q=${encodeURIComponent(retired.destination)}`, locale)}
+            className="rounded-xl border border-navy-200 px-5 py-3 text-sm font-semibold text-navy-700 hover:bg-navy-50"
+          >
+            Autres voyages à {retired.destination}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const [categories, reviews, sameCategory, session] = await Promise.all([
+  const [categories, reviews, related, session, legal] = await Promise.all([
     getCategories(),
     getOfferReviews(slug),
-    getOffers(offer.category),
+    getRelatedOffers(offer.category, offer.slug, 4),
     getCustomerSession(),
+    getLegalEntity(),
   ]);
 
   // Le bouton « favori » n'apparaît que pour un visiteur connecté : sans compte,
@@ -66,7 +104,6 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
 
   const category = categories.find((c) => c.slug === offer.category);
   const gallery = galleryWithMediaFallback(offer.images, offer.image);
-  const related = sameCategory.filter((o) => o.slug !== offer.slug).slice(0, 4);
 
   // Prochaine date : la date ferme si elle est encore à venir, sinon la
   // première date réellement proposée par le calendrier. Jamais une date
@@ -214,6 +251,8 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
               ))}
             </div>
           </section>
+
+          <OfferEssentials offer={offer} legal={legal} />
 
           <section className="mt-9">
             <h2 className="text-lg font-extrabold text-navy-900">Les points forts</h2>
