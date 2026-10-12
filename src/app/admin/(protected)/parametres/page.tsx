@@ -25,6 +25,15 @@ const FIELDS: { key: string; label: string; hint: string; textarea?: boolean }[]
     hint: "Ex. « Agent de voyages immatriculé Atout France IM0xxxxxxxx » ou « Garantie financière APST ». Une par ligne. Vide, rien ne s'affiche en pied de page : jamais de mention IATA/agrément tant qu'elle n'est pas exacte.",
     textarea: true,
   },
+  // Entreprise responsable des contrats : affichée sur chaque fiche offre et
+  // dans le tunnel de réservation, en plus du pied de page. Champs séparés
+  // (plutôt que le texte libre des accréditations) pour pouvoir les présenter
+  // proprement là où le client décide. Vide, le bloc ne s'affiche pas.
+  { key: "legal.company", label: "Entreprise responsable (raison sociale)", hint: "Ex. VELOSO VOYAGES. Vide : le bloc « Organisateur » n'apparaît pas sur les fiches." },
+  { key: "legal.siret", label: "SIRET", hint: "" },
+  { key: "legal.address", label: "Adresse du siège", hint: "" },
+  { key: "legal.registration", label: "Immatriculation", hint: "Ex. Atout France N° IM…, date" },
+  { key: "legal.guarantee", label: "Garantie financière", hint: "Garant et adresse", textarea: true },
   // Coordonnées bancaires du virement.
   //
   // Elles vivent en base, jamais dans le code : le dépôt est versionné et
