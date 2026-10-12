@@ -73,7 +73,11 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
   // passée (voir `upcomingDepartureIso` dans src/server/catalogue.ts).
   const firstOpen = offer.departureDate ? null : firstBookableDate(rulesOf(offer));
   const nextDate = offer.departureDate
-    ? { label: "Prochain départ", value: departureLabel(offer.departureDate).replace("Départ le ", "") }
+    ? {
+        // « Prise en charge le » pour une voiture, « Arrivée le » pour un hôtel.
+        label: `${calendarLabels(offer.category).date} le`,
+        value: departureLabel(offer.departureDate).replace("Départ le ", ""),
+      }
     : firstOpen
       ? {
           label: `${calendarLabels(offer.category).date} possible`,
