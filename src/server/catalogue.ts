@@ -22,6 +22,7 @@ import { getRequestLocale } from "@/i18n/server";
 import { translateContinentLabel } from "@/lib/catalogue-i18n";
 import { pickLocalized, pickLocalizedList, type Locale } from "@/i18n/config";
 import { resolveBookingRules, type CalendarSettings } from "@/lib/booking-rules";
+import { ensureFreshDepartures } from "@/server/departures";
 
 /**
  * Lecture du catalogue pour le site public.
@@ -120,7 +121,7 @@ function toOffer(row: OfferRow, locale: Locale): Offer {
     reviews: row.reviewsCount,
     // Sérialisée en `AAAA-MM-JJ` : la carte est un composant client, et une
     // `Date` traversant la frontière serveur perdrait son fuseau au passage.
-    departureDate: row.departureDate ? isoDay(row.departureDate) : undefined,
+    departureDate: upcomingDepartureIso(row.departureDate),
     dates: row.dates,
     tags: row.tags,
     amenities: row.amenities,
@@ -142,6 +143,21 @@ function toOffer(row: OfferRow, locale: Locale): Offer {
   };
 }
 
+/**
+ * Date de départ ferme encore à venir, sinon `undefined`.
+ *
+ * La colonne `departureDate` est une date figée : une fois passée, l'afficher
+ * (« Départ le 12/07/2026 ») ou la compter dans un filtre de saison ferait
+ * croire à une offre périmée alors que le calendrier en propose d'autres. On
+ * l'écarte donc à la lecture ; la carte retombe sur la période commerciale
+ * (`dates`) en attendant que `refreshPastDepartures` la recale en base.
+ */
+function upcomingDepartureIso(date: Date | null): string | undefined {
+  if (!date) return undefined;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return date < today ? undefined : isoDay(date);
+}
 
 /** Jour civil local, au format `AAAA-MM-JJ`. */
 function isoDay(date: Date): string {
@@ -213,6 +229,7 @@ const OFFER_SELECT = {
 } as const;
 
 export async function getOffers(categorySlug?: string): Promise<Offer[]> {
+  await ensureFreshDepartures();
   const locale = await getRequestLocale();
   const rows = await prisma.offer.findMany({
     where: {
@@ -252,6 +269,7 @@ function lastMinuteWindow(): { gte: Date; lte: Date } {
  * cahier : jamais deux URLs pour un même contenu.
  */
 export async function getRuleOffers(rule: string, take?: number): Promise<Offer[]> {
+  await ensureFreshDepartures();
   const locale = await getRequestLocale();
   const commun = { status: "published", category: { active: true } } as const;
 
@@ -322,6 +340,7 @@ export type HeroSlide = {
 };
 
 export async function getCatalogueHeroSlides(): Promise<HeroSlide[]> {
+  await ensureFreshDepartures();
   const saison = upcomingSeason();
   const { gte, lte } = seasonRange(saison);
 
@@ -430,6 +449,7 @@ function construireSlide(
 }
 
 export async function getFeaturedOffers(take = 8): Promise<Offer[]> {
+  await ensureFreshDepartures();
   const locale = await getRequestLocale();
   const rows = await prisma.offer.findMany({
     where: { status: "published", featured: true },
@@ -460,6 +480,7 @@ export async function getBestDeals(take?: number): Promise<Offer[]> {
 }
 
 export async function getOfferBySlug(slug: string): Promise<Offer | null> {
+  await ensureFreshDepartures();
   const locale = await getRequestLocale();
   const row = await prisma.offer.findFirst({
     where: { slug, status: "published" },
