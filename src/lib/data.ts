@@ -269,7 +269,7 @@ export const CONTINENTS: { id: string; label: string; countries: string[] }[] = 
       "Belgique", "Pays-Bas", "Tchéquie", "Norvège", "Islande", "Turquie",
       "Royaume-Uni", "Irlande", "Autriche", "Suisse", "Malte", "Chypre",
       "Pologne", "Hongrie", "Danemark", "Suède", "Finlande", "Albanie",
-      "Andorre", "Slovénie", "Slovaquie",
+      "Andorre", "Slovénie", "Slovaquie", "Bulgarie", "Roumanie", "Monténégro",
     ],
   },
   {
