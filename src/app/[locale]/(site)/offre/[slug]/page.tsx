@@ -10,6 +10,13 @@ import { getFavouriteSlugs } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
 import { getCategories, getOfferBySlug, getOfferReviews, getOffers, getPublishedOfferSlugs } from "@/server/catalogue";
 import { departureLabel, durationFull } from "@/lib/format";
+import { calendarLabels, firstBookableDate, rulesOf } from "@/lib/booking-rules";
+import {
+  cancellationPolicyFor,
+  defaultItinerary,
+  defaultNotIncluded,
+  defaultPracticalInfo,
+} from "@/lib/offer-details";
 import { galleryWithMediaFallback } from "@/lib/media";
 import { hreflangAlternates } from "@/i18n/config";
 import { getRequestLocale, getRequestDictionary } from "@/i18n/server";
@@ -60,6 +67,28 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
   const category = categories.find((c) => c.slug === offer.category);
   const gallery = galleryWithMediaFallback(offer.images, offer.image);
   const related = sameCategory.filter((o) => o.slug !== offer.slug).slice(0, 4);
+
+  // Prochaine date : la date ferme si elle est encore à venir, sinon la
+  // première date réellement proposée par le calendrier. Jamais une date
+  // passée (voir `upcomingDepartureIso` dans src/server/catalogue.ts).
+  const firstOpen = offer.departureDate ? null : firstBookableDate(rulesOf(offer));
+  const nextDate = offer.departureDate
+    ? { label: "Prochain départ", value: departureLabel(offer.departureDate).replace("Départ le ", "") }
+    : firstOpen
+      ? {
+          label: `${calendarLabels(offer.category).date} possible`,
+          value: `dès le ${firstOpen.split("-").reverse().join("/")}`,
+        }
+      : { label: "Disponibilité", value: offer.dates };
+
+  // Compléments : le texte saisi au back-office l'emporte, sinon un texte
+  // générique déduit des données de l'offre (src/lib/offer-details.ts).
+  const itinerary = offer.itinerary?.length ? offer.itinerary : defaultItinerary(offer);
+  const notIncluded = offer.notIncluded?.length ? offer.notIncluded : defaultNotIncluded(offer);
+  const practicalInfo = offer.practicalInfo?.length
+    ? offer.practicalInfo
+    : defaultPracticalInfo(offer);
+  const cancellation = cancellationPolicyFor(offer.category);
 
   return (
     <div className="mx-auto max-w-page px-4 py-6">
@@ -169,11 +198,7 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
                 { icon: "bed", label: "Formule", value: offer.board },
                 // La date ferme prime sur la période commerciale : c'est elle
                 // qui ancre la décision, comme sur la carte offre.
-                {
-                  icon: "calendar",
-                  label: offer.departureDate ? "Prochain départ" : "Disponibilité",
-                  value: departureLabel(offer.departureDate).replace("Départ le ", "") || offer.dates,
-                },
+                { icon: "calendar", ...nextDate },
               ].map((s) => (
                 <div key={s.label} className="rounded-xl border border-navy-100 bg-white p-4">
                   <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-navy-500">
@@ -212,20 +237,82 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
             </div>
           </section>
 
-          <section className="mt-9 rounded-2xl border border-navy-100 bg-white p-5">
-            <h2 className="text-lg font-extrabold text-navy-900">Compris dans le prix</h2>
-            <ul className="mt-3 space-y-2">
-              {offer.included.map((inc) => (
-                <li key={inc} className="flex items-start gap-2.5 text-sm text-navy-700">
-                  <Icon name="check" className="mt-0.5 size-4 shrink-0 text-teal-500" />
-                  {inc}
+          {itinerary.length > 0 && (
+            <section className="mt-9">
+              <h2 className="text-lg font-extrabold text-navy-900">Programme</h2>
+              <ol className="mt-3 space-y-3 border-l-2 border-navy-100 pl-5">
+                {itinerary.map((step) => {
+                  const [day, ...rest] = step.split(" : ");
+                  return (
+                    <li key={step} className="relative text-sm text-navy-700">
+                      <span className="absolute -left-[27px] top-1 size-3 rounded-full border-2 border-white bg-gold-400" />
+                      {rest.length > 0 ? (
+                        <>
+                          <span className="font-bold text-navy-900">{day}</span> : {rest.join(" : ")}
+                        </>
+                      ) : (
+                        step
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+              {!offer.itinerary?.length && (
+                <p className="mt-3 text-xs text-navy-500">
+                  Programme indicatif : l&apos;ordre exact des étapes et des escales est confirmé par
+                  votre conseiller avec la réservation.
+                </p>
+              )}
+            </section>
+          )}
+
+          <section className="mt-9 grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl border border-navy-100 bg-white p-5">
+              <h2 className="text-lg font-extrabold text-navy-900">Ce prix comprend</h2>
+              <ul className="mt-3 space-y-2">
+                {offer.included.map((inc) => (
+                  <li key={inc} className="flex items-start gap-2.5 text-sm text-navy-700">
+                    <Icon name="check" className="mt-0.5 size-4 shrink-0 text-teal-500" />
+                    {inc}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-navy-100 bg-white p-5">
+              <h2 className="text-lg font-extrabold text-navy-900">Ce prix ne comprend pas</h2>
+              <ul className="mt-3 space-y-2">
+                {notIncluded.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-navy-700">
+                    <Icon name="close" className="mt-0.5 size-4 shrink-0 text-navy-400" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          <section className="mt-9">
+            <h2 className="text-lg font-extrabold text-navy-900">Informations pratiques</h2>
+            <ul className="mt-3 space-y-2.5">
+              {practicalInfo.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-navy-700">
+                  <Icon name="shield" className="mt-0.5 size-4 shrink-0 text-gold-600" />
+                  {item}
                 </li>
               ))}
             </ul>
-            <p className="mt-4 border-t border-navy-100 pt-3 text-xs text-navy-500">
-              Non compris : dépenses personnelles, excursions facultatives et assurance annulation
-              (proposée à l&apos;étape suivante).
-            </p>
+          </section>
+
+          <section className="mt-9 rounded-2xl bg-navy-50 p-5">
+            <h2 className="text-lg font-extrabold text-navy-900">Conditions d&apos;annulation</h2>
+            <ul className="mt-3 space-y-2">
+              {cancellation.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-navy-700">
+                  <Icon name="check" className="mt-0.5 size-4 shrink-0 text-teal-500" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </section>
 
           <ReviewSection
