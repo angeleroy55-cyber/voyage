@@ -10,6 +10,8 @@ import { nextOfferReference } from "@/server/references";
 import { continentOf } from "@/lib/data";
 import { OFFER_SUBTYPES } from "@/lib/constants";
 import { slugify, toList } from "@/lib/slug";
+import { seasonById } from "@/lib/seasons";
+import { readCalendarSettings } from "@/server/calendar-form";
 
 /** Rafraîchit le site public et le back-office après toute écriture. */
 function revalidateOffer(slug?: string) {
@@ -84,6 +86,12 @@ function readOfferForm(formData: FormData) {
     amenities: toList(formData.get("amenities")),
     highlights: toList(formData.get("highlights")),
     included: toList(formData.get("included")),
+    itinerary: toList(formData.get("itinerary")),
+    notIncluded: toList(formData.get("notIncluded")),
+    practicalInfo: toList(formData.get("practicalInfo")),
+    // Saison restreinte aux identifiants connus : une valeur libre ne
+    // correspondrait à aucune fenêtre de dates.
+    season: seasonById(String(formData.get("season") ?? "")) ? String(formData.get("season")) : "",
     status: String(formData.get("status") ?? "draft"),
     featured: formData.get("featured") === "on",
     position: Math.round(number("position")),
@@ -108,6 +116,9 @@ export async function createOffer(formData: FormData) {
   if (!data.title || !data.categoryId) {
     throw new Error("Le titre et la catégorie sont obligatoires.");
   }
+  // Réglages de calendrier propres à l'offre : vides = ceux de la catégorie.
+  const calendar = readCalendarSettings(formData, "overrideWeekdays");
+  if (!calendar.ok) redirect(`/admin/offres/nouvelle?erreur=${calendar.error}`);
 
   const slug = await uniqueSlug(
     String(formData.get("slug") || `${data.destination} ${data.title}`),
@@ -115,7 +126,9 @@ export async function createOffer(formData: FormData) {
   // Le numéro est attribué ici, une fois pour toutes : il ne change plus, même
   // si l'offre change de catégorie, de destination ou de slug.
   const reference = await nextOfferReference();
-  const offer = await prisma.offer.create({ data: { ...data, slug, reference } });
+  const offer = await prisma.offer.create({
+    data: { ...data, ...calendar.data, slug, reference },
+  });
 
   await recomputeDestinationStats(offer.destinationId);
   revalidateOffer(slug);
@@ -125,13 +138,18 @@ export async function createOffer(formData: FormData) {
 export async function updateOffer(id: string, formData: FormData) {
   await requireSession();
   const data = readOfferForm(formData);
+  const calendar = readCalendarSettings(formData, "overrideWeekdays");
+  if (!calendar.ok) redirect(`/admin/offres/${id}?erreur=${calendar.error}`);
   const slug = await uniqueSlug(String(formData.get("slug") || data.title), id);
 
   const previous = await prisma.offer.findUnique({
     where: { id },
     select: { slug: true, destinationId: true },
   });
-  const offer = await prisma.offer.update({ where: { id }, data: { ...data, slug } });
+  const offer = await prisma.offer.update({
+    where: { id },
+    data: { ...data, ...calendar.data, slug },
+  });
 
   // Les deux destinations sont recalculées : celle qu'on quitte perd une offre,
   // celle qu'on rejoint en gagne une, et le prix d'appel bouge des deux côtés.

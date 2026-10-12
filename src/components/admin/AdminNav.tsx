@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/admin", label: "Tableau de bord", icon: "compass", exact: true },
   { href: "/admin/offres", label: "Offres", icon: "package" },
   { href: "/admin/categories", label: "Catégories", icon: "route" },
+  { href: "/admin/calendrier", label: "Dates & prix", icon: "calendar" },
   { href: "/admin/destinations", label: "Destinations", icon: "pin" },
   { href: "/admin/hero", label: "Hero accueil", icon: "sparkles" },
   { href: "/admin/reservations", label: "Réservations", icon: "calendar" },

@@ -12,6 +12,8 @@ import {
   updateOffer,
 } from "@/server/actions/offers";
 import { cloudinaryConfigured } from "@/server/media";
+import { CALENDAR_ERRORS } from "@/server/calendar-form";
+import { resolveBookingRules } from "@/lib/booking-rules";
 
 export const metadata = { title: "Modifier une offre" };
 export const dynamic = "force-dynamic";
@@ -30,6 +32,25 @@ export default async function EditOfferPage({ params, searchParams }: PageProps<
   ]);
 
   if (!offer) notFound();
+
+  // Valeurs que l'offre hérite de sa catégorie quand ses propres champs de
+  // calendrier sont vides : affichées en indication dans le formulaire.
+  const category = await prisma.category.findUnique({
+    where: { id: offer.categoryId },
+    select: {
+      slug: true,
+      bookingLeadDays: true,
+      bookingWindowMonths: true,
+      excludedWeekdays: true,
+      discountMinPct: true,
+      discountMaxPct: true,
+    },
+  });
+  const inheritedRules = resolveBookingRules({
+    categorySlug: category?.slug ?? "",
+    category,
+    offer: { nights: offer.nights, price: offer.price, oldPrice: offer.oldPrice },
+  });
 
   // Les actions sont liées ici à l'identifiant : le formulaire reste ignorant
   // de l'offre qu'il modifie.
@@ -66,6 +87,11 @@ export default async function EditOfferPage({ params, searchParams }: PageProps<
       {(sp.enregistre || sp.cree || sp.image) && (
         <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-700">
           {sp.cree ? "Offre créée." : sp.image ? "Visuel ajouté." : "Modifications enregistrées."}
+        </p>
+      )}
+      {typeof sp.erreur === "string" && CALENDAR_ERRORS[sp.erreur] && (
+        <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+          Non enregistré : {CALENDAR_ERRORS[sp.erreur]}
         </p>
       )}
       {sp.erreur === "fichier" && (
@@ -161,6 +187,13 @@ export default async function EditOfferPage({ params, searchParams }: PageProps<
           categories={categories}
           destinations={destinations}
           submitLabel="Enregistrer les modifications"
+          calendarInherited={{
+            leadDays: inheritedRules.leadDays,
+            windowMonths: inheritedRules.windowMonths,
+            weekdays: inheritedRules.excludedWeekdays,
+            min: inheritedRules.discountMinPct,
+            max: inheritedRules.discountMaxPct,
+          }}
         />
       </div>
 

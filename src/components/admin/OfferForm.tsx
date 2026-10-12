@@ -1,4 +1,8 @@
+import Link from "next/link";
 import { BOARDS, OFFER_SUBTYPES } from "@/lib/constants";
+import { SEASONS } from "@/lib/seasons";
+import { DEFAULT_DISCOUNT_MAX_PCT, DEFAULT_DISCOUNT_MIN_PCT } from "@/lib/pricing";
+import CalendarFields from "@/components/admin/CalendarFields";
 
 type Category = { id: string; label: string };
 type Destination = { id: string; name: string };
@@ -32,6 +36,15 @@ export type OfferFormValues = {
   amenities?: string[];
   highlights?: string[];
   included?: string[];
+  itinerary?: string[];
+  notIncluded?: string[];
+  practicalInfo?: string[];
+  season?: string;
+  bookingLeadDays?: number | null;
+  bookingWindowMonths?: number | null;
+  excludedWeekdays?: string | null;
+  discountMinPct?: number | null;
+  discountMaxPct?: number | null;
   status?: string;
   featured?: boolean;
   position?: number;
@@ -48,12 +61,15 @@ export default function OfferForm({
   categories,
   destinations,
   submitLabel,
+  calendarInherited,
 }: {
   action: (formData: FormData) => void | Promise<void>;
   values?: OfferFormValues;
   categories: Category[];
   destinations: Destination[];
   submitLabel: string;
+  /** Valeurs héritées de la catégorie de l'offre, pour l'indication des champs vides. */
+  calendarInherited?: { leadDays: number; windowMonths: number; weekdays: number[]; min: number; max: number };
 }) {
   return (
     <form action={action} className="space-y-5">
@@ -262,6 +278,64 @@ export default function OfferForm({
             />
             Mettre en avant sur la page d&apos;accueil
           </label>
+        </div>
+      </Card>
+
+      <Card title="Calendrier et prix">
+        <p className="mb-4 text-sm text-navy-600">
+          Réglages propres à cette offre. Vides, ceux de la catégorie s&apos;appliquent (page{" "}
+          <Link href="/admin/calendrier" className="font-semibold underline">
+            Dates &amp; prix
+          </Link>
+          ). Le prix de chaque date reste dans la fourchette de remise sous le prix de référence.
+        </p>
+        <div className="mb-4 grid gap-4 sm:grid-cols-2">
+          <Field
+            label="Saison de vente"
+            hint="Le calendrier ne propose alors que les dates de cette période"
+          >
+            <select name="season" defaultValue={values.season ?? ""} className={INPUT}>
+              <option value="">Toute l&apos;année</option>
+              {SEASONS.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+        <CalendarFields
+          values={values}
+          inheritLabel="de la catégorie"
+          weekdaysOverrideName="overrideWeekdays"
+          inherited={
+            calendarInherited ?? {
+              leadDays: 0,
+              windowMonths: 6,
+              weekdays: [],
+              min: DEFAULT_DISCOUNT_MIN_PCT,
+              max: DEFAULT_DISCOUNT_MAX_PCT,
+            }
+          }
+        />
+      </Card>
+
+      <Card title="Compléments de la fiche">
+        <p className="mb-4 text-sm text-navy-600">
+          Vides, la fiche affiche un texte générique déduit de l&apos;offre (formule, durée, ville
+          de départ, pays). Une ligne par élément ; pour le programme, commencer chaque ligne par
+          « Jour 1 : », « Jours 2 à 4 : »…
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Programme" hint="Circuits et croisières surtout" className="sm:col-span-2">
+            <textarea name="itinerary" rows={5} defaultValue={values.itinerary?.join("\n")} className={INPUT} />
+          </Field>
+          <Field label="Ce prix ne comprend pas" hint="Une ligne par élément">
+            <textarea name="notIncluded" rows={5} defaultValue={values.notIncluded?.join("\n")} className={INPUT} />
+          </Field>
+          <Field label="Informations pratiques" hint="Formalités, bagages, horaires">
+            <textarea name="practicalInfo" rows={5} defaultValue={values.practicalInfo?.join("\n")} className={INPUT} />
+          </Field>
         </div>
       </Card>
 
