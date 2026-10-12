@@ -7,7 +7,14 @@ import { getCustomerSession } from "@/server/customer-session";
 import { sendBookingCreatedEmails, sendNewsletterWelcomeEmail } from "@/server/mail";
 import { bookingReference } from "@/lib/reference";
 import { PAYMENT_CHOICES } from "@/lib/constants";
-import { leadDaysFor, priceForDate } from "@/lib/pricing";
+import { priceForDate } from "@/lib/pricing";
+import {
+  calendarLabels,
+  priceBandOf,
+  resolveBookingRules,
+  startOfToday,
+  unavailableReason,
+} from "@/lib/booking-rules";
 
 /**
  * Écritures déclenchées par les visiteurs du site public.
@@ -18,6 +25,15 @@ import { leadDaysFor, priceForDate } from "@/lib/pricing";
  */
 
 export type FormState = { ok: boolean; message: string };
+
+/** Réglages de calendrier et de prix, lus sur l'offre et sur sa catégorie. */
+const CALENDAR_FIELDS = {
+  bookingLeadDays: true,
+  bookingWindowMonths: true,
+  excludedWeekdays: true,
+  discountMinPct: true,
+  discountMaxPct: true,
+} as const;
 
 function email(value: FormDataEntryValue | null): string {
   return String(value ?? "").trim().toLowerCase();
@@ -66,7 +82,16 @@ export async function createBooking(
 
   const offer = await prisma.offer.findFirst({
     where: { slug: offerSlug, status: "published" },
-    select: { id: true, price: true, title: true, category: { select: { slug: true } } },
+    select: {
+      id: true,
+      price: true,
+      oldPrice: true,
+      title: true,
+      nights: true,
+      season: true,
+      ...CALENDAR_FIELDS,
+      category: { select: { slug: true, ...CALENDAR_FIELDS } },
+    },
   });
   if (!offer) {
     return { ok: false, message: "Cette offre n'est plus disponible." };
@@ -79,23 +104,35 @@ export async function createBooking(
   const departureDate = readDate(formData.get("departureDate"));
   const returnDate = readDate(formData.get("returnDate"));
 
-  // Même délai minimum que celui affiché sur le calendrier de la fiche offre
-  // (DepartureCalendar) : une date trop proche envoyée en contournant
-  // l'interface est refusée plutôt que silencieusement acceptée.
+  // Mêmes règles que le calendrier de la fiche offre (fenêtre, délai minimum,
+  // jours exclus, saison), résolues de la même façon depuis la base : une date
+  // envoyée en contournant l'interface est refusée plutôt que silencieusement
+  // acceptée, et le prix ci-dessous utilise la même fourchette.
+  const rules = resolveBookingRules({
+    categorySlug: offer.category?.slug ?? "",
+    category: offer.category,
+    offer,
+  });
   if (departureDateIso) {
-    const lead = leadDaysFor(offer.category?.slug ?? "");
-    if (lead > 0) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const minDate = new Date(today);
-      minDate.setDate(minDate.getDate() + lead);
-      const picked = new Date(`${departureDateIso}T00:00:00`);
-      if (picked < minDate) {
-        return {
-          ok: false,
-          message: `Cette offre demande un départ au moins ${lead} jours après la date de la demande.`,
-        };
-      }
+    const today = startOfToday();
+    let reason = unavailableReason(departureDateIso, rules, today);
+    // Tolérance d'un jour sur la borne haute : le navigateur du client peut
+    // déjà être au lendemain par rapport à l'horloge du serveur (fuseaux).
+    if (reason === "trop-tard") {
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      reason = unavailableReason(departureDateIso, rules, tomorrow);
+    }
+    if (reason) {
+      const what = calendarLabels(offer.category?.slug ?? "").date.toLowerCase();
+      const messages: Record<string, string> = {
+        format: "La date choisie est illisible. Merci de la sélectionner à nouveau.",
+        "trop-tot": `Cette offre demande une date de ${what} au moins ${rules.leadDays} jours après la date de la demande.`,
+        "trop-tard": `Cette date de ${what} est au-delà de la période actuellement ouverte à la réservation.`,
+        "jour-exclu": `Aucune date de ${what} n'est proposée ce jour de la semaine pour cette offre.`,
+        "hors-saison": "Cette date est en dehors de la période de vente de cette offre.",
+      };
+      return { ok: false, message: messages[reason] };
     }
   }
 
@@ -105,7 +142,7 @@ export async function createBooking(
   // même règle que celle affichée au client (voir src/lib/pricing.ts), pour
   // que le montant facturé soit toujours celui qui a été montré.
   const effectivePrice = departureDateIso
-    ? priceForDate(offer.price, departureDateIso)
+    ? priceForDate(offer.price, departureDateIso, priceBandOf(rules))
     : offer.price;
   const insurancePerPerson = Math.round(effectivePrice * 0.06);
   const totalPrice = travellers * (effectivePrice + (insurance ? insurancePerPerson : 0));

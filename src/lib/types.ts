@@ -1,3 +1,4 @@
+import type { BookingRules } from "./booking-rules";
 /**
  * Slugs de navigation. Ils servent d'URL de premier niveau (`/sejours`,
  * `/circuits`), donc les renommer casse des liens : toute évolution passe par
@@ -106,6 +107,19 @@ export interface Offer {
   description: string;
   highlights: string[];
   included: string[];
+  /** Saison commerciale (src/lib/seasons.ts), vide si l'offre se vend toute l'année. */
+  season?: string;
+  /** Compléments saisis au back-office ; vides, la fiche affiche un texte générique. */
+  itinerary?: string[];
+  notIncluded?: string[];
+  practicalInfo?: string[];
+  /**
+   * Règles du calendrier et de la fourchette de prix, résolues côté serveur
+   * (offre > catégorie > défaut). Absentes sur le catalogue source statique,
+   * qui n'est jamais rendu tel quel : le calendrier retombe alors sur les
+   * valeurs par défaut de la catégorie.
+   */
+  rules?: BookingRules;
 }
 
 export interface Destination {

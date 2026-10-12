@@ -21,6 +21,7 @@ import { listHeroSlides } from "@/server/hero-slides";
 import { getRequestLocale } from "@/i18n/server";
 import { translateContinentLabel } from "@/lib/catalogue-i18n";
 import { pickLocalized, pickLocalizedList, type Locale } from "@/i18n/config";
+import { resolveBookingRules, type CalendarSettings } from "@/lib/booking-rules";
 
 /**
  * Lecture du catalogue pour le site public.
@@ -63,7 +64,21 @@ type OfferRow = {
   highlightsEs: string[];
   includedEn: string[];
   includedEs: string[];
-  category: { slug: string; label: string; accent: string; showDiscountPercent: boolean };
+  itinerary: string[];
+  notIncluded: string[];
+  practicalInfo: string[];
+  season: string;
+  bookingLeadDays: number | null;
+  bookingWindowMonths: number | null;
+  excludedWeekdays: string | null;
+  discountMinPct: number | null;
+  discountMaxPct: number | null;
+  category: {
+    slug: string;
+    label: string;
+    accent: string;
+    showDiscountPercent: boolean;
+  } & CalendarSettings;
   images: { url: string; credit: string; creditUrl: string }[];
 };
 
@@ -112,8 +127,21 @@ function toOffer(row: OfferRow, locale: Locale): Offer {
     description: pickLocalized(locale, row.description, row.descriptionEn, row.descriptionEs),
     highlights: pickLocalizedList(locale, row.highlights, row.highlightsEn, row.highlightsEs),
     included: pickLocalizedList(locale, row.included, row.includedEn, row.includedEs),
+    season: row.season,
+    itinerary: row.itinerary,
+    notIncluded: row.notIncluded,
+    practicalInfo: row.practicalInfo,
+    // Règles du calendrier et de la fourchette de prix, résolues ici une fois
+    // (offre > catégorie > défaut) : la fiche, le tunnel et `createBooking`
+    // travaillent ainsi sur exactement les mêmes valeurs.
+    rules: resolveBookingRules({
+      categorySlug: row.category.slug,
+      category: row.category,
+      offer: row,
+    }),
   };
 }
+
 
 /** Jour civil local, au format `AAAA-MM-JJ`. */
 function isoDay(date: Date): string {
@@ -121,6 +149,15 @@ function isoDay(date: Date): string {
   const jour = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${mois}-${jour}`;
 }
+
+/** Réglages de calendrier et de prix, présents sur `Offer` comme sur `Category`. */
+const CALENDAR_SELECT = {
+  bookingLeadDays: true,
+  bookingWindowMonths: true,
+  excludedWeekdays: true,
+  discountMinPct: true,
+  discountMaxPct: true,
+} as const;
 
 const OFFER_SELECT = {
   slug: true,
@@ -155,8 +192,19 @@ const OFFER_SELECT = {
   highlightsEs: true,
   includedEn: true,
   includedEs: true,
+  itinerary: true,
+  notIncluded: true,
+  practicalInfo: true,
+  season: true,
+  ...CALENDAR_SELECT,
   category: {
-    select: { slug: true, label: true, accent: true, showDiscountPercent: true },
+    select: {
+      slug: true,
+      label: true,
+      accent: true,
+      showDiscountPercent: true,
+      ...CALENDAR_SELECT,
+    },
   },
   images: {
     select: { url: true, credit: true, creditUrl: true },

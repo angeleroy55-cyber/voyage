@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { isBookable, rulesOf } from "@/lib/booking-rules";
 import CheckoutForm from "@/components/offer/CheckoutForm";
 import Icon from "@/components/ui/Icon";
 import { getCustomer } from "@/server/account";
@@ -60,8 +61,13 @@ export default async function ReservationPage({
 
   const travellers = readTravellers(sp.voyageurs);
   const insurance = sp.assurance === "1" || sp.assurance === "on";
-  const departureDate = readDate(sp.du);
-  const returnDate = readDate(sp.au);
+  // Une date qui n'est plus proposée (lien ancien, saisie à la main) est
+  // écartée ici plutôt que refusée au dernier clic par `createBooking` : le
+  // récapitulatif affiche alors « à définir » et le prix catalogue.
+  const requestedDeparture = readDate(sp.du);
+  const departureDate =
+    requestedDeparture && isBookable(requestedDeparture, rulesOf(offer)) ? requestedDeparture : "";
+  const returnDate = departureDate ? readDate(sp.au) : "";
 
   const cover = withMediaFallback(offer.images?.[0] ?? offer.image);
 

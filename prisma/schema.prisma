@@ -66,6 +66,21 @@ model Category {
   /// Couleur du badge « type d'offre » en coin d'image, cf. CATEGORY_ACCENTS.
   accent String @default("navy")
 
+  /// Calendrier de réservation et fourchette de prix (voir src/lib/booking-rules.ts).
+  /// Tous facultatifs : `null` = valeur par défaut documentée dans le code pour
+  /// ce type de catégorie. Une offre peut à son tour surcharger chaque valeur.
+  /// Délai minimum entre la demande et le départ, en jours.
+  bookingLeadDays     Int?
+  /// Fenêtre de réservation ouverte à partir d'aujourd'hui, en mois (3 à 9).
+  bookingWindowMonths Int?
+  /// Jours de semaine sans départ, numéros JavaScript (0 = dimanche) séparés
+  /// par des virgules. Chaîne vide = aucun jour exclu ; `null` = défaut.
+  excludedWeekdays    String?
+  /// Remise minimale et maximale du prix par date par rapport au prix de
+  /// référence concurrentiel (`Offer.oldPrice`), en pourcentage.
+  discountMinPct      Int?
+  discountMaxPct      Int?
+
   position Int     @default(0)
   active   Boolean @default(true)
 
@@ -185,6 +200,26 @@ model Offer {
   amenities  String[] @default([])
   highlights String[] @default([])
   included   String[] @default([])
+
+  /// Compléments de fiche (programme, non compris, infos pratiques). Vides, la
+  /// fiche affiche un texte générique déduit des données de l'offre
+  /// (src/lib/offer-details.ts) ; remplis au back-office, ils le remplacent.
+  itinerary     String[] @default([])
+  notIncluded   String[] @default([])
+  practicalInfo String[] @default([])
+
+  /// Saison commerciale (identifiant de src/lib/seasons.ts) quand l'offre n'a
+  /// de sens qu'à une période : un séjour au ski ne part pas en juillet. Vide =
+  /// offre vendue toute l'année. Restreint les dates du calendrier.
+  season String @default("")
+
+  /// Surcharges du calendrier et de la fourchette de prix pour cette offre
+  /// seulement ; `null` = réglage de la catégorie. Même sens que sur Category.
+  bookingLeadDays     Int?
+  bookingWindowMonths Int?
+  excludedWeekdays    String?
+  discountMinPct      Int?
+  discountMaxPct      Int?
 
   status   String  @default("draft") // draft | published | archived
   featured Boolean @default(false)

@@ -8,6 +8,8 @@ import { createBooking, type FormState } from "@/server/actions/public";
 import { PAYMENT_CHOICES } from "@/lib/constants";
 import { price } from "@/lib/format";
 import { priceForDate } from "@/lib/pricing";
+import { priceBandOf, rulesOf } from "@/lib/booking-rules";
+import { freeCancellationLine } from "@/lib/offer-details";
 import type { Offer } from "@/lib/types";
 
 const INITIAL: FormState = { ok: false, message: "" };
@@ -43,7 +45,9 @@ export default function CheckoutForm({
 
   // Même règle de prix par date qu'à l'étape précédente (BookingBox) et que
   // le serveur (createBooking) : voir src/lib/pricing.ts.
-  const effectivePrice = departureDate ? priceForDate(offer.price, departureDate) : offer.price;
+  const effectivePrice = departureDate
+    ? priceForDate(offer.price, departureDate, priceBandOf(rulesOf(offer)))
+    : offer.price;
   const insurancePerPerson = Math.round(effectivePrice * 0.06);
   const total = useMemo(
     () => travellers * (effectivePrice + (insurance ? insurancePerPerson : 0)),
@@ -281,7 +285,7 @@ export default function CheckoutForm({
         )}
 
         <p className="mt-3 text-center text-xs text-navy-500">
-          Demande sans engagement. Annulation gratuite jusqu&apos;à 30 jours avant le départ.
+          Demande sans engagement. {freeCancellationLine(offer.category)}.
         </p>
       </section>
     </form>
