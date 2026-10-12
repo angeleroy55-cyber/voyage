@@ -21,7 +21,12 @@ import { listHeroSlides } from "@/server/hero-slides";
 import { getRequestLocale } from "@/i18n/server";
 import { translateContinentLabel } from "@/lib/catalogue-i18n";
 import { pickLocalized, pickLocalizedList, type Locale } from "@/i18n/config";
-import { resolveBookingRules, type CalendarSettings } from "@/lib/booking-rules";
+import {
+  isBookable,
+  resolveBookingRules,
+  type BookingRules,
+  type CalendarSettings,
+} from "@/lib/booking-rules";
 import { ensureFreshDepartures } from "@/server/departures";
 
 /**
@@ -85,6 +90,11 @@ type OfferRow = {
 
 function toOffer(row: OfferRow, locale: Locale): Offer {
   const urls = row.images.map((image) => image.url);
+  const rules = resolveBookingRules({
+    categorySlug: row.category.slug,
+    category: row.category,
+    offer: row,
+  });
   return {
     slug: row.slug,
     reference: row.reference,
@@ -121,7 +131,7 @@ function toOffer(row: OfferRow, locale: Locale): Offer {
     reviews: row.reviewsCount,
     // Sérialisée en `AAAA-MM-JJ` : la carte est un composant client, et une
     // `Date` traversant la frontière serveur perdrait son fuseau au passage.
-    departureDate: upcomingDepartureIso(row.departureDate),
+    departureDate: upcomingDepartureIso(row.departureDate, rules),
     dates: row.dates,
     tags: row.tags,
     amenities: row.amenities,
@@ -135,28 +145,26 @@ function toOffer(row: OfferRow, locale: Locale): Offer {
     // Règles du calendrier et de la fourchette de prix, résolues ici une fois
     // (offre > catégorie > défaut) : la fiche, le tunnel et `createBooking`
     // travaillent ainsi sur exactement les mêmes valeurs.
-    rules: resolveBookingRules({
-      categorySlug: row.category.slug,
-      category: row.category,
-      offer: row,
-    }),
+    rules,
   };
 }
 
 /**
- * Date de départ ferme encore à venir, sinon `undefined`.
+ * Date de départ ferme encore valable, sinon `undefined`.
  *
  * La colonne `departureDate` est une date figée : une fois passée, l'afficher
  * (« Départ le 12/07/2026 ») ou la compter dans un filtre de saison ferait
  * croire à une offre périmée alors que le calendrier en propose d'autres. On
  * l'écarte donc à la lecture ; la carte retombe sur la période commerciale
  * (`dates`) en attendant que `refreshPastDepartures` la recale en base.
+ * Même traitement pour une date que le calendrier de l'offre ne propose pas
+ * (au-delà de sa fenêtre, jour exclu, hors saison) : « Prochain départ » doit
+ * toujours être une date que le client peut réellement choisir.
  */
-function upcomingDepartureIso(date: Date | null): string | undefined {
+function upcomingDepartureIso(date: Date | null, rules: BookingRules): string | undefined {
   if (!date) return undefined;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date < today ? undefined : isoDay(date);
+  const iso = isoDay(date);
+  return isBookable(iso, rules) ? iso : undefined;
 }
 
 /** Jour civil local, au format `AAAA-MM-JJ`. */

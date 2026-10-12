@@ -24,11 +24,13 @@ import {
 } from "../src/lib/catalogue-i18n";
 import {
   DESTINATIONS,
+  DEPARTURE_OFFSETS,
   OFFERS,
   REFERENCE_PRICE_SOURCE,
 } from "../src/lib/catalogue-source";
 import { creditFor, photoFor, photoQueryFor, photosFor } from "../src/lib/media/photos";
-import { departureFrom, departureInSeason } from "../src/lib/departures";
+import { nextDepartureFor } from "../src/lib/departures";
+import { resolveBookingRules } from "../src/lib/booking-rules";
 import { photo } from "../src/lib/format";
 import {
   OFFER_REFERENCE_COUNTER,
@@ -122,8 +124,9 @@ const HERO_SLIDES = [
 ];
 
 // `departureFrom` et `departureInSeason` vivent désormais dans
-// src/lib/departures.ts : la remise à jour automatique des dates dépassées
-// (src/server/departures.ts) en a besoin aussi, avec exactement la même logique.
+// src/lib/departures.ts (via `nextDepartureFor`) : la remise à jour
+// automatique des dates dépassées (src/server/departures.ts) en a besoin
+// aussi, avec exactement la même logique.
 
 /**
  * Vrai une seule fois par catégorie, à la première offre rencontrée.
@@ -368,9 +371,25 @@ async function main() {
       referencePriceSource: offer.oldPrice ? REFERENCE_PRICE_SOURCE : "",
       rating: offer.rating,
       reviewsCount: offer.reviews,
-      departureDate:
-        (offer.season ? departureInSeason(offer.season, index) : null) ??
-        departureFrom(offer.departureInDays),
+      // Même calcul que la remise à jour automatique des dates dépassées
+      // (src/server/departures.ts) : saison si l'offre en a une, sinon l'écart
+      // en jours du catalogue, ramené dans la fenêtre de réservation par défaut
+      // de la catégorie et avancé au premier jour réellement réservable. Une
+      // date au-delà de ce que le calendrier propose ne serait pas affichée.
+      departureDate: nextDepartureFor({
+        rules: resolveBookingRules({
+          categorySlug: offer.category,
+          category: null,
+          offer: {
+            nights: offer.nights,
+            season: offer.season,
+            price: offer.price,
+            oldPrice: offer.oldPrice ?? null,
+          },
+        }),
+        position: index,
+        offsets: DEPARTURE_OFFSETS,
+      }),
       dates: offer.dates,
       // Saison commerciale : restreint les dates du calendrier de l'offre.
       season: offer.season ?? "",
