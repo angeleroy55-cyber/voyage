@@ -178,7 +178,7 @@
     "bankDetailsTitle": "Bank transfer details",
     "holder": "Account holder",
     "reference": "Reference to state",
-    "bankNote": "Only make the transfer once we have confirmed availability. We will never ask for these details by phone, and they never change: if in doubt about a message you received, call us before paying.",
+    "bankNote": "Note your reference number, make the transfer, then send us proof of payment (screenshot or PDF) for immediate processing of your booking. These details never change: if in doubt about a message you received, call us before paying.",
     "noCharge": "No amount has been charged. Payment by {method} is only triggered once our team has confirmed the trip.",
     "trackRequest": "Track my request",
     "createAccount": "Create my account to track it",

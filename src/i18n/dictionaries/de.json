@@ -178,7 +178,7 @@
     "bankDetailsTitle": "Bankverbindung für Ihre Überweisung",
     "holder": "Kontoinhaber",
     "reference": "Verwendungszweck",
-    "bankNote": "Führen Sie die Überweisung erst nach unserer Verfügbarkeitsbestätigung durch. Wir werden Sie niemals telefonisch nach diesen Daten fragen, und sie ändern sich nicht: Rufen Sie uns im Zweifelsfall vor der Zahlung an.",
+    "bankNote": "Notieren Sie Ihre Referenznummer, führen Sie die Überweisung durch und senden Sie uns anschließend einen Zahlungsnachweis (Screenshot oder PDF) für die sofortige Bearbeitung Ihrer Buchung. Diese Daten ändern sich nicht: Rufen Sie uns im Zweifelsfall vor der Zahlung an.",
     "noCharge": "Es wurde kein Betrag abgebucht. Die Zahlung per {method} wird erst ausgelöst, sobald unser Team die Reise bestätigt hat.",
     "trackRequest": "Meine Anfrage verfolgen",
     "createAccount": "Kundenkonto erstellen, um sie zu verfolgen",

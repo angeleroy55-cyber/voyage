@@ -178,7 +178,7 @@
     "bankDetailsTitle": "Datos para su transferencia",
     "holder": "Titular",
     "reference": "Concepto a indicar",
-    "bankNote": "Realice la transferencia solo tras nuestra confirmación de disponibilidad. Nunca le pediremos estos datos por teléfono, y no cambian: ante cualquier duda sobre un mensaje recibido, llámenos antes de pagar.",
+    "bankNote": "Anote su número de referencia, realice la transferencia y envíenos un justificante de pago (captura de pantalla o PDF) para la tramitación inmediata de su reserva. Estos datos no cambian: ante cualquier duda sobre un mensaje recibido, llámenos antes de pagar.",
     "noCharge": "No se ha cobrado ningún importe. El pago por {method} solo se activa una vez que nuestro equipo confirma la estancia.",
     "trackRequest": "Seguir mi solicitud",
     "createAccount": "Crear mi cuenta para seguirla",
