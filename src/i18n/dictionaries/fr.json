@@ -178,7 +178,7 @@
     "bankDetailsTitle": "Coordonnées pour votre virement",
     "holder": "Titulaire",
     "reference": "Libellé à indiquer",
-    "bankNote": "Notez le numéro de votre référence, effectuez le virement, puis envoyez-nous une preuve de paiement (capture d'écran ou PDF) pour une prise en charge immédiate de votre dossier. Ces coordonnées ne changent pas : en cas de doute sur un message reçu, appelez-nous avant de payer.",
+    "bankNote": "En procédant à la finalisation de votre réservation, notez le numéro de votre référence, effectuez le virement, puis envoyez-nous une preuve de paiement (capture d'écran ou PDF) pour une prise en charge rapide de votre réservation. Ces coordonnées ne changent pas : en cas de doute sur un message reçu, appelez-nous avant de payer.",
     "noCharge": "Aucun montant n'a été débité. Le règlement par {method} n'est déclenché qu'une fois le séjour confirmé par nos équipes.",
     "trackRequest": "Suivre ma demande",
     "createAccount": "Créer mon espace client pour la suivre",
