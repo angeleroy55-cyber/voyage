@@ -10,7 +10,7 @@
  * Lecture seule : aucune écriture en base.
  */
 import { config as loadEnv } from "dotenv";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import pg from "pg";
@@ -23,7 +23,9 @@ if (!url) throw new Error("DATABASE_URL est absente.");
 
 const TABLES = ["Offer", "OfferImage", "Destination", "Counter", "Booking", "Setting", "Category"];
 const dossier = process.argv[2] ?? join(homedir(), "gosejour-sauvegardes");
-mkdirSync(dossier, { recursive: true });
+// Droits réservés au propriétaire : la sauvegarde contient des noms et e-mails de clients.
+mkdirSync(dossier, { recursive: true, mode: 0o700 });
+chmodSync(dossier, 0o700); // au cas où le dossier existait déjà avec des droits plus larges
 
 const client = new pg.Client({ connectionString: url });
 await client.connect();
@@ -37,5 +39,5 @@ for (const table of TABLES) {
 await client.end();
 
 const fichier = join(dossier, `sauvegarde-${sauvegarde.date.slice(0, 19).replace(/[:T]/g, "-")}.json`);
-writeFileSync(fichier, JSON.stringify(sauvegarde));
+writeFileSync(fichier, JSON.stringify(sauvegarde), { mode: 0o600 });
 console.log(`Écrit : ${fichier}`);
