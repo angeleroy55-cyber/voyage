@@ -10,7 +10,7 @@ const summary = getMailerSummary();
 assert.equal(typeof summary.enabled, "boolean");
 
 const booking = {
-  reference: "GS-TEST01",
+  reference: "GO-TEST01",
   customerName: "Jean Dupont",
   customerEmail: "jean@example.com",
   customerPhone: "0102030405",
@@ -28,11 +28,11 @@ const booking = {
 };
 
 const customerMessage = renderBookingCustomerMessage(booking);
-assert.match(customerMessage.subject, /GS-TEST01/);
+assert.match(customerMessage.subject, /GO-TEST01/);
 assert.match(customerMessage.html, /Marrakech/);
 
 const adminMessage = renderBookingAdminMessage(booking);
-assert.match(adminMessage.subject, /GS-TEST01/);
+assert.match(adminMessage.subject, /GO-TEST01/);
 assert.match(adminMessage.text, /Jean Dupont/);
 
 // Virement : les coordonnées bancaires doivent apparaître dans l'e-mail
@@ -46,7 +46,7 @@ const bookingSepa = {
 };
 const sepaMessage = renderBookingCustomerMessage(bookingSepa);
 assert.match(sepaMessage.html, /FR7616598000014000111233071/);
-assert.match(sepaMessage.html, /GS-TEST01/);
+assert.match(sepaMessage.html, /GO-TEST01/);
 assert.match(sepaMessage.text, /FPELFR21XXX/);
 assert.doesNotMatch(customerMessage.html, /IBAN/);
 

@@ -106,7 +106,7 @@ async function main() {
   console.log("\n5. Réservation : écriture puis lecture back-office");
   const booking = await prisma.booking.create({
     data: {
-      reference: `GS-TEST${Date.now() % 100000}`,
+      reference: `GO-TEST${Date.now() % 100000}`,
       offerId: offer.id,
       customerName: "Sonde Automatique",
       customerEmail: "sonde@example.test",

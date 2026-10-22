@@ -32,7 +32,7 @@ export default async function OffersPage({ searchParams }: PageProps<"/admin/off
       ? {
           OR: [
             // Le numéro d'abord : c'est ce qu'un client dicte au téléphone,
-            // et « 48213 » doit suffire à retrouver GSJ-048213.
+            // et « 74990 » doit suffire à retrouver GO-74990.
             { reference: { contains: query, mode: "insensitive" as const } },
             { title: { contains: query, mode: "insensitive" as const } },
             { destination: { contains: query, mode: "insensitive" as const } },

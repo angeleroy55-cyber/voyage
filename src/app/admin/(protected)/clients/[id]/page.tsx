@@ -178,7 +178,7 @@ export default async function CustomerDetailPage({
                 name="reason"
                 required
                 minLength={3}
-                placeholder="Geste commercial, dossier GS-4F7K2A"
+                placeholder="Geste commercial, dossier GO-4F7K2A"
                 className={INPUT}
               />
             </label>

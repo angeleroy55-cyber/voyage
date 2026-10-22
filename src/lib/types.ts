@@ -31,6 +31,7 @@ export type Board =
   | "Demi-pension"
   | "Petit-déjeuner"
   | "Sans repas"
+  | "Formule à confirmer"
   | "Vol seul";
 
 export interface Category {
@@ -59,9 +60,63 @@ export type CategoryKind = "catalogue" | "dynamique" | "hub" | "editorial";
 export type OfferRule = "promos" | "derniere-minute" | "tout-compris" | "france";
 export type CategoryAccent = "navy" | "gold" | "teal" | "rose" | "violet" | "emerald";
 
+/**
+ * Établissement nommé par une offre : hôtel, résidence, club, camping, navire,
+ * parc ou loueur de voiture. Tous les champs hors `name` et `kind` sont
+ * facultatifs : une rubrique inconnue reste absente plutôt que remplie à la
+ * main, et la fiche n'affiche que ce qui a été relevé.
+ */
+export interface OfferVenue {
+  name: string;
+  kind: "hotel" | "residence" | "club" | "camping" | "navire" | "parc" | "loueur";
+  stars?: number;
+  /** Adresse ou quartier. */
+  address?: string;
+  /** Repères de distance : « Plage : 150 m », « Centre-ville : 2 km ». */
+  distances?: string[];
+  /** Équipements et services, en mots-clés courts. */
+  facilities?: string[];
+  /** Restauration sur place : buffet, restaurants à la carte, bars. */
+  dining?: string[];
+  /** Types de chambre, de cabine ou de véhicule proposés. */
+  rooms?: string[];
+  checkIn?: string;
+  checkOut?: string;
+  /** Taxe de séjour ou frais locaux à régler sur place. */
+  localTax?: string;
+}
+
+/** Vols compris dans l'offre, tels que relevés pour la route concernée. */
+export interface OfferFlights {
+  /** « Paris (CDG ou Orly) ». */
+  from: string;
+  /** « Bangkok (BKK) ». */
+  to: string;
+  /** `null` = non relevé : la fiche ne dit ni oui ni non. */
+  direct: boolean | null;
+  /** « environ 11 h 20 en vol direct ». */
+  duration?: string;
+  /** Compagnies, seulement quand le relevé les nomme. */
+  airlines?: string[];
+  baggage?: string;
+  note?: string;
+}
+
+/** Fiche détaillée d'une offre (colonne JSON `Offer.details`). */
+export interface OfferDetails {
+  venue?: OfferVenue;
+  flights?: OfferFlights;
+  /** Formule repas en une phrase, si le relevé la précise. */
+  meals?: string;
+  /** Transferts aéroport, en une phrase. */
+  transfers?: string;
+  /** Rubriques libres de « L'essentiel avant de réserver ». */
+  extra?: { label: string; value: string }[];
+}
+
 export interface Offer {
   slug: string;
-  /** Numéro public GSJ-XXXXXX, visible de la carte à l'e-mail de confirmation. */
+  /** Numéro public GO-74990, visible de la carte à l'e-mail de confirmation. */
   reference: string;
   category: CategoryId;
   /** Libellé de la catégorie propriétaire, pour le badge « type d'offre ». */
@@ -113,6 +168,8 @@ export interface Offer {
   itinerary?: string[];
   notIncluded?: string[];
   practicalInfo?: string[];
+  /** Fiche détaillée relevée sur le marché ; absente, la fiche reste générique. */
+  details?: OfferDetails;
   /**
    * Règles du calendrier et de la fourchette de prix, résolues côté serveur
    * (offre > catégorie > défaut). Absentes sur le catalogue source statique,

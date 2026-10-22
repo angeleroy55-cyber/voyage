@@ -1,17 +1,35 @@
 import { randomInt } from "node:crypto";
 
 /**
+ * Préfixe unique de toutes les références GoSéjour, offres comme dossiers.
+ *
+ * Il y en avait trois en circulation (GO- pour les offres, GS- pour les
+ * dossiers, GSJ- dans d'anciens textes) : un seul reste, GO-. Les dossiers déjà
+ * enregistrés sous GS- gardent leur référence, que leur client a reçue par
+ * e-mail et qu'il utilise comme motif de virement ; seuls les nouveaux dossiers
+ * naissent en GO-.
+ */
+export const REFERENCE_PREFIX = "GO-";
+
+/**
  * Référence lisible communiquée au client, sans caractères ambigus (0/O, 1/I) :
  * elle est dictée au téléphone et recopiée à la main.
  *
  * Le back-office enregistre les demandes prises par téléphone et le site les
  * demandes en ligne ; les deux passent par ici pour que le format reste unique.
+ *
+ * Six caractères dont au moins une lettre : un numéro d'offre (GO- suivi de
+ * chiffres seuls) et une référence de dossier ne peuvent ainsi jamais être
+ * confondus, malgré le préfixe commun.
  */
 export function bookingReference(): string {
   const alphabet = "ACDEFGHJKLMNPQRSTUVWXYZ2345679";
   let suffix = "";
-  for (let i = 0; i < 6; i++) suffix += alphabet[randomInt(alphabet.length)];
-  return `GS-${suffix}`;
+  do {
+    suffix = "";
+    for (let i = 0; i < 6; i++) suffix += alphabet[randomInt(alphabet.length)];
+  } while (/^\d+$/.test(suffix));
+  return `${REFERENCE_PREFIX}${suffix}`;
 }
 
 /**
@@ -26,7 +44,7 @@ export function bookingReference(): string {
  * pour qu'aucun ne soit réattribué après une suppression.
  */
 export function offerReference(counter: number): string {
-  return `GO-${String(counter).padStart(5, "0")}`;
+  return `${REFERENCE_PREFIX}${String(counter).padStart(5, "0")}`;
 }
 
 /** Clé du compteur dans la table `Counter`. */

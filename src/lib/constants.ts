@@ -5,6 +5,7 @@ export const BOARDS = [
   "Demi-pension",
   "Petit-déjeuner",
   "Sans repas",
+  "Formule à confirmer",
   "Vol seul",
 ] as const;
 

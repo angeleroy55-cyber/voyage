@@ -19,14 +19,13 @@ import { inSeason, seasonById, seasonRange } from "@/lib/seasons";
  *   réglage de l'offre  >  réglage de la catégorie  >  défaut du code ci-dessous.
  *
  * Fenêtre de réservation par défaut (aujourd'hui + délai minimum → + N mois) :
- *   - circuits, croisières : 9 mois. Ce sont les voyages qu'on prépare le
+ *   - circuits, croisières : 12 mois. Ce sont les voyages qu'on prépare le
  *     plus tôt (congés à poser, départs de groupe, cabines limitées).
- *   - séjours, hôtels, vols : 6 mois.
- *   - camping & escapades, parcs de loisirs : 4 mois. Week-ends et courts
- *     séjours se décident tard.
- *   - location de voiture : 3 mois. Location courte, réservée en dernier.
+ *   - séjours, hôtels, vols : 9 mois, soit à peu près l'ouverture des
+ *     programmes de vols des compagnies.
+ *   - camping & escapades, parcs de loisirs, location de voiture : 6 mois.
  *   - long-courrier (9 nuits et plus) : +3 mois sur la valeur de la catégorie,
- *     plafonné à 9 mois, car ces voyages se réservent plus longtemps à l'avance.
+ *     plafonné à 12 mois, car ces voyages se réservent plus longtemps à l'avance.
  *     Ne s'applique pas quand l'offre a sa propre fenêtre.
  *   - offre saisonnière (`Offer.season`, ex. ski, Noël) : seules les dates de
  *     la saison sont proposées, et la fenêtre s'étend jusqu'à la fin de la
@@ -42,29 +41,33 @@ import { inSeason, seasonById, seasonRange } from "@/lib/seasons";
  */
 
 export const WINDOW_MIN_MONTHS = 3;
-export const WINDOW_MAX_MONTHS = 9;
+export const WINDOW_MAX_MONTHS = 12;
 /** Plafond absolu, pour une offre saisonnière dont la saison est lointaine. */
 export const SEASONAL_WINDOW_MAX_MONTHS = 12;
 export const LEAD_MAX_DAYS = 30;
 export const MAX_EXCLUDED_WEEKDAYS = 3;
-/** Bornes de la fourchette de remise réglable au back-office. */
-export const DISCOUNT_LIMIT_MIN_PCT = 5;
+/**
+ * Bornes de la fourchette de remise réglable au back-office. Plus larges que
+ * la politique par défaut (4 à 11 %) pour laisser la marge d'une vente flash
+ * ou, à l'inverse, d'un tarif quasi aligné sur le marché.
+ */
+export const DISCOUNT_LIMIT_MIN_PCT = 3;
 export const DISCOUNT_LIMIT_MAX_PCT = 20;
 /** Seuil « long-courrier » en nuits. */
 const LONG_HAUL_NIGHTS = 9;
 const LONG_HAUL_EXTRA_MONTHS = 3;
 
 export const CATEGORY_WINDOW_DEFAULTS: Record<string, number> = {
-  circuits: 9,
-  croisieres: 9,
-  sejours: 6,
-  hotels: 6,
-  vols: 6,
-  "camping-escapades": 4,
-  "parcs-loisirs": 4,
-  "location-voiture": 3,
+  circuits: 12,
+  croisieres: 12,
+  sejours: 9,
+  hotels: 9,
+  vols: 9,
+  "camping-escapades": 6,
+  "parcs-loisirs": 6,
+  "location-voiture": 6,
 };
-const FALLBACK_WINDOW_MONTHS = 6;
+const FALLBACK_WINDOW_MONTHS = 9;
 
 /** Libellés des jours, index JavaScript (0 = dimanche). */
 export const WEEKDAY_LABELS = [
@@ -97,6 +100,8 @@ export type BookingRules = {
   season: string;
   /** Prix de référence concurrentiel, pour la fourchette de prix. */
   referencePrice: number | null;
+  /** Prix plancher absolu (`Offer.priceFloor`), `null` si l'offre n'en a pas. */
+  priceFloor: number | null;
 };
 
 /** « 1,3 » → [1, 3] : valeurs 0-6 seulement, sans doublon, 3 au plus. */
@@ -130,6 +135,7 @@ export function resolveBookingRules(input: {
     season?: string | null;
     price: number;
     oldPrice: number | null;
+    priceFloor?: number | null;
   };
 }): BookingRules {
   const { categorySlug, category, offer } = input;
@@ -175,6 +181,7 @@ export function resolveBookingRules(input: {
     // Une référence inférieure ou égale au prix n'est pas une référence
     // exploitable : la fourchette n'aurait aucun sens.
     referencePrice: offer.oldPrice && offer.oldPrice > 0 ? offer.oldPrice : null,
+    priceFloor: offer.priceFloor && offer.priceFloor > 0 ? offer.priceFloor : null,
   };
 }
 
@@ -211,6 +218,7 @@ export function priceBandOf(rules: BookingRules): PriceBand {
     referencePrice: rules.referencePrice,
     discountMinPct: rules.discountMinPct,
     discountMaxPct: rules.discountMaxPct,
+    floorPrice: rules.priceFloor,
   };
 }
 

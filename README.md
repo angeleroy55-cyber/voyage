@@ -175,11 +175,24 @@ lecture à partir de `departureDate`, sous le seuil de `LAST_MINUTE_DAYS`
 (21 jours). Une offre ne peut donc pas rester annoncée comme urgente après son
 départ.
 
-**Numéro de référence.** Chaque offre porte un `GSJ-XXXXXX` unique, attribué à
-la création et jamais réattribué, même après suppression. Il ne vient pas d'un
+**Numéro de référence.** Toutes les références GoSéjour commencent par `GO-` :
+chaque offre porte un `GO-74990` (cinq chiffres) unique, attribué à
+la création et jamais réattribué, même après suppression. Un dossier de
+réservation porte un `GO-` suivi de six caractères dont au moins une lettre
+(`GO-4F7K2A`), ce qui ne peut jamais se confondre avec un numéro d'offre. Les
+dossiers enregistrés avant octobre 2026 restent en `GS-` : leur client a reçu
+cette référence et s'en sert comme motif de virement. Le numéro d'offre ne vient pas d'un
 tirage aléatoire mais d'un compteur strictement croissant, stocké dans la table
 `Counter` (`src/server/references.ts`). Le back-office le cherche comme critère
-de recherche prioritaire : « 48213 » retrouve `GSJ-048213`.
+de recherche prioritaire : « 74990 » retrouve `GO-74990`.
+
+**Catalogue de marché.** Les offres ne sont plus génériques : `src/lib/market/catalogue-market.json`
+rattache chaque offre à un produit réel relevé le 21/10/2026 (hôtel nommé, circuit,
+croisière, vol Kayak) et ajoute 200 offres, dont un quart en Asie. Prix GoSéjour = prix du
+marché moins 4 à 11 %, jamais sous le plancher d'un vol. Le calendrier propose quatre jours
+de départ par semaine, soit 16 à 19 dates par mois. Détail, limites et mise en production :
+`docs/superpowers/specs/2026-10-21-refonte-catalogue-design.md` et `scripts/rollout-prod.md`.
+Contrôle : `npx tsx scripts/probe-market.mts` et `npx tsx scripts/probe-departure-days.mts`.
 
 Les anciennes adresses `/recherche/[categorie]` redirigent en 308 vers les
 nouvelles, y compris les quatre slugs renommés (`vol-hotel` vers `sejours`,
@@ -275,7 +288,7 @@ src/
 │  ├─ auth.ts           scrypt + jetons de session
 │  ├─ session.ts        cookies, gardes
 │  ├─ media.ts          Cloudinary / repli local
-│  ├─ references.ts     compteur des numéros GSJ
+│  ├─ references.ts     compteur des numéros d'offre GO-
 │  ├─ catalogue.ts      lectures du site public
 │  └─ actions/          Server Actions (écritures)
 └─ lib/

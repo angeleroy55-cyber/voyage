@@ -49,7 +49,12 @@ export default async function EditOfferPage({ params, searchParams }: PageProps<
   const inheritedRules = resolveBookingRules({
     categorySlug: category?.slug ?? "",
     category,
-    offer: { nights: offer.nights, price: offer.price, oldPrice: offer.oldPrice },
+    offer: {
+      nights: offer.nights,
+      price: offer.price,
+      oldPrice: offer.oldPrice,
+      priceFloor: offer.priceFloor,
+    },
   });
 
   // Les actions sont liées ici à l'identifiant : le formulaire reste ignorant

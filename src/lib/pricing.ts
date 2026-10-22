@@ -32,15 +32,19 @@ import { SEASONS, inSeason } from "@/lib/seasons";
  *      (`Offer.oldPrice`, relevé tracé dans `referencePriceSource`) : le prix
  *      du jour est ramené entre
  *        plafond  = référence × (1 - remise minimale)   → toujours au moins
- *                   5 % (réglable) moins cher que la référence ;
- *        plancher = référence × (1 - remise maximale)   → jamais plus de 20 %
+ *                   4 % (réglable) moins cher que la référence ;
+ *        plancher = référence × (1 - remise maximale)   → jamais plus de 11 %
  *                   (réglable) sous la référence, pour garder la marge…
  *      … sauf si le prix catalogue est lui-même déjà plus bas que ce plancher
  *      (vente flash décidée par l'équipe, ex. -28 %) : le plancher descend
  *      alors au prix catalogue, pour ne jamais afficher sur le calendrier un
  *      prix supérieur à la promotion annoncée sur la carte de l'offre.
  *      Les remises minimale et maximale se règlent par catégorie et par offre
- *      au back-office (/admin/calendrier), 5 % et 20 % par défaut.
+ *      au back-office (/admin/calendrier), 4 % et 11 % par défaut : GoSéjour se
+ *      place 4 à 11 % sous le marché, pas davantage, pour garder une marge.
+ *   5. Prix plancher absolu (`Offer.priceFloor`, `band.floorPrice`) : le prix du
+ *      jour ne descend jamais dessous. Sert surtout aux vols, dont le tarif
+ *      aller-retour le plus bas observé sur le marché est une borne réelle.
  *   Sans prix de référence connu, seule l'étape 3 s'ajoute à la règle d'origine.
  *
  * Le prix affiché au client (`BookingBox`, `CheckoutForm`) et le prix
@@ -67,8 +71,8 @@ export const SEASON_DEMAND: Record<string, { level: "haute" | "normale" | "basse
 };
 
 /** Remises par défaut par rapport au prix de référence, en pourcentage. */
-export const DEFAULT_DISCOUNT_MIN_PCT = 5;
-export const DEFAULT_DISCOUNT_MAX_PCT = 20;
+export const DEFAULT_DISCOUNT_MIN_PCT = 4;
+export const DEFAULT_DISCOUNT_MAX_PCT = 11;
 
 /** Paramètres de l'extension saison + fourchette concurrentielle. */
 export type PriceBand = {
@@ -76,6 +80,8 @@ export type PriceBand = {
   referencePrice?: number | null;
   discountMinPct: number;
   discountMaxPct: number;
+  /** Prix plancher absolu (`Offer.priceFloor`), jamais franchi vers le bas. */
+  floorPrice?: number | null;
 };
 
 /**
@@ -170,6 +176,14 @@ export function priceDetailsForDate(
       price = floor;
       clamped = "plancher";
     }
+  }
+
+  // Plancher absolu : il l'emporte sur la fourchette. Un tarif aérien ne peut
+  // pas être vendu sous le prix mini du marché, quelle que soit la remise.
+  const absoluteFloor = band.floorPrice ?? 0;
+  if (absoluteFloor > 0 && price < absoluteFloor) {
+    price = absoluteFloor;
+    clamped = "plancher";
   }
 
   return {

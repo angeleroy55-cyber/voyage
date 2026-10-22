@@ -9,6 +9,7 @@ import OfferCard, { RatingBadge, Stars } from "@/components/ui/OfferCard";
 import { getFavouriteSlugs } from "@/server/account";
 import { getCustomerSession } from "@/server/customer-session";
 import OfferEssentials from "@/components/offer/OfferEssentials";
+import OfferVenueSection from "@/components/offer/OfferVenueSection";
 import { getCategories, getLegalEntity, getOfferBySlug, getRelatedOffers, getRetiredOffer, getOfferReviews, getPublishedOfferSlugs } from "@/server/catalogue";
 import { departureLabel, durationFull } from "@/lib/format";
 import { calendarLabels, firstBookableDate, rulesOf } from "@/lib/booking-rules";
@@ -16,7 +17,7 @@ import {
   cancellationPolicyFor,
   defaultItinerary,
   defaultNotIncluded,
-  defaultPracticalInfo,
+  practicalInfoFor,
 } from "@/lib/offer-details";
 import { galleryWithMediaFallback } from "@/lib/media";
 import { hreflangAlternates } from "@/i18n/config";
@@ -126,9 +127,7 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
   // générique déduit des données de l'offre (src/lib/offer-details.ts).
   const itinerary = offer.itinerary?.length ? offer.itinerary : defaultItinerary(offer);
   const notIncluded = offer.notIncluded?.length ? offer.notIncluded : defaultNotIncluded(offer);
-  const practicalInfo = offer.practicalInfo?.length
-    ? offer.practicalInfo
-    : defaultPracticalInfo(offer);
+  const practicalInfo = practicalInfoFor(offer);
   const cancellation = cancellationPolicyFor(offer.category);
 
   return (
@@ -254,6 +253,9 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
 
           <OfferEssentials offer={offer} legal={legal} />
 
+          <OfferVenueSection offer={offer} />
+
+          {offer.highlights.length > 0 && (
           <section className="mt-9">
             <h2 className="text-lg font-extrabold text-navy-900">Les points forts</h2>
             <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
@@ -265,7 +267,9 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
               ))}
             </ul>
           </section>
+          )}
 
+          {offer.amenities.length > 0 && (
           <section className="mt-9">
             <h2 className="text-lg font-extrabold text-navy-900">Équipements et services</h2>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -279,6 +283,7 @@ export default async function OfferPage({ params, searchParams }: PageProps<"/[l
               ))}
             </div>
           </section>
+          )}
 
           {itinerary.length > 0 && (
             <section className="mt-9">

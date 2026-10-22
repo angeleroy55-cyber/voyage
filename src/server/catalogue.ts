@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants";
 import { seasonRange, upcomingSeason } from "@/lib/seasons";
 import { withMediaFallback } from "@/lib/media";
+import { parseOfferDetails } from "@/lib/offer-details";
 import type {
   CategoryAccent,
   CategoryId,
@@ -73,6 +74,9 @@ type OfferRow = {
   itinerary: string[];
   notIncluded: string[];
   practicalInfo: string[];
+  /** Colonne JSON `Offer.details`, validée par `parseOfferDetails`. */
+  details: unknown;
+  priceFloor: number | null;
   season: string;
   bookingLeadDays: number | null;
   bookingWindowMonths: number | null;
@@ -142,6 +146,7 @@ function toOffer(row: OfferRow, locale: Locale): Offer {
     itinerary: row.itinerary,
     notIncluded: row.notIncluded,
     practicalInfo: row.practicalInfo,
+    details: parseOfferDetails(row.details),
     // Règles du calendrier et de la fourchette de prix, résolues ici une fois
     // (offre > catégorie > défaut) : la fiche, le tunnel et `createBooking`
     // travaillent ainsi sur exactement les mêmes valeurs.
@@ -219,6 +224,8 @@ const OFFER_SELECT = {
   itinerary: true,
   notIncluded: true,
   practicalInfo: true,
+  details: true,
+  priceFloor: true,
   season: true,
   ...CALENDAR_SELECT,
   category: {

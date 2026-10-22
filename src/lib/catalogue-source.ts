@@ -177,6 +177,28 @@ export const DESTINATIONS: SourceDestination[] = [
   { slug: "jordanie", name: "Jordanie", country: "Jordanie", region: "Moyen-Orient", photo: "Petra Treasury Jordan",
     blurb: "Petra, le Wadi Rum et la mer Morte : un circuit d'une semaine sur des routes faciles." },
 
+  // Destinations ajoutées avec le relevé de marché d'octobre 2026. Les durées de
+  // vol, la monnaie et le décalage horaire viennent des relevés Kayak et des
+  // fiches de formalités (diplomatie.gouv.fr), pas d'une estimation.
+  { slug: "coree-du-sud", name: "Corée du Sud", country: "Corée du Sud", region: "Asie", photo: "Seoul Gyeongbokgung Palace",
+    blurb: "Séoul se rejoint en environ 12 h 18 de vol direct depuis Paris (Korean Air, Air France). Monnaie : le won. Décalage : +8 h en hiver, +7 h en été." },
+  { slug: "nepal", name: "Népal", country: "Népal", region: "Asie", photo: "Kathmandu Durbar Square",
+    blurb: "Katmandou et la vallée : aucun vol direct depuis Paris, une escale est à prévoir. Monnaie : la roupie népalaise. Décalage : +4 h 45 en hiver, +3 h 45 en été." },
+  { slug: "laos", name: "Laos", country: "Laos", region: "Asie du Sud-Est", photo: "Luang Prabang Kuang Si Falls",
+    blurb: "Luang Prabang et Vientiane : aucun vol direct depuis Paris, une escale est à prévoir. Monnaie : le kip. Décalage : +6 h en hiver, +5 h en été." },
+  { slug: "philippines", name: "Philippines", country: "Philippines", region: "Asie du Sud-Est", photo: "Boracay White Beach",
+    blurb: "Manille est à environ 13 h 21 de vol direct depuis Paris (Air France), puis Boracay ou Palawan par vol intérieur. Monnaie : le peso. Décalage : +7 h en hiver, +6 h en été." },
+  { slug: "cambodge", name: "Cambodge", country: "Cambodge", region: "Asie du Sud-Est", photo: "Angkor Wat sunrise",
+    blurb: "Angkor, Siem Reap et Phnom Penh : aucun vol direct depuis Paris, une escale est à prévoir. Monnaie : le riel, le dollar américain y est très utilisé. Décalage : +6 h en hiver, +5 h en été." },
+  { slug: "chine", name: "Chine", country: "Chine", region: "Asie", photo: "Great Wall of China Mutianyu",
+    blurb: "Pékin est à environ 10 h 23 de vol direct depuis Paris (Air China, Air France). Monnaie : le yuan. Décalage : +7 h en hiver, +6 h en été." },
+  { slug: "inde", name: "Inde", country: "Inde", region: "Asie", photo: "Taj Mahal Agra",
+    blurb: "Delhi est à environ 9 h 03 de vol direct depuis Paris (Air France, Air India). Monnaie : la roupie indienne. Décalage : +4 h 30 en hiver, +3 h 30 en été." },
+  { slug: "ouzbekistan", name: "Ouzbékistan", country: "Ouzbékistan", region: "Asie", photo: "Registan Samarkand",
+    blurb: "Tachkent est à environ 6 h 55 de vol direct depuis Paris (Uzbekistan Airways). Monnaie : le soum. Décalage : +4 h en hiver, +3 h en été." },
+  { slug: "oman", name: "Oman", country: "Oman", region: "Moyen-Orient", photo: "Muscat Sultan Qaboos Grand Mosque",
+    blurb: "Mascate est à environ 7 h de vol direct depuis Paris (Oman Air). Monnaie : le rial omanais. Décalage : +3 h en hiver, +2 h en été." },
+
   // ---- Océanie et compléments ----
   { slug: "australie", name: "Australie", country: "Australie", region: "Océanie", photo: "Sydney Opera House",
     blurb: "Vingt-quatre heures de vol, six mois de décalage de saison : on y part quand l'hiver s'installe ici." },
@@ -2214,6 +2236,10 @@ export type SourceOffer = Omit<Offer, "reference"> & {
   season?: string;
   /** Remise appliquée au prix de référence, en pourcentage. */
   discount: number;
+  /** Prix plancher absolu (vols : tarif aller-retour mini observé). */
+  priceFloor?: number;
+  /** Origine du prix de référence, quand elle diffère du relevé générique. */
+  referencePriceSource?: string;
 };
 
 export const OFFERS: SourceOffer[] = RAW.map((o, index) => {

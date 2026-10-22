@@ -146,17 +146,19 @@ export default function QuickView({ offer }: { offer: Offer }) {
             </p>
 
             <div className="mt-2.5 flex flex-wrap items-center gap-3">
-              <span className="flex items-center gap-2">
-                <span className="rounded-lg bg-navy-700 px-2 py-1 text-sm font-bold text-white tabular-nums">
-                  {offer.rating.toFixed(1).replace(".", ",")}
-                </span>
-                <span className="text-xs leading-tight text-navy-600">
-                  <span className="block font-semibold text-navy-800">
-                    {ratingLabel(offer.rating)}
+              {offer.reviews > 0 && (
+                <span className="flex items-center gap-2">
+                  <span className="rounded-lg bg-navy-700 px-2 py-1 text-sm font-bold text-white tabular-nums">
+                    {offer.rating.toFixed(1).replace(".", ",")}
                   </span>
-                  {offer.reviews.toLocaleString("fr-FR")} avis
+                  <span className="text-xs leading-tight text-navy-600">
+                    <span className="block font-semibold text-navy-800">
+                      {ratingLabel(offer.rating)}
+                    </span>
+                    {offer.reviews.toLocaleString("fr-FR")} avis
+                  </span>
                 </span>
-              </span>
+              )}
               {offer.stars > 0 && (
                 <span className="flex gap-0.5" aria-label={`${offer.stars} étoiles`}>
                   {Array.from({ length: offer.stars }).map((_, i) => (

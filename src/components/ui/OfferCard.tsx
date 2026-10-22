@@ -44,6 +44,8 @@ export function Stars({ count, className = "" }: { count: number; className?: st
 }
 
 export function RatingBadge({ score, reviews }: { score: number; reviews: number }) {
+  // Une offre sans avis n'affiche aucune note : « 0,0 · 0 avis » serait un faux signal.
+  if (reviews <= 0 || score <= 0) return null;
   return (
     <div className="flex items-center gap-2">
       <span className="rounded-lg bg-navy-700 px-2 py-1 text-sm font-bold text-white tabular-nums">
@@ -281,12 +283,14 @@ export default function OfferCard({
           {offer.stars > 0 && <span className="text-xs text-navy-500">{offer.board}</span>}
         </div>
 
-        <div className="mt-2.5 flex items-center gap-2 text-xs text-navy-600">
-          <span className="rounded bg-navy-700 px-1.5 py-0.5 font-bold text-white tabular-nums">
-            {offer.rating.toFixed(1).replace(".", ",")}
-          </span>
-          <span>{offer.reviews.toLocaleString("fr-FR")} avis</span>
-        </div>
+        {offer.reviews > 0 && (
+          <div className="mt-2.5 flex items-center gap-2 text-xs text-navy-600">
+            <span className="rounded bg-navy-700 px-1.5 py-0.5 font-bold text-white tabular-nums">
+              {offer.rating.toFixed(1).replace(".", ",")}
+            </span>
+            <span>{offer.reviews.toLocaleString("fr-FR")} avis</span>
+          </div>
+        )}
 
         <div className="mt-3 space-y-0.5 text-xs">
           <p className="font-semibold text-navy-700">{duree}</p>

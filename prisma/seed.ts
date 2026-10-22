@@ -12,7 +12,7 @@
  * `npm run photos`, qui écrit src/lib/media/photos.json. Deux installations du
  * projet produisent donc exactement le même catalogue.
  */
-import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaClient, Prisma } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config as loadEnv } from "dotenv";
 import { CATEGORIES, POSTS, REVIEWS, BRAND, continentOf } from "../src/lib/data";
@@ -30,6 +30,8 @@ import {
 } from "../src/lib/catalogue-source";
 import { creditFor, photoFor, photoQueryFor, photosFor } from "../src/lib/media/photos";
 import { nextDepartureFor } from "../src/lib/departures";
+import { applyMarket, marketStats } from "../src/lib/market";
+import { excludedWeekdaysFor } from "../src/lib/departure-days";
 import { resolveBookingRules } from "../src/lib/booking-rules";
 import { photo } from "../src/lib/format";
 import {
@@ -45,9 +47,38 @@ loadEnv({ path: ".env", quiet: true });
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL est absente.");
 
+/**
+ * Catalogue source + catalogue de marché (src/lib/market) : produits réels
+ * relevés chez Logitravel et Kayak, appliqués aux offres existantes, et offres
+ * ajoutées. Toutes les étapes du seed travaillent sur cette liste.
+ */
+const CATALOGUE = applyMarket(OFFERS);
+
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: url, max: 1 }),
 });
+
+/**
+ * Traductions EN / ES / DE d'une offre.
+ *
+ * Une offre rattachée à un produit relevé a un titre (nom d'hôtel, de navire) et
+ * un texte qui n'existent qu'en français : la traduction du catalogue d'origine
+ * décrirait un autre produit. Elle est donc vidée, et le site retombe sur le
+ * français, plutôt que d'afficher en anglais la description d'une offre disparue.
+ */
+function traduire(offer: (typeof CATALOGUE)[number]) {
+  if (offer.details === undefined) return translateOffer(offer);
+  return {
+    titleEn: offer.title,
+    titleEs: offer.title,
+    descriptionEn: "",
+    descriptionEs: "",
+    highlightsEn: [] as string[],
+    highlightsEs: [] as string[],
+    includedEn: [] as string[],
+    includedEs: [] as string[],
+  };
+}
 
 /**
  * Bandeaux d'accueil composés au seed.
@@ -299,17 +330,18 @@ async function main() {
     (await prisma.category.findMany()).map((c) => [c.slug, c.id]),
   );
 
-  console.log("Offres…");
+  console.log("Offres…", marketStats(), `(${CATALOGUE.length} au total)`);
 
   // Les numéros de référence sont réservés en un seul appel, pour les seules
   // offres qui n'en ont pas encore : relancer le seed ne renumérote donc rien,
   // et le compteur ne redescend jamais.
-  const dejaEnBase = new Map(
-    (
-      await prisma.offer.findMany({ select: { slug: true, reference: true } })
-    ).map((o) => [o.slug, o.reference]),
-  );
-  const aNumeroter = OFFERS.filter((o) => !dejaEnBase.get(o.slug));
+  const lignesEnBase = await prisma.offer.findMany({
+    select: { slug: true, reference: true, excludedWeekdays: true },
+  });
+  const dejaEnBase = new Map(lignesEnBase.map((o) => [o.slug, o.reference]));
+  // Jours sans départ déjà posés (par le seed ou saisis au back-office) : jamais écrasés.
+  const joursExclusEnBase = new Map(lignesEnBase.map((o) => [o.slug, o.excludedWeekdays]));
+  const aNumeroter = CATALOGUE.filter((o) => !dejaEnBase.get(o.slug));
   const numeros = new Map<string, string>();
   if (aNumeroter.length > 0) {
     const compteur = await prisma.counter.upsert({
@@ -340,7 +372,7 @@ async function main() {
       parPays.set(d.country.toLowerCase(), d.id);
     }
   }
-  function destinationPour(offer: (typeof OFFERS)[number]): string | null {
+  function destinationPour(offer: (typeof CATALOGUE)[number]): string | null {
     return (
       parVille.get(offer.destination.toLowerCase()) ??
       parPays.get(offer.country.toLowerCase()) ??
@@ -348,9 +380,19 @@ async function main() {
     );
   }
 
-  for (const [index, offer] of OFFERS.entries()) {
+  for (const [index, offer] of CATALOGUE.entries()) {
     const categoryId = categoriesBySlug.get(offer.category);
     if (!categoryId) continue;
+
+    // Jours de départ de la route : quatre par semaine, soit 16 à 19 dates par
+    // mois (src/lib/departure-days.ts). Posés seulement s'ils ne le sont pas déjà.
+    const excludedWeekdays =
+      joursExclusEnBase.get(offer.slug) ??
+      excludedWeekdaysFor({
+        departureCity: offer.departureCity,
+        country: offer.country,
+        weekend: offer.nights > 0 && offer.nights <= 4 && offer.category !== "circuits",
+      });
 
     const data = {
       categoryId,
@@ -368,7 +410,9 @@ async function main() {
       board: offer.board,
       price: offer.price,
       oldPrice: offer.oldPrice ?? null,
-      referencePriceSource: offer.oldPrice ? REFERENCE_PRICE_SOURCE : "",
+      referencePriceSource: offer.oldPrice ? (offer.referencePriceSource ?? REFERENCE_PRICE_SOURCE) : "",
+      priceFloor: offer.priceFloor ?? null,
+      excludedWeekdays,
       rating: offer.rating,
       reviewsCount: offer.reviews,
       // Même calcul que la remise à jour automatique des dates dépassées
@@ -385,6 +429,8 @@ async function main() {
             season: offer.season,
             price: offer.price,
             oldPrice: offer.oldPrice ?? null,
+            priceFloor: offer.priceFloor ?? null,
+            excludedWeekdays,
           },
         }),
         position: index,
@@ -398,7 +444,13 @@ async function main() {
       amenities: offer.amenities,
       highlights: offer.highlights,
       included: offer.included,
-      ...translateOffer(offer),
+      // Rubriques détaillées relevées sur le marché : écrites seulement quand le
+      // catalogue de marché les fournit, pour ne pas effacer une saisie du back-office.
+      ...(offer.itinerary ? { itinerary: offer.itinerary } : {}),
+      ...(offer.notIncluded ? { notIncluded: offer.notIncluded } : {}),
+      ...(offer.practicalInfo ? { practicalInfo: offer.practicalInfo } : {}),
+      ...(offer.details ? { details: offer.details as unknown as Prisma.InputJsonValue } : {}),
+      ...traduire(offer),
       status: "published",
       origin: "catalogue",
       // Mise en avant : une offre par catégorie du catalogue, la première
@@ -464,7 +516,7 @@ async function main() {
   // base garderait indéfiniment les lignes d'anciennes versions. Seules celles
   // marquées `catalogue` sont concernées : une offre saisie au back-office
   // survit à tous les `db:seed`.
-  const slugsSource = new Set(OFFERS.map((o) => o.slug));
+  const slugsSource = new Set(CATALOGUE.map((o) => o.slug));
   const perimees = await prisma.offer.findMany({
     where: { origin: "catalogue" },
     select: { id: true, slug: true, images: { select: { publicId: true } } },
@@ -716,7 +768,7 @@ async function seedDemoCustomer() {
   // si l'une manque, la ligne est simplement ignorée.
   const wanted = [
     {
-      reference: "GS-CRETE01",
+      reference: "GO-CRETE01",
       slug: "crete-heraklion",
       status: "confirmed",
       travellers: 2,
@@ -728,7 +780,7 @@ async function seedDemoCustomer() {
       nights: 7,
     },
     {
-      reference: "GS-MARRA02",
+      reference: "GO-MARRA02",
       slug: "marrakech-palmeraie",
       status: "pending",
       travellers: 2,
@@ -740,7 +792,7 @@ async function seedDemoCustomer() {
       nights: 7,
     },
     {
-      reference: "GS-LISBO03",
+      reference: "GO-LISBO03",
       slug: "lisbonne-alfama",
       status: "completed",
       travellers: 2,
@@ -752,7 +804,7 @@ async function seedDemoCustomer() {
       nights: 4,
     },
     {
-      reference: "GS-FJORD04",
+      reference: "GO-FJORD04",
       slug: "fjords-norvege",
       status: "cancelled",
       travellers: 2,

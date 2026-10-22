@@ -1,17 +1,22 @@
-import type { Offer } from "@/lib/types";
+import type { Offer, OfferDetails, OfferFlights, OfferVenue } from "@/lib/types";
 
 /**
  * Compléments d'information de la fiche offre : programme, « ce prix ne
  * comprend pas », informations pratiques, conditions d'annulation.
  *
- * Règle de contenu : rien d'inventé. Ces textes sont génériques et se
- * déduisent uniquement des données déjà en base pour l'offre (catégorie,
- * formule, durée, ville de départ, pays) et des engagements déjà affichés
- * ailleurs sur le site. Pas de nom d'hôtel, pas d'horaire précis, pas de
- * règle d'entrée par pays recopiée de mémoire (elles changent) : on renvoie
- * vers la source officielle. Dès que l'équipe saisit un texte précis au
- * back-office (`Offer.itinerary`, `notIncluded`, `practicalInfo`), il
- * remplace le texte générique.
+ * Règle de contenu : rien d'inventé. Deux niveaux :
+ *   - Offre relevée sur le marché (`Offer.details` renseigné) : la fiche
+ *     affiche l'établissement nommé, les vols, les repas et les transferts tels
+ *     que relevés, rubrique par rubrique. Une rubrique que le relevé ne
+ *     contient pas n'est pas affichée comme connue : elle renvoie à la
+ *     confirmation de disponibilité, avant tout paiement.
+ *   - Offre sans relevé : textes génériques déduits uniquement des données de
+ *     l'offre (catégorie, formule, durée, ville de départ, pays) et des
+ *     engagements déjà affichés ailleurs sur le site. Pas de nom d'hôtel, pas
+ *     d'horaire, pas de règle d'entrée recopiée de mémoire (elles changent) :
+ *     on renvoie vers la source officielle.
+ * Dès que l'équipe saisit un texte précis au back-office (`Offer.itinerary`,
+ * `notIncluded`, `practicalInfo`), il remplace le texte générique.
  */
 
 type DetailsInput = Pick<
@@ -32,6 +37,98 @@ const FRENCH_TERRITORIES = new Set([
   "Saint-Martin",
   "Saint-Barthélemy",
 ]);
+
+// ---------------------------------------------------------------------------
+// Lecture de la colonne JSON `Offer.details`
+// ---------------------------------------------------------------------------
+
+function text(value: unknown, max = 400): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim().slice(0, max) : undefined;
+}
+
+function list(value: unknown, maxItems = 40, maxLen = 160): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const items = value
+    .map((v) => text(v, maxLen))
+    .filter((v): v is string => Boolean(v))
+    .slice(0, maxItems);
+  return items.length > 0 ? items : undefined;
+}
+
+const VENUE_KINDS: OfferVenue["kind"][] = [
+  "hotel",
+  "residence",
+  "club",
+  "camping",
+  "navire",
+  "parc",
+  "loueur",
+];
+
+/**
+ * Lit la colonne JSON sans lui faire confiance : elle peut avoir été écrite
+ * par un script de relevé ou, plus tard, par le back-office. Tout ce qui n'a
+ * pas la bonne forme est ignoré plutôt que de faire échouer la page.
+ */
+export function parseOfferDetails(raw: unknown): OfferDetails | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const r = raw as Record<string, unknown>;
+  const out: OfferDetails = {};
+
+  const v = r.venue as Record<string, unknown> | undefined;
+  const venueName = v && text(v.name, 160);
+  if (v && venueName) {
+    const kind = VENUE_KINDS.includes(v.kind as OfferVenue["kind"])
+      ? (v.kind as OfferVenue["kind"])
+      : "hotel";
+    out.venue = {
+      name: venueName,
+      kind,
+      stars: typeof v.stars === "number" && v.stars >= 1 && v.stars <= 5 ? v.stars : undefined,
+      address: text(v.address, 200),
+      distances: list(v.distances, 8, 80),
+      facilities: list(v.facilities, 30, 60),
+      dining: list(v.dining, 10, 120),
+      rooms: list(v.rooms, 10, 100),
+      checkIn: text(v.checkIn, 40),
+      checkOut: text(v.checkOut, 40),
+      localTax: text(v.localTax, 200),
+    };
+  }
+
+  const f = r.flights as Record<string, unknown> | undefined;
+  const from = f && text(f.from, 120);
+  const to = f && text(f.to, 120);
+  if (f && from && to) {
+    out.flights = {
+      from,
+      to,
+      direct: typeof f.direct === "boolean" ? f.direct : null,
+      duration: text(f.duration, 120),
+      airlines: list(f.airlines, 6, 60),
+      baggage: text(f.baggage, 300),
+      note: text(f.note, 300),
+    };
+  }
+
+  out.meals = text(r.meals, 300);
+  out.transfers = text(r.transfers, 300);
+
+  if (Array.isArray(r.extra)) {
+    const extra = r.extra
+      .map((e) => {
+        const o = e as Record<string, unknown> | null;
+        const label = o && text(o.label, 60);
+        const value = o && text(o.value, 400);
+        return label && value ? { label, value } : null;
+      })
+      .filter((e): e is { label: string; value: string } => e !== null)
+      .slice(0, 8);
+    if (extra.length > 0) out.extra = extra;
+  }
+
+  return out.venue || out.flights || out.meals || out.transfers || out.extra ? out : undefined;
+}
 
 /** Produits qui comprennent un vol (tout sauf l'hébergement ou la voiture seuls). */
 export function includesFlight(o: DetailsInput): boolean {
@@ -105,7 +202,7 @@ export function defaultItinerary(o: DetailsInput): string[] {
 export function defaultNotIncluded(o: DetailsInput): string[] {
   const insurance = "L'assurance annulation (proposée à l'étape suivante)";
   const meals =
-    o.board === "Tout compris" || o.board === "Pension complète"
+    o.board === "Tout compris" || o.board === "Pension complète" || o.board === "Formule à confirmer"
       ? null
       : `Les repas non prévus par la formule (${o.board.toLowerCase()})`;
 
@@ -206,6 +303,23 @@ export function defaultPracticalInfo(o: DetailsInput): string[] {
   return info;
 }
 
+/**
+ * Informations pratiques affichées sur la fiche.
+ *
+ * Une offre relevée sur le marché porte ses formalités d'entrée, sa monnaie et
+ * son décalage horaire (sources officielles, voir `catalogue-market.json`) : on
+ * y ajoute les lignes de service communes (bagages, horaires, assistance), sans
+ * répéter la ligne « Formalités » générique. Un texte saisi au back-office reste,
+ * lui, un remplacement complet, comme avant.
+ */
+export function practicalInfoFor(o: DetailsInput & { practicalInfo?: string[] }): string[] {
+  const generic = defaultPracticalInfo(o);
+  const own = o.practicalInfo ?? [];
+  if (own.length === 0) return generic;
+  const fromMarket = own[0].startsWith("Formalités d'entrée pour un ressortissant français (relevé du");
+  return fromMarket ? [...own, ...generic.slice(1)] : own;
+}
+
 // ---------------------------------------------------------------------------
 // Annulation
 // ---------------------------------------------------------------------------
@@ -252,29 +366,44 @@ export function freeCancellationLine(category: string): string {
  * compagnie, horaires) est dit tel quel, avec le moment où l'information est
  * donnée, plutôt que d'être inventé.
  */
-export function essentialsFor(o: DetailsInput & Pick<Offer, "included">): { label: string; value: string }[] {
+export function essentialsFor(
+  o: DetailsInput & Pick<Offer, "included"> & { details?: OfferDetails },
+): { label: string; value: string }[] {
   const rows: { label: string; value: string }[] = [];
   const has = (needle: string) => o.included.some((i) => i.toLowerCase().includes(needle.toLowerCase()));
   const flight = includesFlight(o);
   const beforePayment = "précisés avec la confirmation de disponibilité, avant tout paiement";
+  const d = o.details;
 
   // Hébergement / produit.
   if (o.category === "location-voiture") {
     rows.push({
-      label: "Véhicule",
-      value: `${o.title}, prise en charge à ${o.destination} (${o.country}). Modèle exact selon le parc de l'agence de location, indiqué sur le bon de réservation.`,
+      label: d?.venue ? venueLabel(d.venue) : "Véhicule",
+      value: d?.venue
+        ? venueSentence(d.venue)
+        : `${o.title}, prise en charge à ${o.destination} (${o.country}). Modèle exact selon le parc de l'agence de location, indiqué sur le bon de réservation.`,
     });
   } else if (o.category === "croisieres") {
     rows.push({
-      label: "Navire et cabine",
-      value: `${o.title}, embarquement à ${o.destination}. Nom du navire et catégorie de cabine ${beforePayment}.`,
+      label: d?.venue ? venueLabel(d.venue) : "Navire et cabine",
+      value: d?.venue
+        ? venueSentence(d.venue)
+        : `${o.title}, embarquement à ${o.destination}. Nom du navire et catégorie de cabine ${beforePayment}.`,
     });
   } else if (o.category !== "vols") {
-    const stars = o.stars > 0 ? ` ${o.stars}★` : "";
-    rows.push({
-      label: "Hébergement",
-      value: `Établissement${stars} à ${o.destination} (${o.country}) : « ${o.title} ». Nom et adresse exacts ${beforePayment}.`,
-    });
+    // Un circuit relevé décrit son hébergement dans ses rubriques libres : pas de ligne générique en double.
+    const accommodationInExtra = o.category === "circuits" && d?.extra?.some((e) => e.label === "Hébergement");
+    if (accommodationInExtra) {
+      // rien : la rubrique « Hébergement » de `extra` est affichée plus bas
+    } else if (d?.venue) {
+      rows.push({ label: venueLabel(d.venue), value: venueSentence(d.venue) });
+    } else {
+      const stars = o.stars > 0 ? ` ${o.stars}★` : "";
+      rows.push({
+        label: "Hébergement",
+        value: `Établissement${stars} à ${o.destination} (${o.country}) : « ${o.title} ». Nom et adresse exacts ${beforePayment}.`,
+      });
+    }
   }
 
   // Transport.
@@ -284,7 +413,9 @@ export function essentialsFor(o: DetailsInput & Pick<Offer, "included">): { labe
     const mode = has("Vol ou train") ? "Vol ou train aller-retour" : "Vol aller-retour";
     rows.push({
       label: "Vols",
-      value: `${mode} au départ de ${o.departureCity} compris. Compagnie et horaires ${beforePayment} : ils dépendent des places disponibles au jour de la demande, aucun horaire n'est annoncé avant.`,
+      value: d?.flights
+        ? flightSentence(mode, d.flights, o.departureCity)
+        : `${mode} au départ de ${o.departureCity} compris. Compagnie et horaires ${beforePayment} : ils dépendent des places disponibles au jour de la demande, aucun horaire n'est annoncé avant.`,
     });
   } else {
     rows.push({
@@ -300,12 +431,16 @@ export function essentialsFor(o: DetailsInput & Pick<Offer, "included">): { labe
   if (o.category === "vols") {
     rows.push({
       label: "Bagages",
-      value: "Bagage cabine compris. Bagage en soute selon le tarif de la compagnie, précisé avant tout paiement.",
+      value:
+        d?.flights?.baggage ??
+        "Bagage cabine compris. Bagage en soute selon le tarif de la compagnie, précisé avant tout paiement.",
     });
   } else if (flight) {
     rows.push({
       label: "Bagages",
-      value: "Franchise cabine et soute selon la compagnie et le tarif retenus, indiquée sur la confirmation avant tout paiement.",
+      value:
+        d?.flights?.baggage ??
+        "Franchise cabine et soute selon la compagnie et le tarif retenus, indiquée sur la confirmation avant tout paiement.",
     });
   }
 
@@ -316,18 +451,25 @@ export function essentialsFor(o: DetailsInput & Pick<Offer, "included">): { labe
     "Demi-pension": "Demi-pension : petit-déjeuner et dîner. Déjeuners et boissons non compris.",
     "Petit-déjeuner": "Petit-déjeuner compris. Autres repas et boissons non compris.",
     "Sans repas": "Aucun repas compris.",
+    "Formule à confirmer": "Formule repas non précisée par l'organisateur : détaillée avec la confirmation de disponibilité, avant tout paiement.",
   };
-  if (meals[o.board]) rows.push({ label: "Repas et boissons", value: meals[o.board] });
+  const mealsLine = d?.meals ?? meals[o.board];
+  if (mealsLine) rows.push({ label: "Repas et boissons", value: mealsLine });
 
   // Transferts.
   if (o.category !== "location-voiture") {
     rows.push({
       label: "Transferts",
-      value: has("Transferts")
-        ? "Transferts entre l'aéroport et l'hébergement compris, à l'aller et au retour."
-        : "Non compris.",
+      value:
+        d?.transfers ??
+        (has("Transferts")
+          ? "Transferts entre l'aéroport et l'hébergement compris, à l'aller et au retour."
+          : "Non compris."),
     });
   }
+
+  // Rubriques libres du relevé (taxe de séjour, formalités propres au produit…).
+  for (const extra of d?.extra ?? []) rows.push(extra);
 
   // Prix.
   rows.push({
@@ -336,6 +478,49 @@ export function essentialsFor(o: DetailsInput & Pick<Offer, "included">): { labe
   });
 
   return rows;
+}
+
+/** Intitulé de la rubrique selon le type d'établissement. */
+export function venueLabel(venue: OfferVenue): string {
+  switch (venue.kind) {
+    case "navire":
+      return "Navire";
+    case "parc":
+      return "Parc";
+    case "loueur":
+      return "Loueur";
+    case "camping":
+      return "Camping";
+    default:
+      return "Hébergement";
+  }
+}
+
+/** Une phrase par établissement : nom, catégorie, adresse, chambres, horaires. */
+function venueSentence(venue: OfferVenue): string {
+  const head = `${venue.name}${venue.stars ? ` ${venue.stars}★` : ""}${venue.address ? `, ${venue.address}` : ""}.`;
+  const parts = [head];
+  if (venue.rooms?.length) parts.push(`Chambres : ${venue.rooms.join(", ")}.`);
+  const times = [
+    venue.checkIn ? `arrivée à partir de ${venue.checkIn}` : "",
+    venue.checkOut ? `départ avant ${venue.checkOut}` : "",
+  ].filter(Boolean);
+  if (times.length) parts.push(`${times.join(", ")}.`.replace(/^./, (c) => c.toUpperCase()));
+  return parts.join(" ");
+}
+
+function flightSentence(mode: string, f: OfferFlights, departureCity: string): string {
+  const route = `${f.from || departureCity} vers ${f.to}`;
+  const stops = f.direct === true ? "vol direct" : f.direct === false ? "avec escale" : "";
+  const detail = [stops, f.duration].filter(Boolean).join(", ");
+  const parts = [`${mode} compris, ${route}${detail ? ` (${detail})` : ""}.`];
+  parts.push(
+    f.airlines?.length
+      ? `Compagnies relevées sur cette route : ${f.airlines.join(", ")}. Horaires précisés avec la confirmation de disponibilité, avant tout paiement.`
+      : "Compagnie et horaires précisés avec la confirmation de disponibilité, avant tout paiement.",
+  );
+  if (f.note) parts.push(f.note);
+  return parts.join(" ");
 }
 
 /**

@@ -87,6 +87,7 @@ export async function createBooking(
       id: true,
       price: true,
       oldPrice: true,
+      priceFloor: true,
       title: true,
       nights: true,
       season: true,

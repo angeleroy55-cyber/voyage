@@ -47,7 +47,7 @@ export type BookingMailData = {
   destination: string;
   country: string;
   offerTitle: string;
-  /** Numéro public de l'offre (GSJ-XXXXXX), pour la retrouver sans le lien. */
+  /** Numéro public de l'offre (GO-74990), pour la retrouver sans le lien. */
   offerReference?: string;
   /** Lien absolu vers la fiche, seulement si SITE_URL est configurée. */
   offerUrl?: string;

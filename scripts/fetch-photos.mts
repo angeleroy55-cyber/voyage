@@ -19,8 +19,12 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { DESTINATIONS, OFFERS } from "../src/lib/catalogue-source";
+import { DESTINATIONS, OFFERS as OFFERS_SOURCE } from "../src/lib/catalogue-source";
+import { applyMarket } from "../src/lib/market";
 import { photoHintFor, photoQueryFor } from "../src/lib/media/photo-query";
+
+// Catalogue source + produits relevés sur le marché : toutes les offres à illustrer.
+const OFFERS = applyMarket(OFFERS_SOURCE);
 
 const SORTIE = "src/lib/media/photos.json";
 const TOUT = process.argv.includes("--tout");

@@ -43,6 +43,7 @@ export async function refreshPastDepartures(today: Date = startOfToday()): Promi
       season: true,
       price: true,
       oldPrice: true,
+      priceFloor: true,
       ...CALENDAR_FIELDS,
       category: { select: { slug: true, ...CALENDAR_FIELDS } },
     },

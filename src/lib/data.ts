@@ -305,7 +305,7 @@ export const CONTINENTS: { id: string; label: string; countries: string[] }[] = 
     countries: [
       "Thaïlande", "Japon", "Vietnam", "Indonésie", "Chine", "Inde", "Sri Lanka",
       "Malaisie", "Cambodge", "Philippines", "Corée du Sud", "Ouzbékistan",
-      "Singapour", "Népal",
+      "Singapour", "Népal", "Laos",
     ],
   },
   {

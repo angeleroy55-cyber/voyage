@@ -113,7 +113,7 @@ Aujourd'hui `src/server/actions/admin.ts` ne permet que `setBookingStatus` et
 - **Créer une réservation à la main**, pour les demandes prises au téléphone :
   choix de l'offre, coordonnées, rattachement facultatif à un `Customer`
   existant, voyageurs, dates, assurance, montant, moyen de paiement,
-  échéancier. La référence suit le format `GS-XXXXXX` déjà produit par
+  échéancier. La référence suit le format `GO-XXXXXX` produit par
   `createBooking()` dans `src/server/actions/public.ts`, factorise plutôt que
   de dupliquer.
 - **Modifier** une réservation existante : mêmes champs.

@@ -131,7 +131,7 @@ model Destination {
 model Offer {
   id            String  @id @default(cuid())
   slug          String  @unique
-  /// Numéro de référence public, au format GSJ-XXXXXX. Unique, attribué à la
+  /// Numéro de référence public, au format GO-74990. Unique, attribué à la
   /// création et jamais recyclé, même après suppression de l'offre : le support
   /// client doit pouvoir retrouver un dossier des années plus tard. Le compteur
   /// vit dans `Counter` (cf. src/server/references.ts).
@@ -207,6 +207,18 @@ model Offer {
   itinerary     String[] @default([])
   notIncluded   String[] @default([])
   practicalInfo String[] @default([])
+
+  /// Fiche détaillée relevée sur le marché : établissement nommé (hôtel, navire,
+  /// camping), vols, repas, transferts (type `OfferDetails`, src/lib/types.ts).
+  /// `null` = pas encore relevée : la fiche affiche alors le texte générique de
+  /// src/lib/offer-details.ts. Colonne JSON plutôt que dix colonnes : chaque
+  /// catégorie ne remplit pas les mêmes rubriques (un vol n'a pas d'hôtel).
+  details Json?
+
+  /// Prix plancher par personne, en euros : le calendrier ne descend jamais en
+  /// dessous. Sert surtout aux vols, dont le tarif aller-retour le plus bas
+  /// observé sur le marché est une borne réelle, pas un choix commercial.
+  priceFloor Int?
 
   /// Saison commerciale (identifiant de src/lib/seasons.ts) quand l'offre n'a
   /// de sens qu'à une période : un séjour au ski ne part pas en juillet. Vide =
@@ -348,7 +360,7 @@ model Favourite {
 
 model Booking {
   id        String @id @default(cuid())
-  /// Référence lisible communiquée au client (ex. GS-4F7K2A).
+  /// Référence lisible communiquée au client (ex. GO-4F7K2A ; les dossiers antérieurs à octobre 2026 restent en GS-).
   reference String @unique
   offerId   String?
   /// Rattachement à un espace client. Reste nul pour une demande passée sans
